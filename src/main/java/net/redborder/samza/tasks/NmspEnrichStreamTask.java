@@ -16,6 +16,7 @@
 package net.redborder.samza.tasks;
 
 import org.apache.samza.config.Config;
+import org.apache.samza.storage.kv.KeyValueStore;
 import org.apache.samza.system.IncomingMessageEnvelope;
 import org.apache.samza.system.OutgoingMessageEnvelope;
 import org.apache.samza.system.SystemStream;
@@ -23,33 +24,59 @@ import org.apache.samza.task.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class NmspEnrichStreamTask implements StreamTask, InitableTask {
     private static final Logger log = LoggerFactory.getLogger(NmspEnrichStreamTask.class);
 
-    //private KeyValueStore<String, Map<String, Object>> store;
-    private final SystemStream OUTPUT_STREAM = new SystemStream("kafka", "rb_flow_with_nmsp");
+    private KeyValueStore<String, Map<String, Object>> store;
+    private final SystemStream OUTPUT_STREAM = new SystemStream("druid", "rb_flow");
 
     @Override
     public void init(Config config, TaskContext context) throws Exception {
-        //this.store = (KeyValueStore<String, Map<String, Object>>) context.getStore("nmsp");
+        this.store = (KeyValueStore<String, Map<String, Object>>) context.getStore("nmsp");
     }
 
     @Override
     public void process(IncomingMessageEnvelope envelope, MessageCollector collector, TaskCoordinator coordinator) throws Exception {
         Map<String, Object> message = (Map<String, Object>) envelope.getMessage();
         String mac = (String) message.get("client_mac");
-        log.info("Client mac is " + mac);
+        Map<String, Object> output;
+        Map<String, Object> cached;
+        Map<String, Object> toCache;
+        List<String> wireless_stations;
+        String type, wireless_station;
 
-        //if (envelope.getSystemStreamPartition().getSystemStream().getStream().equals("rb_nmsp")) {
-           // this.store.put(mac, message);
-        //} else {
-            //Map<String, Object> output = new HashMap<>();
-            //output.putAll(message);
-            //output.putAll(this.store.get(mac));
+        if (mac != null) {
+            if (envelope.getSystemStreamPartition().getSystemStream().getStream().equals("rb_nmsp")) {
+                toCache = new HashMap<>();
 
-            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, message));
-        //}
+                type = (String) message.get("type");
+                if (type != null && type.equals("measure")) {
+                    wireless_stations = (List<String>) message.get("ap_mac");
+
+                    if (wireless_stations != null && !wireless_stations.isEmpty()) {
+                        wireless_station = wireless_stations.get(0);
+                        toCache.put("wireless_station", wireless_station);
+                    }
+                }
+
+                this.store.put(mac, toCache);
+            } else {
+                output = new HashMap<>();
+                cached = this.store.get(mac);
+
+                output.putAll(message);
+
+                if (cached != null && !cached.isEmpty()) {
+                    log.info("Cache hit at mac " + mac + " with data " + cached);
+                    output.putAll(cached);
+                }
+
+                collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, output));
+            }
+        }
     }
 }
