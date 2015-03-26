@@ -11,6 +11,10 @@ import java.util.Map;
 public class MockKeyValueStore implements KeyValueStore<String, Map<String, Object>> {
     Map<String, Map<String, Object>> store = new HashMap<>();
 
+    public boolean isEmpty() {
+        return store.isEmpty();
+    }
+
     @Override
     public Map<String, Object> get(String s) {
         return store.get(s);

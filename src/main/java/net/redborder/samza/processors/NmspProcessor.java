@@ -49,9 +49,10 @@ public class NmspProcessor extends Processor {
                 wireless_station = wireless_stations.get(0);
                 toCache.put(Dimension.WIRELESS_STATION, wireless_station);
             }
+
+            store.put(mac, toCache);
         }
 
-        store.put(mac, toCache);
         return null;
     }
 }

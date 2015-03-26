@@ -15,36 +15,80 @@
 
 package net.redborder.samza.processors;
 
+import junit.framework.TestCase;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.MockKeyValueStore;
-import org.apache.samza.storage.kv.KeyValueStore;
+import net.redborder.samza.util.constants.Dimension;
+import net.redborder.samza.util.constants.DimensionValue;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class NmspProcessorTest {
-    NmspProcessor nmspProcessor;
+@RunWith(MockitoJUnitRunner.class)
+public class NmspProcessorTest extends TestCase {
+    static MockKeyValueStore store;
+    static NmspProcessor nmspProcessor;
 
     @Mock
-    StoreManager storeManager;
+    static StoreManager storeManager;
 
-    @Before
-    public void initTest() {
-        KeyValueStore<String, Map<String, Object>> store = new MockKeyValueStore();
+    @BeforeClass
+    public static void initTest() {
+        // This store uses an in-memory map instead of samza K/V RockDB
+        store = new MockKeyValueStore();
 
+        // Mock the storeManager in order to return the mock store
+        // that we just instantiated
         storeManager = mock(StoreManager.class);
         when(storeManager.getStore(NmspProcessor.NMSP_STORE)).thenReturn(store);
 
         nmspProcessor = new NmspProcessor(storeManager);
     }
 
+    @Before
+    // Cleans the store in order to use an empty
+    // memory map in each test
+    public void cleanStore() {
+        store.flush();
+    }
+
     @Test
     public void processReturnsNull() {
+        Map<String, Object> message = new HashMap<>();
+        assertEquals(nmspProcessor.process(message), null);
+    }
 
+    @Test
+    public void emptyMessageIsIgnored() {
+        Map<String, Object> message = new HashMap<>();
+        nmspProcessor.process(message);
+        assertTrue(store.isEmpty());
+    }
+
+    @Test
+    public void enrichesWithWirelessStation() {
+        Map<String, Object> message = new HashMap<>();
+        List<String> ap_macs = Arrays.asList("11:11:11:11:11:11", "22:22:22:22:22:22", "33:33:33:33:33:33");
+
+        message.put(Dimension.CLIENT_MAC, "00:00:00:00:00:00");
+        message.put(Dimension.NMSP_AP_MAC, ap_macs);
+        message.put(Dimension.NMSP_TYPE, DimensionValue.NMSP_TYPE_MEASURE);
+        nmspProcessor.process(message);
+
+        Map<String, Object> fromCache = store.get("00:00:00:00:00:00");
+        String apFromCache = (String) fromCache.get(Dimension.WIRELESS_STATION);
+
+        assertEquals(apFromCache, ap_macs.get(0));
     }
 }
