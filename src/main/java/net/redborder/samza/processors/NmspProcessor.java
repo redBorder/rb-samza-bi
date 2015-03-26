@@ -15,5 +15,42 @@
 
 package net.redborder.samza.processors;
 
+import net.redborder.samza.util.constants.Dimension;
+import net.redborder.samza.util.constants.DimensionValue;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 public class NmspProcessor implements IProcessor {
+    final private static String NMSP_STORE = "rb_nmsp";
+    private static NmspProcessor instance = null;
+
+    private NmspProcessor() {}
+
+    public NmspProcessor getInstance() {
+        if (instance == null) instance = new NmspProcessor();
+        return instance;
+    }
+
+    @Override
+    public Map<String, Object> process(Map<String, Object> message) {
+        Map<String, Object> toCache = new HashMap<>();
+        String type = (String) message.get(Dimension.NMSP_TYPE);
+        String mac = (String) message.get(Dimension.CLIENT_MAC);
+        List<String> wireless_stations;
+        String wireless_station;
+
+        if (type != null && type.equals(DimensionValue.NMSP_TYPE_MEASURE)) {
+            wireless_stations = (List<String>) message.get(Dimension.NMSP_AP_MAC);
+
+            if (wireless_stations != null && !wireless_stations.isEmpty()) {
+                wireless_station = wireless_stations.get(0);
+                toCache.put(Dimension.WIRELESS_STATION, wireless_station);
+            }
+        }
+
+        StoreManager.getStore(NMSP_STORE).put(mac, toCache);
+        return null;
+    }
 }

@@ -13,10 +13,14 @@
  * along with redBorder. If not, see <http://www.gnu.org/licenses/>.
  */
 
-package net.redborder.samza.processors;
+package net.redborder.samza.util.constants;
 
-import java.util.Map;
+public class Dimension {
+    // Common
+    public final static String CLIENT_MAC = "client_mac";
+    public final static String WIRELESS_STATION = "wireless_station";
 
-public interface IProcessor {
-    Map<String, Object> process(Map<String, Object> message);
+    // NMSP
+    public final static String NMSP_AP_MAC = "ap_mac";
+    public final static String NMSP_TYPE = "type";
 }
