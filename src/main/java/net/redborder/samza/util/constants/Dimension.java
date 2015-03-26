@@ -20,8 +20,19 @@ public class Dimension {
     public final static String CLIENT_MAC = "client_mac";
     public final static String WIRELESS_STATION = "wireless_station";
     public final static String SRC_IP = "src";
+    public final static String SENSOR_NAME = "sensor_name";
+    public final static String CLIENT_RSSI = "client_rssi";
+    public final static String CLIENT_RSSI_NUM = "client_rssi_num";
+    public final static String TIMESTAMP = "timestamp";
+    public final static String PKTS = "pkts";
+    public final static String BYTES = "bytes";
+    public final static String TYPE = "type";
+    public final static String SRC_VLAN = "src_vlan";
 
     // NMSP
     public final static String NMSP_AP_MAC = "ap_mac";
-    public final static String NMSP_TYPE = "type";
+    public final static String NMSP_RSSI = "rssi";
+    public final static String NMSP_DOT11STATUS = "dot11Status";
+    public final static String NMSP_VLAN_ID = "vlan_id";
+
 }

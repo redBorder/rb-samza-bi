@@ -32,7 +32,7 @@ public class StoreManager {
     public StoreManager(Config config, TaskContext context){
         for(String str : config.keySet()){
             if(str.contains("stores") && str.contains("factory")){
-                String store = str.substring(str.indexOf(".")+1, str.indexOf(".", str.indexOf(".")+1));
+                String store = getStoreName(str);
                 stores.put(store, (KeyValueStore<String, Map<String, Object>>) context.getStore(store));
             }
         }
@@ -53,5 +53,9 @@ public class StoreManager {
         }
 
         return enrichment;
+    }
+
+    private String getStoreName(String str){
+        return str.substring(str.indexOf(".")+1, str.indexOf(".", str.indexOf(".")+1));
     }
 }

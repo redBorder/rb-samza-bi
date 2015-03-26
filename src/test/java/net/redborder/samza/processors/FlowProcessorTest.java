@@ -72,7 +72,7 @@ public class FlowProcessorTest extends TestCase {
 
         for (String str : map.keySet()) {
             if (str.contains("stores") && str.contains("factory")) {
-                String store = str.substring(str.indexOf(".") + 1, str.indexOf(".", str.indexOf(".") + 1));
+                String store = getStoreName(str);
                 stores.add(store);
                 when(context.getStore(store)).thenReturn(new MockKeyValueStore());
             }
@@ -100,6 +100,10 @@ public class FlowProcessorTest extends TestCase {
         message.putAll(cacheNmsp);
 
         assertTrue(message.equals(result));
+    }
+
+    private static String getStoreName(String str){
+        return str.substring(str.indexOf(".")+1, str.indexOf(".", str.indexOf(".")+1));
     }
 }
 
