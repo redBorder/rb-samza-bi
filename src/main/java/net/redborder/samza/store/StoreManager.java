@@ -47,7 +47,8 @@ public class StoreManager {
         for(String key : keys) {
             if(key != null) {
                 for (KeyValueStore<String, Map<String, Object>> store : stores.values()) {
-                    enrichment.putAll(store.get(key));
+                    Map<String, Object> contents = store.get(key);
+                    if (contents != null) enrichment.putAll(contents);
                 }
             }
         }

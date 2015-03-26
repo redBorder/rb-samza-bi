@@ -19,10 +19,8 @@ import junit.framework.TestCase;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.MockKeyValueStore;
 import net.redborder.samza.util.constants.Dimension;
-import net.redborder.samza.util.constants.DimensionValue;
 import org.apache.samza.config.Config;
 import org.apache.samza.task.TaskContext;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,12 +28,10 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-import static net.redborder.samza.util.constants.Dimension.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -54,8 +50,6 @@ public class FlowProcessorTest extends TestCase {
 
     @BeforeClass
     public static void initTest() throws IOException {
-
-
         Properties properties = new Properties();
         InputStream inputStream = new FileInputStream("src/main/config/enrichment.properties");
         properties.load(inputStream);
@@ -86,10 +80,10 @@ public class FlowProcessorTest extends TestCase {
     public void enrichment() {
         Map<String, Object> cacheNmsp = new HashMap<>();
 
-        if (stores.contains("nmsp")) {
+        if (stores.contains("nmsp-measure")) {
             cacheNmsp.put("wireless_station", "11:11:11:11:11:11");
             cacheNmsp.put("dot11Status", "ASSOCIATED");
-            storeManager.getStore("nmsp").put("00:00:00:00:00:00", cacheNmsp);
+            storeManager.getStore("nmsp-measure").put("00:00:00:00:00:00", cacheNmsp);
         }
 
         Map<String, Object> message = new HashMap<>();

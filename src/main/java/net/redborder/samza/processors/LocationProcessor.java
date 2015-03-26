@@ -28,7 +28,7 @@ import static net.redborder.samza.util.constants.Dimension.*;
 import static net.redborder.samza.util.constants.DimensionValue.LOC_ASSOCIATED;
 
 public class LocationProcessor extends Processor {
-    final public static String LOCATION_STORE = "rb_location";
+    final public static String LOCATION_STORE = "location";
 
     private KeyValueStore<String, Map<String, Object>> store;
 
@@ -41,7 +41,8 @@ public class LocationProcessor extends Processor {
     public Map<String, Object> process(Map<String, Object> message) {
         Map<String, Object> mseEventContent, location, mapInfo, toCache, toDruid;
         Map<String, Object> geoCoordinate = null;
-        String mapHierarchy, macAddress, locationFormat, state;
+        String mapHierarchy, locationFormat, state;
+        String macAddress = null;
         Double latitude, longitude;
         String[] zone;
 
@@ -135,7 +136,7 @@ public class LocationProcessor extends Processor {
                     toDruid.put("timestamp", System.currentTimeMillis() / 1000);
                 }
 
-
+                if (macAddress != null) store.put(macAddress, toCache);
                 return toDruid;
             }
         } else {
