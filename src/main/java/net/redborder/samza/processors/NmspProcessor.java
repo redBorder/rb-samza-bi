@@ -26,12 +26,11 @@ import java.util.Map;
 
 public class NmspProcessor extends Processor {
     final private static String NMSP_STORE = "rb_nmsp";
-    private static NmspProcessor instance = null;
 
-    private KeyValueStore<String, Map<String, Object>> nmspStore;
+    private KeyValueStore<String, Map<String, Object>> store;
 
     private NmspProcessor(StoreManager storeManager) {
-        nmspStore = storeManager.getStore(NMSP_STORE);
+        store = storeManager.getStore(NMSP_STORE);
     }
 
     @Override
@@ -52,7 +51,7 @@ public class NmspProcessor extends Processor {
             }
         }
 
-        nmspStore.put(mac, toCache);
+        store.put(mac, toCache);
         return null;
     }
 }

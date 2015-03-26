@@ -16,10 +16,8 @@
 package net.redborder.samza.store;
 
 import junit.framework.TestCase;
+import net.redborder.samza.util.MockKeyValueStore;
 import org.apache.samza.config.Config;
-import org.apache.samza.storage.kv.Entry;
-import org.apache.samza.storage.kv.KeyValueIterator;
-import org.apache.samza.storage.kv.KeyValueStore;
 import org.apache.samza.task.TaskContext;
 import org.junit.Before;
 import org.junit.Test;
@@ -91,51 +89,6 @@ public class StoreManagerTest extends TestCase {
             assertEquals(cache.get("string"), "test");
             assertEquals(cache.get("boolean"), true);
 
-        }
-    }
-
-    private class MockKeyValueStore implements KeyValueStore<String, Object> {
-
-        Map<Object, Object> store = new HashMap<>();
-
-        @Override
-        public Object get(String s) {
-            return store.get(s);
-        }
-
-        @Override
-        public void put(String s, Object o) {
-            store.put(s, o);
-        }
-
-        @Override
-        public void putAll(List<Entry<String, Object>> list) {
-        }
-
-        @Override
-        public void delete(String s) {
-            store.remove(s);
-        }
-
-        @Override
-        public KeyValueIterator<String, Object> range(String s, String k1) {
-            return null;
-        }
-
-        @Override
-        public KeyValueIterator<String, Object> all() {
-            return null;
-        }
-
-        @Override
-        public void close() {
-            store.clear();
-            store = null;
-        }
-
-        @Override
-        public void flush() {
-            store.clear();
         }
     }
 }
