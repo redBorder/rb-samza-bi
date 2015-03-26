@@ -22,7 +22,6 @@ public class Dimension {
     public final static String WIRELESS_ID = "wireless_id";
     public final static String SRC_IP = "src";
     public final static String DST_IP = "dst";
-
     public final static String SENSOR_NAME = "sensor_name";
     public final static String CLIENT_LATLNG = "client_latlong";
     public final static String CLIENT_RSSI = "client_rssi";
@@ -40,7 +39,6 @@ public class Dimension {
     public final static String DOT11STATUS = "dot11_status";
     public final static String SRC = "src";
     public final static String DOT11PROTOCOL = "dot11_protocol";
-    public final static String WIRELESS_ID = "wireless_id";
 
     //Darklist
     public final static String DARKLIST_SCORE = "darklist_score";
