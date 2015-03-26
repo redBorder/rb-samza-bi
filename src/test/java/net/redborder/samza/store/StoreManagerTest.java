@@ -99,12 +99,15 @@ public class StoreManagerTest extends TestCase {
 
         for (String store : stores) {
             Map<String, Object> cache = new HashMap<>();
-            cache.put(store, store);
+            cache.put(store + "-mac", store + "-mac");
             result.putAll(cache);
-            storeManager.getStore(store).put("testing", cache);
+            storeManager.getStore(store).put("testing-mac", cache);
+            cache.put(store + "-ip", store + "-ip");
+            result.putAll(cache);
+            storeManager.getStore(store).put("testing-ip", cache);
         }
 
-        Map<String, Object> enrichCache = storeManager.enrich("testing");
+        Map<String, Object> enrichCache = storeManager.enrich("testing-mac", "testing-ip");
         assertTrue(enrichCache.equals(result));
     }
 }

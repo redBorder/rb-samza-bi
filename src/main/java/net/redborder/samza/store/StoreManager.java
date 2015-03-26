@@ -43,10 +43,13 @@ public class StoreManager {
         return stores.get(store);
     }
 
-    public Map<String, Object> enrich(String key){
+    public Map<String, Object> enrich(String ... keys){
         Map<String, Object> enrichment = new HashMap<>();
-        for(KeyValueStore<String, Map<String, Object>> store : stores.values())
-            enrichment.putAll(store.get(key));
+        for(String key : keys) {
+            for (KeyValueStore<String, Map<String, Object>> store : stores.values())
+                enrichment.putAll(store.get(key));
+        }
+
         return enrichment;
     }
 }
