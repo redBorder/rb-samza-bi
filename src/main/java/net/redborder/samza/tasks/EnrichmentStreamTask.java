@@ -15,6 +15,8 @@
 
 package net.redborder.samza.tasks;
 
+import net.redborder.samza.processors.FlowProcessor;
+import net.redborder.samza.processors.IProcessor;
 import org.apache.samza.config.Config;
 import org.apache.samza.storage.kv.KeyValueStore;
 import org.apache.samza.system.IncomingMessageEnvelope;
@@ -24,6 +26,7 @@ import org.apache.samza.task.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +54,10 @@ public class EnrichmentStreamTask implements StreamTask, InitableTask {
         List<String> wireless_stations;
         String type, wireless_station;
         String stream = envelope.getSystemStreamPartition().getSystemStream().getStream();
+
+        Method method = Class.forName("").getClassLoader().loadClass("testClass").getMethod("getInstance");
+        IProcessor processor = (IProcessor) method.invoke(null, null);
+
 
         if (mac != null) {
             if (stream.equals("rb_nmsp")) {
