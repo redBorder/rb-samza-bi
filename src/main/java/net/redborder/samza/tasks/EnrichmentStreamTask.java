@@ -28,15 +28,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NmspEnrichStreamTask implements StreamTask, InitableTask {
-    private static final Logger log = LoggerFactory.getLogger(NmspEnrichStreamTask.class);
+public class EnrichmentStreamTask implements StreamTask, InitableTask {
+    private static final Logger log = LoggerFactory.getLogger(EnrichmentStreamTask.class);
 
     private KeyValueStore<String, Map<String, Object>> store;
     private final SystemStream OUTPUT_STREAM = new SystemStream("druid", "rb_flow");
+    private Config config;
 
     @Override
     public void init(Config config, TaskContext context) throws Exception {
         this.store = (KeyValueStore<String, Map<String, Object>>) context.getStore("nmsp");
+        this.config = config;
     }
 
     @Override
@@ -48,9 +50,10 @@ public class NmspEnrichStreamTask implements StreamTask, InitableTask {
         Map<String, Object> toCache;
         List<String> wireless_stations;
         String type, wireless_station;
+        String stream = envelope.getSystemStreamPartition().getSystemStream().getStream();
 
         if (mac != null) {
-            if (envelope.getSystemStreamPartition().getSystemStream().getStream().equals("rb_nmsp")) {
+            if (stream.equals("rb_nmsp")) {
                 toCache = new HashMap<>();
 
                 type = (String) message.get("type");
