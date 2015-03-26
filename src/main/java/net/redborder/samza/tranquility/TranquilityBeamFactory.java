@@ -27,6 +27,7 @@ import io.druid.granularity.QueryGranularity;
 import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
 import io.druid.query.aggregation.LongSumAggregatorFactory;
+import io.druid.query.aggregation.hyperloglog.HyperUniquesAggregatorFactory;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -34,6 +35,7 @@ import org.apache.samza.config.Config;
 import org.apache.samza.system.SystemStream;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
+import static net.redborder.samza.util.constants.Dimension.*;
 
 import java.util.List;
 import java.util.Map;
@@ -53,21 +55,25 @@ public class TranquilityBeamFactory implements BeamFactory
                 "application_id_name", "biflow_direction", "conversation", "direction",
                 "engine_id_name", "http_user_agent_os", "http_host", "http_social_media",
                 "http_social_user", "http_referer_l1", "l4_proto", "ip_protocol_version",
-                "sensor_name", "scatterplot", "src", "src_country_code", "src_net_name",
+                "sensor_name", "scatterplot", SRC_IP, "src_country_code", "src_net_name",
                 "src_port", "src_as_name", "client_mac", "client_id", "client_mac_vendor",
-                "dot11_status", "src_vlan", "src_map", "srv_port", "dst",
+                DOT11STATUS, SRC_VLAN, "src_map", "srv_port", DST_IP,
                 "dst_country_code", "dst_net_name", "dst_port", "dst_as_name",
                 "dst_vlan", "dst_map", "input_snmp", "output_snmp", "tos",
                 "client_latlong", "coordinates_map", "client_campus",
-                "client_building", "client_floor", "wireless_id","client_rssi", "client_rssi_num",
-                "client_snr", "client_snr_num", "wireless_station", "hnblocation", "hnbgeolocation", "rat",
-                "darklist_score_name", "darklist_category", "darklist_protocol",
-                "darklist_direction", "darklist_score");
+                "client_building", "client_floor", WIRELESS_ID, CLIENT_RSSI, CLIENT_RSSI_NUM,
+                "client_snr", "client_snr_num", WIRELESS_STATION, "hnblocation", "hnbgeolocation", "rat",
+                DARKLIST_SCORE_NAME, DARKLIST_CATEGORY, DARKLIST_PROTOCOL,
+                DARKLIST_DIRECTION, DARKLIST_SCORE);
 
         final List<AggregatorFactory> aggregators = ImmutableList.<AggregatorFactory>of(
                 new CountAggregatorFactory("events"),
-                new LongSumAggregatorFactory("sum_bytes", "bytes"),
-                new LongSumAggregatorFactory("sum_pkts", "pkts")
+                new LongSumAggregatorFactory("sum_bytes", BYTES),
+                new LongSumAggregatorFactory("sum_pkts", PKTS),
+                new LongSumAggregatorFactory("sum_rssi", CLIENT_RSSI_NUM),
+                new LongSumAggregatorFactory("sum_dl_score", DARKLIST_SCORE),
+                new HyperUniquesAggregatorFactory("clients", CLIENT_MAC),
+                new HyperUniquesAggregatorFactory("wireless_stations", WIRELESS_STATION)
         );
 
         // The Timestamper should return the timestamp of the class your Samza task produces. Samza envelopes contain

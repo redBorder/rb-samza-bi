@@ -20,6 +20,8 @@ public class Dimension {
     public final static String CLIENT_MAC = "client_mac";
     public final static String WIRELESS_STATION = "wireless_station";
     public final static String SRC_IP = "src";
+    public final static String DST_IP = "dst";
+
     public final static String SENSOR_NAME = "sensor_name";
     public final static String CLIENT_RSSI = "client_rssi";
     public final static String CLIENT_RSSI_NUM = "client_rssi_num";
@@ -31,6 +33,13 @@ public class Dimension {
     public final static String DOT11STATUS = "dot11Status";
     public final static String DOT11PROTOCOL = "dot11_protocol";
     public final static String WIRELESS_ID = "wireless_id";
+
+    //Darklist
+    public final static String DARKLIST_SCORE = "darklist_score";
+    public final static String DARKLIST_SCORE_NAME = "darklist_score_name";
+    public final static String DARKLIST_PROTOCOL = "darklist_protocol";
+    public final static String DARKLIST_DIRECTION = "darklist_direction";
+    public final static String DARKLIST_CATEGORY = "darklist_category";
 
     // NMSP
     public final static String NMSP_AP_MAC = "ap_mac";
