@@ -19,7 +19,6 @@ import junit.framework.TestCase;
 import net.redborder.samza.util.MockKeyValueStore;
 import org.apache.samza.config.Config;
 import org.apache.samza.task.TaskContext;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -57,7 +56,6 @@ public class StoreManagerTest extends TestCase {
         for (final String name : properties.stringPropertyNames())
             map.put(name, properties.getProperty(name));
 
-
         config = mock(Config.class);
         when(config.keySet()).thenReturn(map.keySet());
 
@@ -94,7 +92,6 @@ public class StoreManagerTest extends TestCase {
 
     @Test
     public void enrichment(){
-
         Map<String, Object> result = new HashMap<>();
 
         for (String store : stores) {
