@@ -17,9 +17,6 @@ package net.redborder.samza.store;
 
 import junit.framework.TestCase;
 import org.apache.samza.config.Config;
-
-import static org.mockito.Mockito.*;
-
 import org.apache.samza.storage.kv.Entry;
 import org.apache.samza.storage.kv.KeyValueIterator;
 import org.apache.samza.storage.kv.KeyValueStore;
@@ -30,9 +27,13 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StoreManagerTest extends TestCase {
@@ -48,7 +49,7 @@ public class StoreManagerTest extends TestCase {
     @Before
     public void initTest() throws IOException {
         Properties properties = new Properties();
-        InputStream inputStream = getClass().getClassLoader().getResourceAsStream("src/main/config/enrichment.properties");
+        InputStream inputStream = new FileInputStream("src/main/config/enrichment.properties");
         properties.load(inputStream);
 
         Map<String, String> map = new HashMap<>();
