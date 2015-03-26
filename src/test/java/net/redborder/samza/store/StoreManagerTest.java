@@ -37,6 +37,7 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StoreManagerTest extends TestCase {
+    @Mock
     Config config;
 
     @Mock
@@ -57,23 +58,21 @@ public class StoreManagerTest extends TestCase {
         for (final String name : properties.stringPropertyNames())
             map.put(name, properties.getProperty(name));
 
-        config.putAll(map);
+
+        config = mock(Config.class);
+        when(config.keySet()).thenReturn(map.keySet());
 
         context = mock(TaskContext.class);
 
         for (String str : map.keySet()) {
             if (str.contains("stores") && str.contains("factory")) {
-                String store = str.substring(str.indexOf("."), str.indexOf(".", str.indexOf(".") + 1));
+                String store = str.substring(str.indexOf(".")+1, str.indexOf(".", str.indexOf(".") + 1));
                 stores.add(store);
-                when(context.getStore(str)).thenReturn(new MockKeyValueStore());
+                when(context.getStore(store)).thenReturn(new MockKeyValueStore());
             }
         }
         storeManager = new StoreManager(config, context);
-    }
 
-
-    @Test
-    public void save() {
         for (String store : stores) {
             Map<String, Object> cache = new HashMap<>();
             cache.put("integer", 1);
@@ -84,7 +83,7 @@ public class StoreManagerTest extends TestCase {
     }
 
     @Test
-    public void get() {
+    public void checkStore() {
         for (String store : stores) {
             Map<String, Object> cache = storeManager.getStore(store).get("testing");
             assertEquals(cache.get("integer"), 1);
