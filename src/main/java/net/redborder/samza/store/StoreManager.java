@@ -1,8 +1,12 @@
 package net.redborder.samza.store;
 
+import org.apache.samza.config.Config;
 import org.apache.samza.storage.kv.KeyValueStore;
+import org.apache.samza.task.TaskContext;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -12,7 +16,13 @@ public class StoreManager {
 
     private static Map<String, KeyValueStore<String, Map<String, Object>>> stores = new HashMap<>();
 
-    public static void init(Map<String, KeyValueStore<String, Map<String, Object>>> stores){
+    public static void init(Config config, TaskContext context){
+        for(String str : config.keySet()){
+            if(str.contains("stores") && str.contains("factory")){
+                String store = str.substring(str.indexOf("."), str.indexOf(".", str.indexOf(".")+1));
+                stores.put(store, (KeyValueStore<String, Map<String, Object>>) context.getStore(store));
+            }
+        }
         stores.putAll(stores);
     }
 
