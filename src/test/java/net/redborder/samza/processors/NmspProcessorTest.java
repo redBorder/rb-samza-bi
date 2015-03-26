@@ -18,8 +18,10 @@ package net.redborder.samza.processors;
 import junit.framework.TestCase;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.MockKeyValueStore;
-import net.redborder.samza.util.constants.Dimension;
-import net.redborder.samza.util.constants.DimensionValue;
+
+import static net.redborder.samza.util.constants.Dimension.*;
+import static net.redborder.samza.util.constants.DimensionValue.*;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -49,6 +51,7 @@ public class NmspProcessorTest extends TestCase {
     public static void initTest() {
         // This store uses an in-memory map instead of samza K/V RockDB
         storeMeasure = new MockKeyValueStore();
+        storeInfo = new MockKeyValueStore();
 
         // Mock the storeManager in order to return the mock store
         // that we just instantiated
@@ -65,12 +68,13 @@ public class NmspProcessorTest extends TestCase {
     // memory map in each test
     public void cleanStore() {
         storeMeasure.flush();
+        storeInfo.flush();
     }
 
     @Test
-    public void processReturnsNull() {
+    public void processEmptyMsg() {
         Map<String, Object> message = new HashMap<>();
-        assertEquals(nmspProcessor.process(message), null);
+        assertEquals(nmspProcessor.process(message), new HashMap<String, Object>());
     }
 
     @Test
@@ -84,15 +88,103 @@ public class NmspProcessorTest extends TestCase {
     public void enrichesWithWirelessStation() {
         Map<String, Object> message = new HashMap<>();
         List<String> ap_macs = Arrays.asList("11:11:11:11:11:11", "22:22:22:22:22:22", "33:33:33:33:33:33");
+        List<Integer> rssi = Arrays.asList(-80, -54, -32);
 
-        message.put(Dimension.CLIENT_MAC, "00:00:00:00:00:00");
-        message.put(Dimension.NMSP_AP_MAC, ap_macs);
-        message.put(Dimension.TYPE, DimensionValue.NMSP_TYPE_MEASURE);
+        message.put(CLIENT_MAC, "00:00:00:00:00:00");
+        message.put(NMSP_AP_MAC, ap_macs);
+        message.put(NMSP_RSSI, rssi);
+        message.put(TYPE, NMSP_TYPE_MEASURE);
         nmspProcessor.process(message);
 
         Map<String, Object> fromCache = storeMeasure.get("00:00:00:00:00:00");
-        String apFromCache = (String) fromCache.get(Dimension.WIRELESS_STATION);
 
-        assertEquals(apFromCache, ap_macs.get(0));
+        String apFromCache = (String) fromCache.get(WIRELESS_STATION);
+
+        assertEquals(apFromCache, ap_macs.get(2));
+    }
+
+    @Test
+    public void enrichesWithRssi() {
+        Map<String, Object> message = new HashMap<>();
+        List<String> ap_macs = Arrays.asList("11:11:11:11:11:11", "22:22:22:22:22:22", "33:33:33:33:33:33");
+        List<Integer> rssi = Arrays.asList(-80, -54, -32);
+
+        message.put(CLIENT_MAC, "00:00:00:00:00:00");
+        message.put(NMSP_AP_MAC, ap_macs);
+        message.put(NMSP_RSSI, rssi);
+        message.put(TYPE, NMSP_TYPE_MEASURE);
+        nmspProcessor.process(message);
+
+        Map<String, Object> fromCache = storeMeasure.get("00:00:00:00:00:00");
+
+        int client_rssi_num = (int) fromCache.get(CLIENT_RSSI_NUM);
+        String client_rssi = (String) fromCache.get(CLIENT_RSSI);
+
+        assertEquals("RssiCheck", client_rssi_num, -32);
+        assertEquals(client_rssi, "excelent");
+    }
+
+    @Test
+    public void enrichWithStatus() {
+        Map<String, Object> message = new HashMap<>();
+        List<String> ap_macs = Arrays.asList("11:11:11:11:11:11", "22:22:22:22:22:22", "33:33:33:33:33:33");
+        List<Integer> rssi = Arrays.asList(-80, -54, -32);
+
+        message.put(CLIENT_MAC, "00:00:00:00:00:00");
+        message.put(NMSP_AP_MAC, ap_macs);
+        message.put(NMSP_RSSI, rssi);
+        message.put(TYPE, NMSP_TYPE_MEASURE);
+        Map<String, Object> toDruid = nmspProcessor.process(message);
+
+        Map<String, Object> fromCache = storeMeasure.get("00:00:00:00:00:00");
+
+        assertEquals(toDruid.get(DOT11STATUS), "PROBING");
+        assertEquals(fromCache.get(DOT11STATUS), "ASSOCIATED");
+    }
+
+    @Test
+    public void enrichWithInfoAndMeasure() {
+
+        //Message 1
+        Map<String, Object> messageInfo = new HashMap<>();
+        messageInfo.put(CLIENT_MAC, "00:00:00:00:00:00");
+        messageInfo.put(TYPE, NMSP_TYPE_INFO);
+        messageInfo.put(NMSP_WIRELESS_ID, "rb_Corp");
+        messageInfo.put(NMSP_DOT11STATUS, "ASSOCIATED");
+        messageInfo.put(WIRELESS_STATION, "33:33:33:33:33:33");
+
+        List<String> ap_macs = Arrays.asList("11:11:11:11:11:11", "22:22:22:22:22:22", "33:33:33:33:33:33");
+        List<Integer> rssi = Arrays.asList(-80, -54, -32);
+        //Message 2
+        Map<String, Object> messageMeasure1 = new HashMap<>();
+        messageMeasure1.put(CLIENT_MAC, "00:00:00:00:00:00");
+        messageMeasure1.put(NMSP_AP_MAC, ap_macs);
+        messageMeasure1.put(NMSP_RSSI, rssi);
+        messageMeasure1.put(TYPE, NMSP_TYPE_MEASURE);
+
+        //Message 3
+        Map<String, Object> messageMeasure2 = new HashMap<>();
+        messageMeasure2.put(CLIENT_MAC, "00:00:00:00:00:00");
+        messageMeasure2.put(NMSP_AP_MAC, ap_macs);
+        messageMeasure2.put(NMSP_RSSI, rssi);
+        messageMeasure2.put(TYPE, NMSP_TYPE_MEASURE);
+
+        Map<String, Object> fromCache;
+
+        Map<String, Object> toDruidMeasure1 = nmspProcessor.process(messageMeasure1);
+        fromCache = storeMeasure.get("00:00:00:00:00:00");
+
+        assertEquals(toDruidMeasure1.get(DOT11STATUS), "PROBING");
+        assertEquals(fromCache.get(WIRELESS_ID), null);
+        assertEquals(fromCache.get(DOT11STATUS), "ASSOCIATED");
+
+        nmspProcessor.process(messageInfo);
+
+        Map<String, Object> toDruidMeasure2 = nmspProcessor.process(messageMeasure2);
+        fromCache = storeMeasure.get("00:00:00:00:00:00");
+
+        assertEquals(fromCache.get(WIRELESS_ID), "rb_Corp");
+        assertEquals(toDruidMeasure2.get(DOT11STATUS), "ASSOCIATED");
+        assertEquals(fromCache.get(DOT11STATUS), "ASSOCIATED");
     }
 }

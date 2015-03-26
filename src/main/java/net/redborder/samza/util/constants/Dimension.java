@@ -28,11 +28,16 @@ public class Dimension {
     public final static String BYTES = "bytes";
     public final static String TYPE = "type";
     public final static String SRC_VLAN = "src_vlan";
+    public final static String DOT11STATUS = "dot11Status";
+    public final static String DOT11PROTOCOL = "dot11_protocol";
+    public final static String WIRELESS_ID = "wireless_id";
 
     // NMSP
     public final static String NMSP_AP_MAC = "ap_mac";
     public final static String NMSP_RSSI = "rssi";
     public final static String NMSP_DOT11STATUS = "dot11Status";
     public final static String NMSP_VLAN_ID = "vlan_id";
+    public final static String NMSP_DOT11PROTOCOL = "dot11_protocol";
+    public final static String NMSP_WIRELESS_ID = "wireless_id";
 
 }
