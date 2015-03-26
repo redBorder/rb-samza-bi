@@ -100,6 +100,8 @@ public class NmspProcessor extends Processor {
                 toDruid.put(NMSP_DOT11STATUS, dot11Status);
 
                 storeMeasure.put(mac, toCache);
+                toDruid.put("timestamp", System.currentTimeMillis() / 1000);
+                return toDruid;
             }
         } else if (type != null && type.equals(NMSP_TYPE_INFO)) {
             Object vlan = message.remove(NMSP_VLAN_ID);
@@ -116,8 +118,10 @@ public class NmspProcessor extends Processor {
             toDruid.put(TYPE, "nmsp-info");
             toDruid.put(CLIENT_MAC, mac);
             storeInfo.put(mac, toCache);
+            toDruid.put("timestamp", System.currentTimeMillis() / 1000);
+            return toDruid;
         }
 
-        return toDruid;
+        return null;
     }
 }

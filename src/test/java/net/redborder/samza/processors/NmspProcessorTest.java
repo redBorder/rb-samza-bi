@@ -18,10 +18,6 @@ package net.redborder.samza.processors;
 import junit.framework.TestCase;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.MockKeyValueStore;
-
-import static net.redborder.samza.util.constants.Dimension.*;
-import static net.redborder.samza.util.constants.DimensionValue.*;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -34,6 +30,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static net.redborder.samza.util.constants.Dimension.*;
+import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_INFO;
+import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_MEASURE;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -74,7 +73,7 @@ public class NmspProcessorTest extends TestCase {
     @Test
     public void processEmptyMsg() {
         Map<String, Object> message = new HashMap<>();
-        assertEquals(nmspProcessor.process(message), new HashMap<String, Object>());
+        assertEquals(nmspProcessor.process(message), null);
     }
 
     @Test
