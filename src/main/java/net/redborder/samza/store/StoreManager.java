@@ -36,7 +36,6 @@ public class StoreManager {
                 stores.put(store, (KeyValueStore<String, Map<String, Object>>) context.getStore(store));
             }
         }
-        stores.putAll(stores);
     }
 
     public KeyValueStore<String, Map<String, Object>> getStore(String store){
@@ -46,8 +45,11 @@ public class StoreManager {
     public Map<String, Object> enrich(String ... keys){
         Map<String, Object> enrichment = new HashMap<>();
         for(String key : keys) {
-            for (KeyValueStore<String, Map<String, Object>> store : stores.values())
-                enrichment.putAll(store.get(key));
+            if(key != null) {
+                for (KeyValueStore<String, Map<String, Object>> store : stores.values()) {
+                    enrichment.putAll(store.get(key));
+                }
+            }
         }
 
         return enrichment;

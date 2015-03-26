@@ -19,6 +19,7 @@ public class Dimension {
     // Common
     public final static String CLIENT_MAC = "client_mac";
     public final static String WIRELESS_STATION = "wireless_station";
+    public final static String SRC_IP = "src";
 
     // NMSP
     public final static String NMSP_AP_MAC = "ap_mac";
