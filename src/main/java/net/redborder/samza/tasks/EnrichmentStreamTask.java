@@ -17,7 +17,6 @@ package net.redborder.samza.tasks;
 
 import net.redborder.samza.processors.IProcessor;
 import org.apache.samza.config.Config;
-import org.apache.samza.storage.kv.KeyValueStore;
 import org.apache.samza.system.IncomingMessageEnvelope;
 import org.apache.samza.system.OutgoingMessageEnvelope;
 import org.apache.samza.system.SystemStream;
@@ -31,7 +30,6 @@ import java.util.Map;
 public class EnrichmentStreamTask implements StreamTask, InitableTask {
     private static final Logger log = LoggerFactory.getLogger(EnrichmentStreamTask.class);
 
-    private KeyValueStore<String, Map<String, Object>> store;
     private final SystemStream OUTPUT_STREAM = new SystemStream("druid", "rb_flow");
     private Config config;
 
@@ -46,7 +44,8 @@ public class EnrichmentStreamTask implements StreamTask, InitableTask {
         Map<String, Object> message = (Map<String, Object>) envelope.getMessage();
         Map<String, Object> output;
 
-        Class messageClass = Class.forName("redborder.processors." + stream);
+        String className = this.config.get("redborder.processors." + stream + ".class");
+        Class messageClass = Class.forName(className);
         Method method = messageClass.getMethod("getInstance");
         IProcessor processor = (IProcessor) method.invoke(null, null);
         output = processor.process(message);

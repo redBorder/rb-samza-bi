@@ -15,6 +15,7 @@
 
 package net.redborder.samza.processors;
 
+import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.storage.kv.KeyValueStore;
 import org.slf4j.Logger;
@@ -28,7 +29,7 @@ public class FlowProcessor implements IProcessor {
     private static FlowProcessor instance = null;
 
     final private static String NMSP_STORE = "rb_flow";
-    private KeyValueStore<String, Object> nmspStore;
+    private KeyValueStore<String, Map<String, Object>> nmspStore;
 
     private FlowProcessor() {
         this.nmspStore = StoreManager.getStore(NMSP_STORE);
@@ -43,7 +44,7 @@ public class FlowProcessor implements IProcessor {
     public Map<String, Object> process(Map<String, Object> message) {
         Map<String, Object> output = new HashMap<>();
         String mac = (String) message.get(Dimension.CLIENT_MAC);
-        Map<String, Object> nmspData = (Map<String, Object>) this.nmspStore.get(mac);
+        Map<String, Object> nmspData = this.nmspStore.get(mac);
 
         output.putAll(message);
 

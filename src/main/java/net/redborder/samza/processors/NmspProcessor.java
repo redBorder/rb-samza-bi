@@ -15,8 +15,10 @@
 
 package net.redborder.samza.processors;
 
+import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.constants.Dimension;
 import net.redborder.samza.util.constants.DimensionValue;
+import org.apache.samza.storage.kv.KeyValueStore;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,8 +27,11 @@ import java.util.Map;
 public class NmspProcessor implements IProcessor {
     final private static String NMSP_STORE = "rb_nmsp";
     private static NmspProcessor instance = null;
+    private KeyValueStore<String, Map<String, Object>> store;
 
-    private NmspProcessor() {}
+    private NmspProcessor() {
+        this.store = StoreManager.getStore(NMSP_STORE);
+    }
 
     public NmspProcessor getInstance() {
         if (instance == null) instance = new NmspProcessor();
@@ -50,7 +55,7 @@ public class NmspProcessor implements IProcessor {
             }
         }
 
-        StoreManager.getStore(NMSP_STORE).put(mac, toCache);
+        this.store.put(mac, toCache);
         return null;
     }
 }
