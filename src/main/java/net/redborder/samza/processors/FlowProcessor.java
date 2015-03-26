@@ -17,37 +17,30 @@ package net.redborder.samza.processors;
 
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.constants.Dimension;
-import org.apache.samza.storage.kv.KeyValueStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.Map;
 
 public class FlowProcessor extends Processor {
     private static final Logger log = LoggerFactory.getLogger(FlowProcessor.class);
-    private static FlowProcessor instance = null;
 
-    final private static String FLOW_STORE = "rb_flow";
-    private KeyValueStore<String, Map<String, Object>> store;
+    private StoreManager storeManager;
 
-    private FlowProcessor(StoreManager storeManager) {
-        this.store = storeManager.getStore(FLOW_STORE);
+    public FlowProcessor(StoreManager storeManager) {
+        this.storeManager = storeManager;
     }
 
     @Override
     public Map<String, Object> process(Map<String, Object> message) {
-        Map<String, Object> output = new HashMap<>();
         String mac = (String) message.get(Dimension.CLIENT_MAC);
-        Map<String, Object> nmspData = this.store.get(mac);
+        String ip = (String) message.get(Dimension.SRC_IP);
+        Map<String, Object> enrichData = this.storeManager.enrich(mac, ip);
 
-        output.putAll(message);
-
-        if (nmspData != null && !nmspData.isEmpty()) {
-            log.info("Cache hit at mac " + mac + " with data " + nmspData);
-            output.putAll(nmspData);
+        if (enrichData != null && !enrichData.isEmpty()) {
+            message.putAll(enrichData);
         }
 
-        return output;
+        return message;
     }
 }
