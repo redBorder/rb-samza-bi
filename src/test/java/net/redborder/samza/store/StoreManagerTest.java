@@ -34,6 +34,7 @@ import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StoreManagerTest extends TestCase {
+
     @Mock
     Config config;
 
@@ -69,7 +70,10 @@ public class StoreManagerTest extends TestCase {
             }
         }
         storeManager = new StoreManager(config, context);
+    }
 
+    @Test
+    public void checkStore() {
         for (String store : stores) {
             Map<String, Object> cache = new HashMap<>();
             cache.put("integer", 1);
@@ -77,16 +81,13 @@ public class StoreManagerTest extends TestCase {
             cache.put("boolean", true);
             storeManager.getStore(store).put("testing", cache);
         }
-    }
 
-    @Test
-    public void checkStore() {
         for (String store : stores) {
             Map<String, Object> cache = storeManager.getStore(store).get("testing");
             assertEquals(cache.get("integer"), 1);
             assertEquals(cache.get("string"), "test");
             assertEquals(cache.get("boolean"), true);
-
+            assertEquals(cache.get("null"), null);
         }
     }
 }
