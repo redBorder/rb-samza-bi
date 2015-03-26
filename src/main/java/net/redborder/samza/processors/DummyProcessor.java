@@ -13,10 +13,19 @@
  * along with redBorder. If not, see <http://www.gnu.org/licenses/>.
  */
 
+package net.redborder.samza.processors;
 
-package net.redborder.samza.util.constants;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
-public class DimensionValue {
-    // NMSP
-    public final static String NMSP_TYPE_MEASURE = "measure";
+import java.util.Map;
+
+public class DummyProcessor extends Processor {
+    private static final Logger log = LoggerFactory.getLogger(DummyProcessor.class);
+
+    @Override
+    public Map<String, Object> process(Map<String, Object> message) {
+        log.warn("The dummy process method was called!");
+        return null;
+    }
 }

@@ -15,8 +15,5 @@
 
 package net.redborder.samza.processors;
 
-import java.util.Map;
-
-public interface IProcessor {
-    Map<String, Object> process(Map<String, Object> message);
+public class NmspProcessorTest {
 }

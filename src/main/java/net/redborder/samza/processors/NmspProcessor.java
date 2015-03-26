@@ -24,23 +24,20 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NmspProcessor implements IProcessor {
+public class NmspProcessor extends Processor {
     final private static String NMSP_STORE = "rb_nmsp";
     private static NmspProcessor instance = null;
-    private KeyValueStore<String, Map<String, Object>> store;
 
-    private NmspProcessor() {
-        this.store = StoreManager.getStore(NMSP_STORE);
-    }
+    private KeyValueStore<String, Map<String, Object>> nmspStore;
 
-    public NmspProcessor getInstance() {
-        if (instance == null) instance = new NmspProcessor();
-        return instance;
+    private NmspProcessor(StoreManager storeManager) {
+        nmspStore = storeManager.getStore(NMSP_STORE);
     }
 
     @Override
     public Map<String, Object> process(Map<String, Object> message) {
         Map<String, Object> toCache = new HashMap<>();
+
         String type = (String) message.get(Dimension.NMSP_TYPE);
         String mac = (String) message.get(Dimension.CLIENT_MAC);
         List<String> wireless_stations;
@@ -55,7 +52,7 @@ public class NmspProcessor implements IProcessor {
             }
         }
 
-        this.store.put(mac, toCache);
+        nmspStore.put(mac, toCache);
         return null;
     }
 }

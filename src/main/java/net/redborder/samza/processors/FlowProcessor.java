@@ -24,27 +24,22 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.Map;
 
-public class FlowProcessor implements IProcessor {
+public class FlowProcessor extends Processor {
     private static final Logger log = LoggerFactory.getLogger(FlowProcessor.class);
     private static FlowProcessor instance = null;
 
-    final private static String NMSP_STORE = "rb_flow";
-    private KeyValueStore<String, Map<String, Object>> nmspStore;
+    final private static String FLOW_STORE = "rb_flow";
+    private KeyValueStore<String, Map<String, Object>> store;
 
-    private FlowProcessor() {
-        this.nmspStore = StoreManager.getStore(NMSP_STORE);
-    }
-
-    public FlowProcessor getInstance() {
-        if (instance == null) instance = new FlowProcessor();
-        return instance;
+    private FlowProcessor(StoreManager storeManager) {
+        this.store = storeManager.getStore(FLOW_STORE);
     }
 
     @Override
     public Map<String, Object> process(Map<String, Object> message) {
         Map<String, Object> output = new HashMap<>();
         String mac = (String) message.get(Dimension.CLIENT_MAC);
-        Map<String, Object> nmspData = this.nmspStore.get(mac);
+        Map<String, Object> nmspData = this.store.get(mac);
 
         output.putAll(message);
 
