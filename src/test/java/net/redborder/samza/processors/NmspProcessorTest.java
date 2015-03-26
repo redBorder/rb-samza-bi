@@ -37,7 +37,9 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NmspProcessorTest extends TestCase {
-    static MockKeyValueStore store;
+    static MockKeyValueStore storeMeasure;
+    static MockKeyValueStore storeInfo;
+
     static NmspProcessor nmspProcessor;
 
     @Mock
@@ -46,12 +48,14 @@ public class NmspProcessorTest extends TestCase {
     @BeforeClass
     public static void initTest() {
         // This store uses an in-memory map instead of samza K/V RockDB
-        store = new MockKeyValueStore();
+        storeMeasure = new MockKeyValueStore();
 
         // Mock the storeManager in order to return the mock store
         // that we just instantiated
         storeManager = mock(StoreManager.class);
-        when(storeManager.getStore(NmspProcessor.NMSP_STORE)).thenReturn(store);
+        when(storeManager.getStore(NmspProcessor.NMSP_STORE_MEASURE)).thenReturn(storeMeasure);
+        when(storeManager.getStore(NmspProcessor.NMSP_STORE_INFO)).thenReturn(storeInfo);
+
 
         nmspProcessor = new NmspProcessor(storeManager);
     }
@@ -60,7 +64,7 @@ public class NmspProcessorTest extends TestCase {
     // Cleans the store in order to use an empty
     // memory map in each test
     public void cleanStore() {
-        store.flush();
+        storeMeasure.flush();
     }
 
     @Test
@@ -73,7 +77,7 @@ public class NmspProcessorTest extends TestCase {
     public void emptyMessageIsIgnored() {
         Map<String, Object> message = new HashMap<>();
         nmspProcessor.process(message);
-        assertTrue(store.isEmpty());
+        assertTrue(storeMeasure.isEmpty());
     }
 
     @Test
@@ -83,10 +87,10 @@ public class NmspProcessorTest extends TestCase {
 
         message.put(Dimension.CLIENT_MAC, "00:00:00:00:00:00");
         message.put(Dimension.NMSP_AP_MAC, ap_macs);
-        message.put(Dimension.NMSP_TYPE, DimensionValue.NMSP_TYPE_MEASURE);
+        message.put(Dimension.TYPE, DimensionValue.NMSP_TYPE_MEASURE);
         nmspProcessor.process(message);
 
-        Map<String, Object> fromCache = store.get("00:00:00:00:00:00");
+        Map<String, Object> fromCache = storeMeasure.get("00:00:00:00:00:00");
         String apFromCache = (String) fromCache.get(Dimension.WIRELESS_STATION);
 
         assertEquals(apFromCache, ap_macs.get(0));
