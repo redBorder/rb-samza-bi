@@ -16,8 +16,6 @@
 package net.redborder.samza.processors;
 
 import net.redborder.samza.store.StoreManager;
-import static net.redborder.samza.util.constants.Dimension.*;
-import static net.redborder.samza.util.constants.DimensionValue.*;
 import org.apache.samza.storage.kv.KeyValueStore;
 
 import java.util.Collections;
@@ -25,14 +23,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static net.redborder.samza.util.constants.Dimension.*;
+import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_INFO;
+import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_MEASURE;
+
 public class NmspProcessor extends Processor {
     final public static String NMSP_STORE_MEASURE = "nmsp-measure";
     final public static String NMSP_STORE_INFO = "nmsp-info";
 
-
     private KeyValueStore<String, Map<String, Object>> storeMeasure;
     private KeyValueStore<String, Map<String, Object>> storeInfo;
-
 
     public NmspProcessor(StoreManager storeManager) {
         storeMeasure = storeManager.getStore(NMSP_STORE_MEASURE);
@@ -100,22 +100,21 @@ public class NmspProcessor extends Processor {
                 toDruid.put(NMSP_DOT11STATUS, dot11Status);
 
                 storeMeasure.put(mac, toCache);
-            } else if (type != null && type.equals(NMSP_TYPE_INFO)) {
-
-                Object vlan = message.remove(NMSP_VLAN_ID);
-
-                if (vlan != null) {
-                    toCache.put(SRC_VLAN, vlan);
-                }
-
-                toCache.putAll(message);
-                toDruid.putAll(toCache);
-                toDruid.put(BYTES, 0);
-                toDruid.put(PKTS, 0);
-                toDruid.put(TYPE, "nmsp-info");
-                toDruid.put(CLIENT_MAC, mac);
-                storeInfo.put(mac, toCache);
             }
+        } else if (type != null && type.equals(NMSP_TYPE_INFO)) {
+            Object vlan = message.remove(NMSP_VLAN_ID);
+
+            if (vlan != null) {
+                toCache.put(SRC_VLAN, vlan);
+            }
+
+            toCache.putAll(message);
+            toDruid.putAll(toCache);
+            toDruid.put(BYTES, 0);
+            toDruid.put(PKTS, 0);
+            toDruid.put(TYPE, "nmsp-info");
+            toDruid.put(CLIENT_MAC, mac);
+            storeInfo.put(mac, toCache);
         }
 
         return toDruid;
