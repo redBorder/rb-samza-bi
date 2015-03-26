@@ -20,6 +20,7 @@ import net.redborder.samza.util.MockKeyValueStore;
 import org.apache.samza.config.Config;
 import org.apache.samza.task.TaskContext;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -36,17 +37,17 @@ import static org.mockito.Mockito.*;
 public class StoreManagerTest extends TestCase {
 
     @Mock
-    Config config;
+    static Config config;
 
     @Mock
-    TaskContext context;
+    static TaskContext context;
 
-    StoreManager storeManager;
+    static StoreManager storeManager;
 
-    List<String> stores = new ArrayList<>();
+    static List<String> stores = new ArrayList<>();
 
-    @Before
-    public void initTest() throws IOException {
+    @BeforeClass
+    public static void initTest() throws IOException {
         Properties properties = new Properties();
         InputStream inputStream = new FileInputStream("src/main/config/enrichment.properties");
         properties.load(inputStream);
@@ -89,6 +90,25 @@ public class StoreManagerTest extends TestCase {
             assertEquals(cache.get("boolean"), true);
             assertEquals(cache.get("null"), null);
         }
+    }
+
+    @Test
+    public void enrichment(){
+
+        Map<String, Object> result = new HashMap<>();
+
+        for (String store : stores) {
+            Map<String, Object> cache = new HashMap<>();
+            cache.put(store + "-mac", store + "-mac");
+            result.putAll(cache);
+            storeManager.getStore(store).put("testing-mac", cache);
+            cache.put(store + "-ip", store + "-ip");
+            result.putAll(cache);
+            storeManager.getStore(store).put("testing-ip", cache);
+        }
+
+        Map<String, Object> enrichCache = storeManager.enrich("testing-mac", "testing-ip");
+        assertTrue(enrichCache.equals(result));
     }
 }
 
