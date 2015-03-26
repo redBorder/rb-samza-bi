@@ -15,5 +15,36 @@
 
 package net.redborder.samza.processors;
 
+import net.redborder.samza.store.StoreManager;
+import net.redborder.samza.util.MockKeyValueStore;
+import org.apache.samza.storage.kv.KeyValueStore;
+import org.junit.Before;
+import org.junit.Test;
+import org.mockito.Mock;
+
+import java.util.Map;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 public class NmspProcessorTest {
+    NmspProcessor nmspProcessor;
+
+    @Mock
+    StoreManager storeManager;
+
+    @Before
+    public void initTest() {
+        KeyValueStore<String, Map<String, Object>> store = new MockKeyValueStore();
+
+        storeManager = mock(StoreManager.class);
+        when(storeManager.getStore(NmspProcessor.NMSP_STORE)).thenReturn(store);
+
+        nmspProcessor = new NmspProcessor(storeManager);
+    }
+
+    @Test
+    public void processReturnsNull() {
+
+    }
 }

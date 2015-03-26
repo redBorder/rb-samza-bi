@@ -25,11 +25,11 @@ import java.util.List;
 import java.util.Map;
 
 public class NmspProcessor extends Processor {
-    final private static String NMSP_STORE = "rb_nmsp";
+    final public static String NMSP_STORE = "rb_nmsp";
 
     private KeyValueStore<String, Map<String, Object>> store;
 
-    private NmspProcessor(StoreManager storeManager) {
+    public NmspProcessor(StoreManager storeManager) {
         store = storeManager.getStore(NMSP_STORE);
     }
 

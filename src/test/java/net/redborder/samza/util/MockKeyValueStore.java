@@ -8,21 +8,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class MockKeyValueStore implements KeyValueStore<String, Object> {
-    Map<Object, Object> store = new HashMap<>();
+public class MockKeyValueStore implements KeyValueStore<String, Map<String, Object>> {
+    Map<String, Map<String, Object>> store = new HashMap<>();
 
     @Override
-    public Object get(String s) {
+    public Map<String, Object> get(String s) {
         return store.get(s);
     }
 
     @Override
-    public void put(String s, Object o) {
+    public void put(String s, Map<String, Object> o) {
         store.put(s, o);
     }
 
     @Override
-    public void putAll(List<Entry<String, Object>> list) {
+    public void putAll(List<Entry<String, Map<String, Object>>> list) {
     }
 
     @Override
@@ -31,12 +31,12 @@ public class MockKeyValueStore implements KeyValueStore<String, Object> {
     }
 
     @Override
-    public KeyValueIterator<String, Object> range(String s, String k1) {
+    public KeyValueIterator<String, Map<String, Object>> range(String s, String k1) {
         return null;
     }
 
     @Override
-    public KeyValueIterator<String, Object> all() {
+    public KeyValueIterator<String, Map<String, Object>> all() {
         return null;
     }
 

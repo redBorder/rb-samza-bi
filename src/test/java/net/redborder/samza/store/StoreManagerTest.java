@@ -30,8 +30,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StoreManagerTest extends TestCase {
