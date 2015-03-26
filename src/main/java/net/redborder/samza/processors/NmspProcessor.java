@@ -15,5 +15,12 @@
 
 package net.redborder.samza.processors;
 
+import java.util.Map;
+
 public class NmspProcessor implements IProcessor {
+
+    @Override
+    public Map<String, Object> process() {
+        return null;
+    }
 }
