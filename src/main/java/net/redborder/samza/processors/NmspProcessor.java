@@ -50,6 +50,7 @@ public class NmspProcessor extends Processor {
         if (type != null && type.equals(NMSP_TYPE_MEASURE)) {
             List<String> apMacs = (List<String>) message.get(NMSP_AP_MAC);
             List<Integer> clientRssis = (List<Integer>) message.get(NMSP_RSSI);
+            message.remove(type);
 
             if (clientRssis != null && apMacs != null && !apMacs.isEmpty() && !clientRssis.isEmpty()) {
                 Integer rssi = Collections.max(clientRssis);
@@ -69,7 +70,7 @@ public class NmspProcessor extends Processor {
                     toCache.put(CLIENT_RSSI, "excelent");
 
                 Map<String, Object> infoCache = storeInfo.get(mac);
-                String dot11Status = "PROBING";
+                String dot11Status;
 
                 if (infoCache == null) {
                     toCache.put(CLIENT_RSSI_NUM, rssi);
@@ -77,8 +78,7 @@ public class NmspProcessor extends Processor {
                     toCache.put(NMSP_DOT11STATUS, "ASSOCIATED");
                     dot11Status = "PROBING";
                 } else {
-                    String apAssociated = (String) toCache.get(WIRELESS_STATION);
-
+                    String apAssociated = (String) infoCache.get(WIRELESS_STATION);
                     if (apMacs.contains(apAssociated)) {
                         Integer rssiAssociated = clientRssis.get(apMacs.indexOf(apAssociated));
                         toCache.put(CLIENT_RSSI_NUM, rssiAssociated);
@@ -103,6 +103,7 @@ public class NmspProcessor extends Processor {
             }
         } else if (type != null && type.equals(NMSP_TYPE_INFO)) {
             Object vlan = message.remove(NMSP_VLAN_ID);
+            message.remove(type);
 
             if (vlan != null) {
                 toCache.put(SRC_VLAN, vlan);
