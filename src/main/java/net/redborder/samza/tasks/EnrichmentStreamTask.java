@@ -16,6 +16,7 @@
 package net.redborder.samza.tasks;
 
 import net.redborder.samza.processors.IProcessor;
+import net.redborder.samza.store.StoreManager;
 import org.apache.samza.config.Config;
 import org.apache.samza.system.IncomingMessageEnvelope;
 import org.apache.samza.system.OutgoingMessageEnvelope;
@@ -35,6 +36,7 @@ public class EnrichmentStreamTask implements StreamTask, InitableTask {
 
     @Override
     public void init(Config config, TaskContext context) throws Exception {
+        StoreManager.init(config, context);
         this.config = config;
     }
 
