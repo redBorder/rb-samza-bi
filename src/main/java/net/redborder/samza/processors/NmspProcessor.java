@@ -32,8 +32,8 @@ import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_MEASUR
 
 public class NmspProcessor extends Processor {
     private static final SystemStream OUTPUT_STREAM = new SystemStream("druid", "rb_flow");
-    private final static String NMSP_STORE_MEASURE = "nmsp-measure";
-    private final static String NMSP_STORE_INFO = "nmsp-info";
+    public final static String NMSP_STORE_MEASURE = "nmsp-measure";
+    public final static String NMSP_STORE_INFO = "nmsp-info";
 
     private KeyValueStore<String, Map<String, Object>> storeMeasure;
     private KeyValueStore<String, Map<String, Object>> storeInfo;
