@@ -158,7 +158,7 @@ public class NmspProcessorTest extends TestCase {
     }
 
     @Test
-    public void enrichWithInfoAndMeasure() {
+    public void enrichWithInfoAndMeasureAPatList() {
         MockMessageCollector collector = new MockMessageCollector();
 
         //Message 1
@@ -208,5 +208,116 @@ public class NmspProcessorTest extends TestCase {
         assertEquals(fromCache.get(WIRELESS_ID), "rb_Corp");
         assertEquals(toDruidMeasure2.get(DOT11STATUS), "ASSOCIATED");
         assertEquals(fromCache.get(DOT11STATUS), "ASSOCIATED");
+    }
+
+    @Test
+    public void enrichWithInfoAndMeasureAPNotatList() {
+        MockMessageCollector collector = new MockMessageCollector();
+
+        //Message 1
+        Map<String, Object> messageInfo = new HashMap<>();
+        messageInfo.put(CLIENT_MAC, "00:00:00:00:00:00");
+        messageInfo.put(TYPE, NMSP_TYPE_INFO);
+        messageInfo.put(NMSP_WIRELESS_ID, "rb_Corp");
+        messageInfo.put(NMSP_DOT11STATUS, "ASSOCIATED");
+        messageInfo.put(WIRELESS_STATION, "33:33:33:33:33:33");
+
+        List<String> ap_macs = Arrays.asList("11:11:11:11:11:11", "22:22:22:22:22:22", "33:33:33:33:33:33");
+        List<Integer> rssi = Arrays.asList(-80, -54, -32);
+        //Message 2
+        Map<String, Object> messageMeasure1 = new HashMap<>();
+        messageMeasure1.put(CLIENT_MAC, "00:00:00:00:00:00");
+        messageMeasure1.put(NMSP_AP_MAC, ap_macs);
+        messageMeasure1.put(NMSP_RSSI, rssi);
+        messageMeasure1.put(TYPE, NMSP_TYPE_MEASURE);
+
+        //Message 3
+        Map<String, Object> messageMeasure2 = new HashMap<>();
+        messageMeasure2.put(CLIENT_MAC, "00:00:00:00:00:00");
+        messageMeasure2.put(NMSP_AP_MAC, Arrays.asList("11:11:11:11:11:11", "22:22:22:22:22:22"));
+        messageMeasure2.put(NMSP_RSSI, Arrays.asList(-80, -54));
+        messageMeasure2.put(TYPE, NMSP_TYPE_MEASURE);
+
+        Map<String, Object> fromCache;
+
+        nmspProcessor.process(messageMeasure1, collector);
+
+        Map<String, Object> toDruidMeasure1 = collector.getResult().get(0);
+
+        fromCache = storeMeasure.get("00:00:00:00:00:00");
+
+        assertEquals("PROBING", toDruidMeasure1.get(DOT11STATUS));
+        assertNull(fromCache.get(WIRELESS_ID));
+        assertEquals("ASSOCIATED", fromCache.get(DOT11STATUS));
+
+        nmspProcessor.process(messageInfo, collector);
+        collector.getResult();
+
+        nmspProcessor.process(messageMeasure2, collector);
+
+        Map<String, Object> toDruidMeasure2 = collector.getResult().get(0);
+
+        fromCache = storeMeasure.get("00:00:00:00:00:00");
+
+        assertNull(fromCache.get(WIRELESS_ID));
+        assertEquals("PROBING", toDruidMeasure2.get(DOT11STATUS));
+        assertEquals("ASSOCIATED", fromCache.get(DOT11STATUS));
+    }
+
+    @Test
+    public void checkRssiNames() {
+        MockMessageCollector collector = new MockMessageCollector();
+
+        //Message 2
+        Map<String, Object> messageMeasure1 = new HashMap<>();
+        messageMeasure1.put(CLIENT_MAC, "00:00:00:00:00:00");
+        messageMeasure1.put(NMSP_AP_MAC, Arrays.asList("11:11:11:11:11:11"));
+        messageMeasure1.put(NMSP_RSSI, Arrays.asList(-85));
+        messageMeasure1.put(TYPE, NMSP_TYPE_MEASURE);
+
+        nmspProcessor.process(messageMeasure1, collector);
+        Map<String, Object> toDruid = collector.getResult().get(0);
+        assertEquals(toDruid.get("client_rssi"), "bad");
+
+        messageMeasure1.put(NMSP_RSSI, Arrays.asList(-80));
+        nmspProcessor.process(messageMeasure1, collector);
+        toDruid = collector.getResult().get(0);
+        assertEquals(toDruid.get("client_rssi"), "low");
+
+        messageMeasure1.put(NMSP_RSSI, Arrays.asList(-70));
+        nmspProcessor.process(messageMeasure1, collector);
+        toDruid = collector.getResult().get(0);
+        assertEquals(toDruid.get("client_rssi"), "medium");
+
+        messageMeasure1.put(NMSP_RSSI, Arrays.asList(-60));
+        nmspProcessor.process(messageMeasure1, collector);
+        toDruid = collector.getResult().get(0);
+        assertEquals(toDruid.get("client_rssi"), "good");
+
+        messageMeasure1.put(NMSP_RSSI, Arrays.asList(-40));
+        nmspProcessor.process(messageMeasure1, collector);
+        toDruid = collector.getResult().get(0);
+        assertEquals(toDruid.get("client_rssi"), "excelent");
+
+        messageMeasure1.put(NMSP_RSSI, Arrays.asList(0));
+        nmspProcessor.process(messageMeasure1, collector);
+        toDruid = collector.getResult().get(0);
+        assertEquals(toDruid.get("client_rssi"), "unknown");
+    }
+
+    @Test
+    public void checkVlanId(){
+        MockMessageCollector collector = new MockMessageCollector();
+
+        Map<String, Object> messageInfo = new HashMap<>();
+        messageInfo.put(CLIENT_MAC, "00:00:00:00:00:00");
+        messageInfo.put(NMSP_AP_MAC, Arrays.asList("11:11:11:11:11:11"));
+        messageInfo.put(NMSP_VLAN_ID, 40);
+
+        messageInfo.put(TYPE, NMSP_TYPE_INFO);
+
+        nmspProcessor.process(messageInfo, collector);
+        Map<String, Object> toDruid = collector.getResult().get(0);
+        assertEquals(toDruid.get(SRC_VLAN), 40);
     }
 }
