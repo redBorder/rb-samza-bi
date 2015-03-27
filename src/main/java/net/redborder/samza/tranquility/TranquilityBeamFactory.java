@@ -40,6 +40,8 @@ import java.util.List;
 import java.util.Map;
 
 import static net.redborder.samza.util.constants.Dimension.*;
+import static net.redborder.samza.util.constants.Aggregators.*;
+
 
 public class TranquilityBeamFactory implements BeamFactory
 {
@@ -57,10 +59,10 @@ public class TranquilityBeamFactory implements BeamFactory
                 "engine_id_name", "http_user_agent_os", "http_host", "http_social_media",
                 "http_social_user", "http_referer_l1", "l4_proto", "ip_protocol_version",
                 "sensor_name", "scatterplot", SRC_IP, "src_country_code", "src_net_name",
-                "src_port", "src_as_name", "client_mac", "client_id", "client_mac_vendor",
-                DOT11STATUS, SRC_VLAN, "src_map", "srv_port", DST_IP,
-                "dst_country_code", "dst_net_name", "dst_port", "dst_as_name",
-                "dst_vlan", "dst_map", "input_snmp", "output_snmp", "tos",
+                SRC_PORT, SRC_AS_NAME, CLIENT_MAC, CLIENT_ID, CLIENT_MAC_VENDOR,
+                DOT11STATUS, SRC_VLAN, SRC_MAP, SRV_PORT, DST_IP,
+                "dst_country_code", "dst_net_name", DST_AS_NAME, DST_PORT,
+                "dst_vlan", DST_MAP, "input_snmp", "output_snmp", "tos",
                 "client_latlong", "coordinates_map", "client_campus",
                 "client_building", "client_floor", WIRELESS_ID, CLIENT_RSSI, CLIENT_RSSI_NUM,
                 "client_snr", "client_snr_num", WIRELESS_STATION, "hnblocation", "hnbgeolocation", "rat",
@@ -68,13 +70,13 @@ public class TranquilityBeamFactory implements BeamFactory
                 DARKLIST_DIRECTION, DARKLIST_SCORE);
 
         final List<AggregatorFactory> aggregators = ImmutableList.<AggregatorFactory>of(
-                new CountAggregatorFactory("events"),
-                new LongSumAggregatorFactory("sum_bytes", BYTES),
-                new LongSumAggregatorFactory("sum_pkts", PKTS),
-                new LongSumAggregatorFactory("sum_rssi", CLIENT_RSSI_NUM),
-                new LongSumAggregatorFactory("sum_dl_score", DARKLIST_SCORE),
-                new HyperUniquesAggregatorFactory("clients", CLIENT_MAC),
-                new HyperUniquesAggregatorFactory("wireless_stations", WIRELESS_STATION)
+                new CountAggregatorFactory(EVENTS_AGGREGATOR),
+                new LongSumAggregatorFactory(SUM_BYTES_AGGREGATOR, BYTES),
+                new LongSumAggregatorFactory(SUM_PKTS_AGGREGATOR, PKTS),
+                new LongSumAggregatorFactory(SUM_RSSI_AGGREGATOR, CLIENT_RSSI_NUM),
+                new LongSumAggregatorFactory(SUM_DL_SCORE_AGGREGATOR, DARKLIST_SCORE),
+                new HyperUniquesAggregatorFactory(CLIENTS_AGGREGATOR, CLIENT_MAC),
+                new HyperUniquesAggregatorFactory(WIRELESS_STATIONS_AGGREGATOR, WIRELESS_STATION)
         );
 
         // The Timestamper should return the timestamp of the class your Samza task produces. Samza envelopes contain
@@ -85,7 +87,7 @@ public class TranquilityBeamFactory implements BeamFactory
             public DateTime timestamp(Object obj)
             {
                 final Map<String, Object> theMap = (Map<String, Object>) obj;
-                Long date = Long.parseLong(theMap.get("timestamp").toString());
+                Long date = Long.parseLong(theMap.get(TIMESTAMP).toString());
                 date = date * 1000;
                 return new DateTime(date.longValue());
             }
@@ -112,7 +114,7 @@ public class TranquilityBeamFactory implements BeamFactory
                         .warmingPeriod(new Period("PT0M"))
                         .windowPeriod(new Period("PT15M"))
                         .build())
-                .timestampSpec(new TimestampSpec("timestamp", "posix"))
+                .timestampSpec(new TimestampSpec(TIMESTAMP, "posix"))
                 .buildBeam();
     }
 }

@@ -38,7 +38,16 @@ public class Dimension {
     public final static String FLOOR = "client_floor";
     public final static String DOT11STATUS = "dot11_status";
     public final static String SRC = "src";
-    public final static String DOT11PROTOCOL = "dot11_protocol";
+    public final static String CLIENT_MAC_VENDOR = "client_mac_vendor";
+    public final static String CLIENT_ID = "client_id";
+    public final static String SRC_AS_NAME = "src_as_name";
+    public final static String SRC_PORT = "src_port";
+    public final static String SRC_MAP = "src_map";
+    public final static String SRV_PORT = "srv_port";
+    public final static String DST_AS_NAME = "dst_as_name";
+    public final static String DST_PORT = "dst_port";
+    public final static String DST_MAP = "dst_map";
+
 
     //Darklist
     public final static String DARKLIST_SCORE = "darklist_score";
