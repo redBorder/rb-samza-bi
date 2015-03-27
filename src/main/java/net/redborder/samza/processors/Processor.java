@@ -53,4 +53,6 @@ public abstract class Processor {
     }
 
     public abstract void process(Map<String, Object> message, MessageCollector collector);
+
+    public abstract String getName();
 }

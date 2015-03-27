@@ -27,8 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import static net.redborder.samza.util.constants.Dimension.*;
-import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_INFO;
-import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_MEASURE;
+import static net.redborder.samza.util.constants.DimensionValue.*;
 
 public class NmspProcessor extends Processor {
     private static final SystemStream OUTPUT_STREAM = new SystemStream("druid", "rb_flow");
@@ -41,6 +40,11 @@ public class NmspProcessor extends Processor {
     public NmspProcessor(StoreManager storeManager) {
         storeMeasure = storeManager.getStore(NMSP_STORE_MEASURE);
         storeInfo = storeManager.getStore(NMSP_STORE_INFO);
+    }
+
+    @Override
+    public String getName() {
+        return "nmsp";
     }
 
     @Override

@@ -41,6 +41,11 @@ public class LocationV89Processor extends Processor {
     }
 
     @Override
+    public String getName() {
+        return "locv89";
+    }
+
+    @Override
     @SuppressWarnings("unchecked cast")
     public void process(Map<String, Object> message, MessageCollector collector) {
         Map<String, Object> mseEventContent, location, mapInfo, toCache, toDruid;

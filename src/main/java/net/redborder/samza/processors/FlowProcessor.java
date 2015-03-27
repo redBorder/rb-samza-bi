@@ -35,6 +35,11 @@ public class FlowProcessor extends Processor {
     }
 
     @Override
+    public String getName() {
+        return "flow";
+    }
+
+    @Override
     public void process(Map<String, Object> message, MessageCollector collector) {
         String mac = (String) message.get(Dimension.CLIENT_MAC);
         String ip = (String) message.get(Dimension.SRC_IP);

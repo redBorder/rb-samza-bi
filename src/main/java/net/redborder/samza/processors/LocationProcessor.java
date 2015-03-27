@@ -32,6 +32,11 @@ public class LocationProcessor extends Processor {
     }
 
     @Override
+    public String getName() {
+        return "loc";
+    }
+
+    @Override
     @SuppressWarnings("unchecked cast")
     public void process(Map<String, Object> message, MessageCollector collector) {
         if (message.containsKey(LOC_STREAMING_NOTIFICATION)) {

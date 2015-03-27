@@ -55,6 +55,11 @@ public class LocationV10Processor extends Processor {
     }
 
     @Override
+    public String getName() {
+        return "locv10";
+    }
+
+    @Override
     @SuppressWarnings("unchecked cast")
     public void process(Map<String, Object> message, MessageCollector collector) {
         List<Map<String, Object>> notifications = (List<Map<String, Object>>) message.get(LOC_NOTIFICATIONS);

@@ -25,6 +25,11 @@ public class DummyProcessor extends Processor {
     private static final Logger log = LoggerFactory.getLogger(DummyProcessor.class);
 
     @Override
+    public String getName() {
+        return "dummy";
+    }
+
+    @Override
     public void process(Map<String, Object> message, MessageCollector collector) {
         log.warn("The dummy process method was called!");
     }

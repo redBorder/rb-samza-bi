@@ -7,9 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Date: 27/3/15 10:42.
- */
 public class MockMessageCollector implements MessageCollector {
 
    List<Map<String, Object>> list = new ArrayList<>();
