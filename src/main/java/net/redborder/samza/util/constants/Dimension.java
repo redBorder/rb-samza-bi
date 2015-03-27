@@ -68,6 +68,7 @@ public class Dimension {
     public final static String CLIENT_BUILDING = "client_building";
     public final static String CLIENT_CAMPUS = "client_campus";
     public final static String CLIENT_FLOOR = "client_floor";
+    public final static String CLIENT_ZONE = "client_zone";
     public final static String COORDINATES_MAP = "coordinates_map";
     public final static String HNBLOCATION = "hnblocation";
     public final static String HNBGEOLOCATION = "hnbgeolocation";
@@ -89,6 +90,8 @@ public class Dimension {
     public final static String NMSP_WIRELESS_ID = "wireless_id";
 
     // Location
+    public final static String LOC_NOTIFICATIONS = "notifications";
+    public final static String LOC_NOTIFICATION_TYPE = "notificationType";
     public final static String LOC_STREAMING_NOTIFICATION = "StreamingNotification";
     public final static String LOC_LOCATION = "location";
     public final static String LOC_GEOCOORDINATEv8 = "GeoCoordinate";
@@ -97,6 +100,7 @@ public class Dimension {
     public final static String LOC_MAPINFOv9 = "mapInfo";
     public final static String LOC_MACADDR = "macAddress";
     public final static String LOC_MAP_HIERARCHY = "mapHierarchyString";
+    public final static String LOC_MAP_HIERARCHY_V10 = "locationMapHierarchy";
     public final static String LOC_DOT11STATUS = "dot11Status";
     public final static String LOC_SSID = "ssId";
     public final static String LOC_IPADDR = "ipAddress";
@@ -105,4 +109,8 @@ public class Dimension {
     public final static String LOC_LONGITUDE = "longitude";
     public final static String LOC_LATITUDEv8 = "latitude";
     public final static String LOC_LATITUDEv9 = "lattitude";
+    public final static String LOC_DEVICEID = "deviceId";
+    public final static String LOC_BAND = "band";
+    public final static String LOC_STATUS = "status";
+    public final static String LOC_USERNAME = "username";
 }
