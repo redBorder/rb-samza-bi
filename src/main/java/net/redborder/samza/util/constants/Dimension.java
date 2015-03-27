@@ -72,8 +72,6 @@ public class Dimension {
     public final static String CLIENT_CAMPUS = "client_campus";
     public final static String CLIENT_FLOOR = "client_floor";
     public final static String COORDINATES_MAP = "coordinates_map";
-    public final static String CLIENT_SNR = "client_snr";
-    public final static String CLIENT_SNR_NUM = "client_snr_num";
     public final static String HNBLOCATION = "hnblocation";
     public final static String HNBGEOLOCATION = "hnbgeolocation";
     public final static String RAT = "rat";
