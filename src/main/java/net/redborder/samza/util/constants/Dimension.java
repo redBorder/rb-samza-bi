@@ -34,9 +34,6 @@ public class Dimension {
     public final static String TYPE = "type";
     public final static String SRC_VLAN = "src_vlan";
     public final static String DST_VLAN = "dst_vlan";
-    public final static String CAMPUS = "client_campus";
-    public final static String BUILDING = "client_building";
-    public final static String FLOOR = "client_floor";
     public final static String DOT11STATUS = "dot11_status";
     public final static String SRC = "src";
     public final static String CLIENT_MAC_VENDOR = "client_mac_vendor";
@@ -76,11 +73,7 @@ public class Dimension {
     public final static String HNBGEOLOCATION = "hnbgeolocation";
     public final static String RAT = "rat";
 
-
-
-
-
-    //Darklist
+    // Darklist
     public final static String DARKLIST_SCORE = "darklist_score";
     public final static String DARKLIST_SCORE_NAME = "darklist_score_name";
     public final static String DARKLIST_PROTOCOL = "darklist_protocol";
