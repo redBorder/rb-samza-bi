@@ -17,6 +17,9 @@ package net.redborder.samza.processors;
 
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.constants.Dimension;
+import org.apache.samza.system.OutgoingMessageEnvelope;
+import org.apache.samza.system.SystemStream;
+import org.apache.samza.task.MessageCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +27,7 @@ import java.util.Map;
 
 public class FlowProcessor extends Processor {
     private static final Logger log = LoggerFactory.getLogger(FlowProcessor.class);
-
+    private static final SystemStream OUTPUT_STREAM = new SystemStream("druid", "rb_flow");
     private StoreManager storeManager;
 
     public FlowProcessor(StoreManager storeManager) {
@@ -32,7 +35,7 @@ public class FlowProcessor extends Processor {
     }
 
     @Override
-    public Map<String, Object> process(Map<String, Object> message) {
+    public void process(Map<String, Object> message, MessageCollector collector) {
         String mac = (String) message.get(Dimension.CLIENT_MAC);
         String ip = (String) message.get(Dimension.SRC_IP);
         Map<String, Object> enrichData = this.storeManager.enrich(mac, ip);
@@ -41,6 +44,6 @@ public class FlowProcessor extends Processor {
             message.putAll(enrichData);
         }
 
-        return message;
+        collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, message));
     }
 }

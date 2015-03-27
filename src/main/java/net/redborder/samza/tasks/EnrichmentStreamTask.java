@@ -29,7 +29,6 @@ import java.util.Map;
 
 public class EnrichmentStreamTask implements StreamTask, InitableTask {
     private static final Logger log = LoggerFactory.getLogger(EnrichmentStreamTask.class);
-    private static final SystemStream OUTPUT_STREAM = new SystemStream("druid", "rb_flow");
 
     private Config config;
     private StoreManager storeManager;
@@ -44,13 +43,8 @@ public class EnrichmentStreamTask implements StreamTask, InitableTask {
     public void process(IncomingMessageEnvelope envelope, MessageCollector collector, TaskCoordinator coordinator) throws Exception {
         String stream = envelope.getSystemStreamPartition().getSystemStream().getStream();
         Map<String, Object> message = (Map<String, Object>) envelope.getMessage();
-        Map<String, Object> output;
 
         Processor processor = Processor.getProcessor(stream, this.config, storeManager);
-        output = processor.process(message);
-
-        if (output != null) {
-            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, output));
-        }
+        processor.process(message, collector);
     }
 }

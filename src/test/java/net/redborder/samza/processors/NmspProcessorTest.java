@@ -18,6 +18,10 @@ package net.redborder.samza.processors;
 import junit.framework.TestCase;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.MockKeyValueStore;
+import net.redborder.samza.util.MockMessageCollector;
+import org.apache.samza.system.OutgoingMessageEnvelope;
+import org.apache.samza.system.SystemStream;
+import org.apache.samza.task.MessageCollector;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -46,6 +50,7 @@ public class NmspProcessorTest extends TestCase {
     @Mock
     static StoreManager storeManager;
 
+
     @BeforeClass
     public static void initTest() {
         // This store uses an in-memory map instead of samza K/V RockDB
@@ -57,7 +62,6 @@ public class NmspProcessorTest extends TestCase {
         storeManager = mock(StoreManager.class);
         when(storeManager.getStore(NmspProcessor.NMSP_STORE_MEASURE)).thenReturn(storeMeasure);
         when(storeManager.getStore(NmspProcessor.NMSP_STORE_INFO)).thenReturn(storeInfo);
-
 
         nmspProcessor = new NmspProcessor(storeManager);
     }
@@ -72,19 +76,24 @@ public class NmspProcessorTest extends TestCase {
 
     @Test
     public void processEmptyMsg() {
+        MockMessageCollector collector = new MockMessageCollector();
         Map<String, Object> message = new HashMap<>();
-        assertEquals(nmspProcessor.process(message), null);
+        nmspProcessor.process(message, collector);
+        assertTrue(collector.getResult().isEmpty());
     }
 
     @Test
     public void emptyMessageIsIgnored() {
+        MockMessageCollector collector = new MockMessageCollector();
         Map<String, Object> message = new HashMap<>();
-        nmspProcessor.process(message);
+        nmspProcessor.process(message, collector);
         assertTrue(storeMeasure.isEmpty());
     }
 
     @Test
     public void enrichesWithWirelessStation() {
+        MockMessageCollector collector = new MockMessageCollector();
+
         Map<String, Object> message = new HashMap<>();
         List<String> ap_macs = Arrays.asList("11:11:11:11:11:11", "22:22:22:22:22:22", "33:33:33:33:33:33");
         List<Integer> rssi = Arrays.asList(-80, -54, -32);
@@ -93,7 +102,7 @@ public class NmspProcessorTest extends TestCase {
         message.put(NMSP_AP_MAC, ap_macs);
         message.put(NMSP_RSSI, rssi);
         message.put(TYPE, NMSP_TYPE_MEASURE);
-        nmspProcessor.process(message);
+        nmspProcessor.process(message, collector);
 
         Map<String, Object> fromCache = storeMeasure.get("00:00:00:00:00:00");
 
@@ -104,6 +113,8 @@ public class NmspProcessorTest extends TestCase {
 
     @Test
     public void enrichesWithRssi() {
+        MockMessageCollector collector = new MockMessageCollector();
+
         Map<String, Object> message = new HashMap<>();
         List<String> ap_macs = Arrays.asList("11:11:11:11:11:11", "22:22:22:22:22:22", "33:33:33:33:33:33");
         List<Integer> rssi = Arrays.asList(-80, -54, -32);
@@ -112,7 +123,7 @@ public class NmspProcessorTest extends TestCase {
         message.put(NMSP_AP_MAC, ap_macs);
         message.put(NMSP_RSSI, rssi);
         message.put(TYPE, NMSP_TYPE_MEASURE);
-        nmspProcessor.process(message);
+        nmspProcessor.process(message, collector);
 
         Map<String, Object> fromCache = storeMeasure.get("00:00:00:00:00:00");
 
@@ -125,6 +136,8 @@ public class NmspProcessorTest extends TestCase {
 
     @Test
     public void enrichWithStatus() {
+        MockMessageCollector collector = new MockMessageCollector();
+
         Map<String, Object> message = new HashMap<>();
         List<String> ap_macs = Arrays.asList("11:11:11:11:11:11", "22:22:22:22:22:22", "33:33:33:33:33:33");
         List<Integer> rssi = Arrays.asList(-80, -54, -32);
@@ -133,16 +146,20 @@ public class NmspProcessorTest extends TestCase {
         message.put(NMSP_AP_MAC, ap_macs);
         message.put(NMSP_RSSI, rssi);
         message.put(TYPE, NMSP_TYPE_MEASURE);
-        Map<String, Object> toDruid = nmspProcessor.process(message);
+
+        nmspProcessor.process(message, collector);
+
+        List<Map<String, Object>> toDruid = collector.getResult();
 
         Map<String, Object> fromCache = storeMeasure.get("00:00:00:00:00:00");
 
-        assertEquals(toDruid.get(DOT11STATUS), "PROBING");
+        assertEquals(toDruid.get(0).get(DOT11STATUS), "PROBING");
         assertEquals(fromCache.get(DOT11STATUS), "ASSOCIATED");
     }
 
     @Test
     public void enrichWithInfoAndMeasure() {
+        MockMessageCollector collector = new MockMessageCollector();
 
         //Message 1
         Map<String, Object> messageInfo = new HashMap<>();
@@ -170,16 +187,22 @@ public class NmspProcessorTest extends TestCase {
 
         Map<String, Object> fromCache;
 
-        Map<String, Object> toDruidMeasure1 = nmspProcessor.process(messageMeasure1);
+        nmspProcessor.process(messageMeasure1, collector);
+
+        Map<String, Object> toDruidMeasure1 = collector.getResult().get(0);
+
         fromCache = storeMeasure.get("00:00:00:00:00:00");
 
         assertEquals(toDruidMeasure1.get(DOT11STATUS), "PROBING");
         assertEquals(fromCache.get(WIRELESS_ID), null);
         assertEquals(fromCache.get(DOT11STATUS), "ASSOCIATED");
 
-        nmspProcessor.process(messageInfo);
+        nmspProcessor.process(messageInfo, collector);
 
-        Map<String, Object> toDruidMeasure2 = nmspProcessor.process(messageMeasure2);
+        nmspProcessor.process(messageMeasure2, collector);
+
+        Map<String, Object> toDruidMeasure2 = collector.getResult().get(0);
+
         fromCache = storeMeasure.get("00:00:00:00:00:00");
 
         assertEquals(fromCache.get(WIRELESS_ID), "rb_Corp");

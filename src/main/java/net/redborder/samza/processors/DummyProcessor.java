@@ -15,6 +15,7 @@
 
 package net.redborder.samza.processors;
 
+import org.apache.samza.task.MessageCollector;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -24,8 +25,7 @@ public class DummyProcessor extends Processor {
     private static final Logger log = LoggerFactory.getLogger(DummyProcessor.class);
 
     @Override
-    public Map<String, Object> process(Map<String, Object> message) {
+    public void process(Map<String, Object> message, MessageCollector collector) {
         log.warn("The dummy process method was called!");
-        return null;
     }
 }

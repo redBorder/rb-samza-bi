@@ -17,6 +17,9 @@ package net.redborder.samza.processors;
 
 import net.redborder.samza.store.StoreManager;
 import org.apache.samza.storage.kv.KeyValueStore;
+import org.apache.samza.system.OutgoingMessageEnvelope;
+import org.apache.samza.system.SystemStream;
+import org.apache.samza.task.MessageCollector;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,8 +31,9 @@ import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_INFO;
 import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_MEASURE;
 
 public class NmspProcessor extends Processor {
-    final public static String NMSP_STORE_MEASURE = "nmsp-measure";
-    final public static String NMSP_STORE_INFO = "nmsp-info";
+    private static final SystemStream OUTPUT_STREAM = new SystemStream("druid", "rb_flow");
+    private final static String NMSP_STORE_MEASURE = "nmsp-measure";
+    private final static String NMSP_STORE_INFO = "nmsp-info";
 
     private KeyValueStore<String, Map<String, Object>> storeMeasure;
     private KeyValueStore<String, Map<String, Object>> storeInfo;
@@ -40,7 +44,7 @@ public class NmspProcessor extends Processor {
     }
 
     @Override
-    public Map<String, Object> process(Map<String, Object> message) {
+    public void process(Map<String, Object> message, MessageCollector collector) {
         Map<String, Object> toCache = new HashMap<>();
         Map<String, Object> toDruid = new HashMap<>();
 
@@ -101,7 +105,7 @@ public class NmspProcessor extends Processor {
 
                 storeMeasure.put(mac, toCache);
                 toDruid.put("timestamp", System.currentTimeMillis() / 1000);
-                return toDruid;
+                collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
             }
         } else if (type != null && type.equals(NMSP_TYPE_INFO)) {
             Object vlan = message.remove(NMSP_VLAN_ID);
@@ -119,9 +123,7 @@ public class NmspProcessor extends Processor {
             toDruid.put(CLIENT_MAC, mac);
             storeInfo.put(mac, toCache);
             toDruid.put("timestamp", System.currentTimeMillis() / 1000);
-            return toDruid;
+            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
         }
-
-        return null;
     }
 }
