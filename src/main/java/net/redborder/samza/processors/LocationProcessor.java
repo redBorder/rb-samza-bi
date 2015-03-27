@@ -16,6 +16,7 @@
 package net.redborder.samza.processors;
 
 import net.redborder.samza.store.StoreManager;
+import org.apache.samza.task.MessageCollector;
 
 import java.util.Map;
 
@@ -32,11 +33,11 @@ public class LocationProcessor extends Processor {
 
     @Override
     @SuppressWarnings("unchecked cast")
-    public Map<String, Object> process(Map<String, Object> message) {
+    public void process(Map<String, Object> message, MessageCollector collector) {
         if (message.containsKey(LOC_STREAMING_NOTIFICATION)) {
-            return locv89.process(message);
+            locv89.process(message, collector);
         } else {
-            return locv10.process(message);
+            locv10.process(message, collector);
         }
     }
 }

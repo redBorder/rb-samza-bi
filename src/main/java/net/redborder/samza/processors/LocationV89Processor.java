@@ -17,6 +17,9 @@ package net.redborder.samza.processors;
 
 import net.redborder.samza.store.StoreManager;
 import org.apache.samza.storage.kv.KeyValueStore;
+import org.apache.samza.system.OutgoingMessageEnvelope;
+import org.apache.samza.system.SystemStream;
+import org.apache.samza.task.MessageCollector;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
@@ -29,6 +32,7 @@ import static net.redborder.samza.util.constants.DimensionValue.LOC_ASSOCIATED;
 
 public class LocationV89Processor extends Processor {
     final public static String LOCATION_STORE = "location";
+    private static final SystemStream OUTPUT_STREAM = new SystemStream("druid", "rb_flow");
 
     private KeyValueStore<String, Map<String, Object>> store;
 
@@ -38,7 +42,7 @@ public class LocationV89Processor extends Processor {
 
     @Override
     @SuppressWarnings("unchecked cast")
-    public Map<String, Object> process(Map<String, Object> message) {
+    public void process(Map<String, Object> message, MessageCollector collector) {
         Map<String, Object> mseEventContent, location, mapInfo, toCache, toDruid;
         Map<String, Object> geoCoordinate = null;
         String mapHierarchy, locationFormat, state;
@@ -135,9 +139,7 @@ public class LocationV89Processor extends Processor {
             }
 
             if (macAddress != null) store.put(macAddress, toCache);
-            return toDruid;
-        } else {
-            return null;
+            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
         }
     }
 }
