@@ -17,6 +17,7 @@ package net.redborder.samza.processors;
 
 import net.redborder.samza.store.StoreManager;
 import org.apache.samza.storage.kv.KeyValueStore;
+import org.apache.samza.task.MessageCollector;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 

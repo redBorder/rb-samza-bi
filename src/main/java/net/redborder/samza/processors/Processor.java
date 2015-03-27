@@ -17,6 +17,7 @@ package net.redborder.samza.processors;
 
 import net.redborder.samza.store.StoreManager;
 import org.apache.samza.config.Config;
+import org.apache.samza.task.MessageCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,5 +52,5 @@ public abstract class Processor {
         return processors.get(streamName);
     }
 
-    public abstract Map<String, Object> process(Map<String, Object> message);
+    public abstract void process(Map<String, Object> message, MessageCollector collector);
 }

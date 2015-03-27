@@ -18,6 +18,7 @@ package net.redborder.samza.processors;
 import junit.framework.TestCase;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.MockKeyValueStore;
+import net.redborder.samza.util.MockMessageCollector;
 import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.task.TaskContext;
@@ -79,6 +80,7 @@ public class FlowProcessorTest extends TestCase {
     @Test
     public void enrichment() {
         Map<String, Object> cacheNmsp = new HashMap<>();
+        MockMessageCollector collector = new MockMessageCollector();
 
         if (stores.contains("nmsp-measure")) {
             cacheNmsp.put("wireless_station", "11:11:11:11:11:11");
@@ -89,10 +91,11 @@ public class FlowProcessorTest extends TestCase {
         Map<String, Object> message = new HashMap<>();
 
         message.put(Dimension.CLIENT_MAC, "00:00:00:00:00:00");
-        Map<String, Object> result = flowProcessor.process(message);
+        flowProcessor.process(message, collector);
+
+        Map<String, Object> result = collector.getResult().get(0);
 
         message.putAll(cacheNmsp);
-
         assertTrue(message.equals(result));
     }
 
