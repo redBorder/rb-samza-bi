@@ -33,6 +33,7 @@ public class Dimension {
     public final static String BYTES = "bytes";
     public final static String TYPE = "type";
     public final static String SRC_VLAN = "src_vlan";
+    public final static String DST_VLAN = "dst_vlan";
     public final static String CAMPUS = "client_campus";
     public final static String BUILDING = "client_building";
     public final static String FLOOR = "client_floor";
@@ -47,6 +48,38 @@ public class Dimension {
     public final static String DST_AS_NAME = "dst_as_name";
     public final static String DST_PORT = "dst_port";
     public final static String DST_MAP = "dst_map";
+    public final static String APPLICATION_ID_NAME = "application_id_name";
+    public final static String BITFLOW_DIRECTION = "biflow_direction";
+    public final static String CONVERSATION = "conversation";
+    public final static String DIRECTION = "direction";
+    public final static String ENGINE_ID_NAME = "engine_id_name";
+    public final static String HTTP_HOST = "http_host";
+    public final static String HTTP_SOCIAL_MEDIA = "http_social_media";
+    public final static String HTTP_SOCIAL_USER = "http_social_user";
+    public final static String HTTP_USER_AGENT_OS = "http_user_agent_os";
+    public final static String HTTP_REFER_L1 = "http_referer_l1";
+    public final static String IP_PROTOCOL_VERSION = "ip_protocol_version";
+    public final static String L4_PROTO = "l4_proto";
+    public final static String SRC_NET_NAME = "src_net_name";
+    public final static String DST_NET_NAME = "dst_net_name";
+    public final static String TOS = "tos";
+    public final static String DST_COUNTRY_CODE = "dst_country_code";
+    public final static String SRC_COUNTRY_CODE = "src_country_code";
+    public final static String SCATTERPLOT = "scatterplot";
+    public final static String INPUT_SNMP = "input_snmp";
+    public final static String OUTPUT_SNMP = "output_snmp";
+    public final static String CLIENT_BUILDING = "client_building";
+    public final static String CLIENT_CAMPUS = "client_campus";
+    public final static String CLIENT_FLOOR = "client_floor";
+    public final static String COORDINATES_MAP = "coordinates_map";
+    public final static String CLIENT_SNR = "client_snr";
+    public final static String CLIENT_SNR_NUM = "client_snr_num";
+    public final static String HNBLOCATION = "hnblocation";
+    public final static String HNBGEOLOCATION = "hnbgeolocation";
+    public final static String RAT = "rat";
+
+
+
 
 
     //Darklist

@@ -55,17 +55,17 @@ public class TranquilityBeamFactory implements BeamFactory
         final String dataSource = stream.getStream();
 
         final List<String> dimensions = ImmutableList.of(
-                "application_id_name", "biflow_direction", "conversation", "direction",
-                "engine_id_name", "http_user_agent_os", "http_host", "http_social_media",
-                "http_social_user", "http_referer_l1", "l4_proto", "ip_protocol_version",
-                "sensor_name", "scatterplot", SRC_IP, "src_country_code", "src_net_name",
+                APPLICATION_ID_NAME, BITFLOW_DIRECTION, CONVERSATION, DIRECTION,
+                ENGINE_ID_NAME, HTTP_USER_AGENT_OS, HTTP_HOST, HTTP_SOCIAL_MEDIA,
+                HTTP_SOCIAL_USER, HTTP_REFER_L1, L4_PROTO, IP_PROTOCOL_VERSION,
+                SENSOR_NAME, SCATTERPLOT, SRC_IP, SRC_COUNTRY_CODE, SRC_NET_NAME,
                 SRC_PORT, SRC_AS_NAME, CLIENT_MAC, CLIENT_ID, CLIENT_MAC_VENDOR,
                 DOT11STATUS, SRC_VLAN, SRC_MAP, SRV_PORT, DST_IP,
-                "dst_country_code", "dst_net_name", DST_AS_NAME, DST_PORT,
-                "dst_vlan", DST_MAP, "input_snmp", "output_snmp", "tos",
-                "client_latlong", "coordinates_map", "client_campus",
-                "client_building", "client_floor", WIRELESS_ID, CLIENT_RSSI, CLIENT_RSSI_NUM,
-                "client_snr", "client_snr_num", WIRELESS_STATION, "hnblocation", "hnbgeolocation", "rat",
+                DST_COUNTRY_CODE, DST_NET_NAME, DST_AS_NAME, DST_PORT,
+                DST_VLAN, DST_MAP, INPUT_SNMP, OUTPUT_SNMP, TOS,
+                CLIENT_LATLNG, COORDINATES_MAP, CLIENT_CAMPUS,
+                CLIENT_BUILDING, CLIENT_FLOOR, WIRELESS_ID, CLIENT_RSSI, CLIENT_RSSI_NUM,
+                CLIENT_SNR, CLIENT_SNR_NUM, WIRELESS_STATION, HNBLOCATION, HNBGEOLOCATION, RAT,
                 DARKLIST_SCORE_NAME, DARKLIST_CATEGORY, DARKLIST_PROTOCOL,
                 DARKLIST_DIRECTION, DARKLIST_SCORE);
 
