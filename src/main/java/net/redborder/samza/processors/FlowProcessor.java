@@ -15,6 +15,7 @@
 
 package net.redborder.samza.processors;
 
+import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.system.OutgoingMessageEnvelope;
@@ -29,9 +30,11 @@ public class FlowProcessor extends Processor {
     private static final Logger log = LoggerFactory.getLogger(FlowProcessor.class);
     private static final SystemStream OUTPUT_STREAM = new SystemStream("druid", "rb_flow");
     private StoreManager storeManager;
+    private EnrichManager enrichManager;
 
-    public FlowProcessor(StoreManager storeManager) {
+    public FlowProcessor(StoreManager storeManager, EnrichManager enrichManager) {
         this.storeManager = storeManager;
+        this.enrichManager = enrichManager;
     }
 
     @Override
@@ -48,6 +51,8 @@ public class FlowProcessor extends Processor {
         if (enrichData != null && !enrichData.isEmpty()) {
             message.putAll(enrichData);
         }
+
+
 
         collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, message));
     }

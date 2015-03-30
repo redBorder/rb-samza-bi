@@ -15,6 +15,8 @@
 
 package net.redborder.samza.processors;
 
+import net.redborder.samza.enrichments.EnrichManager;
+import net.redborder.samza.enrichments.IEnrich;
 import net.redborder.samza.store.StoreManager;
 import org.apache.samza.config.Config;
 import org.apache.samza.task.MessageCollector;
@@ -24,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class Processor {
@@ -36,9 +39,23 @@ public abstract class Processor {
             String className = config.get("redborder.processors." + streamName + ".class");
 
             try {
+                List<String> enableProcessors = config.getList("reborder.processors");
+
                 Class foundClass = Class.forName(className);
-                Constructor constructor = foundClass.getConstructor(StoreManager.class);
-                Processor processor = (Processor) constructor.newInstance(new Object [] { storeManager });
+                Constructor constructor = foundClass.getConstructor(StoreManager.class, EnrichManager.class);
+
+                EnrichManager enrichManager = new EnrichManager();
+
+                for(String processor : enableProcessors){
+                    List<String> enrichments = config.getList("redborder.enrichmet." + processor);
+                    for(String enrichment : enrichments) {
+                        Class enrichClass = Class.forName("redborder.enrichments." + enrichment);
+                        IEnrich enrich = (IEnrich) enrichClass.newInstance();
+                        enrichManager.addEnrichment(enrich);
+                    }
+                }
+
+                Processor processor = (Processor) constructor.newInstance(new Object [] { storeManager, enrichManager});
                 processors.put(streamName, processor);
             } catch (ClassNotFoundException e) {
                 log.error("Couldnt find the class associated with the stream " + streamName);
