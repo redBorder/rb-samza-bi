@@ -20,11 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Date: 30/3/15 12:26.
- */
 public class EnrichManager {
-
     List<IEnrich> enrichments;
 
     public EnrichManager() {

@@ -29,9 +29,6 @@ import java.util.regex.PatternSyntaxException;
 
 import static net.redborder.samza.util.constants.Dimension.*;
 
-/**
- * Date: 30/3/15 16:31.
- */
 public class GeoIpEnrich implements IEnrich {
     private static final Logger log = LoggerFactory.getLogger(GeoIpEnrich.class);
 

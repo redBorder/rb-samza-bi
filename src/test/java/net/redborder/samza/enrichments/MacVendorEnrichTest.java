@@ -31,6 +31,7 @@ public class MacVendorEnrichTest extends TestCase {
 
     @Test
     public void enrichesWithMacVendor() {
+        // Enriches when the MAC is found
         MacVendorEnrich.ouiFilePath = ClassLoader.getSystemResource("mac_vendors").getFile();
         MacVendorEnrich macVendorEnrich = new MacVendorEnrich();
 
@@ -40,6 +41,7 @@ public class MacVendorEnrichTest extends TestCase {
         Map<String, Object> enriched = macVendorEnrich.enrich(messageApple);
         assertEquals("Apple", enriched.get(CLIENT_MAC_VENDOR));
 
+        // It doesn't define CLIENT_MAC_VENDOR field when the MAC is not found
         Map<String, Object> messageWithoutVendor = new HashMap<>();
         messageWithoutVendor.put(CLIENT_MAC, "AA:AA:AA:AA:AA:AA");
 
@@ -51,6 +53,7 @@ public class MacVendorEnrichTest extends TestCase {
     public void logsWhenVendorFileNotFound() {
         MacVendorEnrich.ouiFilePath = "/this_path_doesnt_exist";
         MacVendorEnrich macVendorEnrich = new MacVendorEnrich();
+        assertTrue(macVendorEnrich.ouiMap.isEmpty());
     }
 }
 
