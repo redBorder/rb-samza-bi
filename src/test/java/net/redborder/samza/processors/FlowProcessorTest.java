@@ -16,6 +16,7 @@
 package net.redborder.samza.processors;
 
 import junit.framework.TestCase;
+import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.MockKeyValueStore;
 import net.redborder.samza.util.MockMessageCollector;
@@ -40,6 +41,7 @@ import static org.mockito.Mockito.when;
 public class FlowProcessorTest extends TestCase {
     static FlowProcessor flowProcessor;
     static StoreManager storeManager;
+    static EnrichManager enrichManager;
 
     @Mock
     static Config config;
@@ -55,26 +57,20 @@ public class FlowProcessorTest extends TestCase {
         InputStream inputStream = new FileInputStream("src/main/config/enrichment.properties");
         properties.load(inputStream);
 
-        Map<String, String> map = new HashMap<>();
-
-        for (final String name : properties.stringPropertyNames())
-            map.put(name, properties.getProperty(name));
-
-        config = mock(Config.class);
-        when(config.keySet()).thenReturn(map.keySet());
-
         context = mock(TaskContext.class);
 
-        for (String str : map.keySet()) {
-            if (str.contains("stores") && str.contains("factory")) {
-                String store = getStoreName(str);
-                stores.add(store);
-                when(context.getStore(store)).thenReturn(new MockKeyValueStore());
-            }
+        String storesListAsString = properties.getProperty("redborder.stores");
+        for (String store : storesListAsString.split(",")) {
+            stores.add(store);
+            when(context.getStore(store)).thenReturn(new MockKeyValueStore());
         }
 
+        config = mock(Config.class);
+        when(config.getList("redborder.stores")).thenReturn(stores);
+
         storeManager = new StoreManager(config, context);
-        flowProcessor = new FlowProcessor(storeManager);
+        enrichManager = new EnrichManager();
+        flowProcessor = new FlowProcessor(storeManager, enrichManager);
     }
 
     @Test
@@ -97,10 +93,6 @@ public class FlowProcessorTest extends TestCase {
 
         message.putAll(cacheNmsp);
         assertTrue(message.equals(result));
-    }
-
-    private static String getStoreName(String str){
-        return str.substring(str.indexOf(".")+1, str.indexOf(".", str.indexOf(".")+1));
     }
 }
 

@@ -51,23 +51,16 @@ public class StoreManagerTest extends TestCase {
         InputStream inputStream = new FileInputStream("src/main/config/enrichment.properties");
         properties.load(inputStream);
 
-        Map<String, String> map = new HashMap<>();
-
-        for (final String name : properties.stringPropertyNames())
-            map.put(name, properties.getProperty(name));
-
-        config = mock(Config.class);
-        when(config.keySet()).thenReturn(map.keySet());
-
         context = mock(TaskContext.class);
 
-        for (String str : map.keySet()) {
-            if (str.contains("stores") && str.contains("factory")) {
-                String store = str.substring(str.indexOf(".")+1, str.indexOf(".", str.indexOf(".") + 1));
-                stores.add(store);
-                when(context.getStore(store)).thenReturn(new MockKeyValueStore());
-            }
+        String storesListAsString = properties.getProperty("redborder.stores");
+        for (String store : storesListAsString.split(",")) {
+            stores.add(store);
+            when(context.getStore(store)).thenReturn(new MockKeyValueStore());
         }
+
+        config = mock(Config.class);
+        when(config.getList("redborder.stores")).thenReturn(stores);
         storeManager = new StoreManager(config, context);
     }
 

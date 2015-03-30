@@ -36,32 +36,32 @@ public abstract class Processor {
     public static Processor getProcessor(String streamName, Config config, StoreManager storeManager) {
         if (!processors.containsKey(streamName)) {
             log.info("Asked for processor " + streamName + " but it wasn't found. Lets try to create it.");
-            String className = config.get("redborder.processors." + streamName + ".class");
+            EnrichManager enrichManager = new EnrichManager();
+            String className = config.get("redborder.processors." + streamName);
+
+            List<String> enrichments = config.getList("redborder.enrichments.streams." + streamName);
+            for (String enrichment : enrichments) {
+                try {
+                    Class enrichClass = Class.forName("redborder.enrichments.types." + enrichment);
+                    IEnrich enrich = (IEnrich) enrichClass.newInstance();
+                    enrichManager.addEnrichment(enrich);
+                } catch (ClassNotFoundException e) {
+                    log.error("Couldn't find the class associated with the enrichment " + enrichment);
+                } catch (InstantiationException | IllegalAccessException e) {
+                    log.error("Couldn't create the instance associated with the enrichment " + enrichment, e);
+                }
+            }
 
             try {
-                List<String> enableProcessors = config.getList("reborder.processors");
-
                 Class foundClass = Class.forName(className);
                 Constructor constructor = foundClass.getConstructor(StoreManager.class, EnrichManager.class);
-
-                EnrichManager enrichManager = new EnrichManager();
-
-                for(String processor : enableProcessors){
-                    List<String> enrichments = config.getList("redborder.enrichmet." + processor);
-                    for(String enrichment : enrichments) {
-                        Class enrichClass = Class.forName("redborder.enrichments." + enrichment);
-                        IEnrich enrich = (IEnrich) enrichClass.newInstance();
-                        enrichManager.addEnrichment(enrich);
-                    }
-                }
-
                 Processor processor = (Processor) constructor.newInstance(new Object [] { storeManager, enrichManager});
                 processors.put(streamName, processor);
             } catch (ClassNotFoundException e) {
-                log.error("Couldnt find the class associated with the stream " + streamName);
+                log.error("Couldn't find the class associated with the stream " + streamName);
                 processors.put(streamName, new DummyProcessor());
             } catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
-                log.error("Couldnt create the instance associated with the stream " + streamName, e);
+                log.error("Couldn't create the instance associated with the stream " + streamName, e);
                 processors.put(streamName, new DummyProcessor());
             }
         }

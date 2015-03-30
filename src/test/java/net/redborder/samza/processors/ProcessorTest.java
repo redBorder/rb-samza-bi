@@ -29,7 +29,7 @@ public class ProcessorTest extends TestCase {
     @Test
     public void getProcessorInstantiatesTheCorrectProcessor() {
         Config config = mock(Config.class);
-        when(config.get("redborder.processors.rb_flow.class")).thenReturn("net.redborder.samza.processors.FlowProcessor");
+        when(config.get("redborder.processors.rb_flow")).thenReturn("net.redborder.samza.processors.FlowProcessor");
         Processor p = Processor.getProcessor("rb_flow", config, null);
         assertEquals("flow", p.getName());
     }
@@ -37,7 +37,7 @@ public class ProcessorTest extends TestCase {
     @Test
     public void getProcessorReturnsDummyWhenClassNotFound() {
         Config config = mock(Config.class);
-        when(config.get("redborder.processors.rb_nmsp.class")).thenReturn("net.redborder.samza.processors.NotFoundProcessor");
+        when(config.get("redborder.processors.rb_nmsp")).thenReturn("net.redborder.samza.processors.NotFoundProcessor");
         Processor p = Processor.getProcessor("rb_nmsp", config, null);
         assertEquals("dummy", p.getName());
     }

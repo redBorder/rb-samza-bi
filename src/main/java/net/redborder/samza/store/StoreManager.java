@@ -20,6 +20,7 @@ import org.apache.samza.storage.kv.KeyValueStore;
 import org.apache.samza.task.TaskContext;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,12 +30,11 @@ public class StoreManager {
 
     private static Map<String, KeyValueStore<String, Map<String, Object>>> stores = new HashMap<>();
 
-    public StoreManager(Config config, TaskContext context){
-        for(String str : config.keySet()){
-            if(str.contains("stores") && str.contains("factory")){
-                String store = getStoreName(str);
-                stores.put(store, (KeyValueStore<String, Map<String, Object>>) context.getStore(store));
-            }
+    public StoreManager(Config config, TaskContext context) {
+        List<String> storesList = config.getList("redborder.stores");
+
+        for (String store : storesList) {
+            stores.put(store, (KeyValueStore<String, Map<String, Object>>) context.getStore(store));
         }
     }
 
@@ -54,9 +54,5 @@ public class StoreManager {
         }
 
         return enrichment;
-    }
-
-    private String getStoreName(String str){
-        return str.substring(str.indexOf(".")+1, str.indexOf(".", str.indexOf(".")+1));
     }
 }
