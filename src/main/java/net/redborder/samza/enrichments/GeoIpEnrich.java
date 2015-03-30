@@ -2,7 +2,6 @@ package net.redborder.samza.enrichments;
 
 import com.maxmind.geoip.Location;
 import com.maxmind.geoip.LookupService;
-import net.redborder.samza.util.constants.Dimension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,11 +11,9 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
 import static net.redborder.samza.util.constants.Dimension.*;
 
-/**
- * Date: 30/3/15 16:31.
- */
 public class GeoIpEnrich implements IEnrich {
     private static final Logger log = LoggerFactory.getLogger(GeoIpEnrich.class);
 
