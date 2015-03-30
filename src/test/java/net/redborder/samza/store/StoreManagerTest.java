@@ -17,6 +17,7 @@ package net.redborder.samza.store;
 
 import junit.framework.TestCase;
 import net.redborder.samza.util.MockKeyValueStore;
+import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.task.TaskContext;
 import org.junit.BeforeClass;
@@ -61,6 +62,10 @@ public class StoreManagerTest extends TestCase {
 
         config = mock(Config.class);
         when(config.getList("redborder.stores")).thenReturn(stores);
+        for (String store : stores) {
+            when(config.get("redborder.store." + store + ".key", Dimension.CLIENT_MAC)).thenReturn(properties.getProperty("redborder.store." + store + ".key"));
+        }
+
         storeManager = new StoreManager(config, context);
     }
 
@@ -84,20 +89,22 @@ public class StoreManagerTest extends TestCase {
     }
 
     @Test
-    public void enrichment(){
+    public void enrichment() {
         Map<String, Object> result = new HashMap<>();
+
+        Map<String, Object> message = new HashMap<>();
+        message.put(Dimension.CLIENT_MAC, "testing-mac");
+
+        result.putAll(message);
 
         for (String store : stores) {
             Map<String, Object> cache = new HashMap<>();
-            cache.put(store + "-mac", store + "-mac");
+            cache.put(store + "-enrichment-key", store + "-enrichment-value");
             result.putAll(cache);
             storeManager.getStore(store).put("testing-mac", cache);
-            cache.put(store + "-ip", store + "-ip");
-            result.putAll(cache);
-            storeManager.getStore(store).put("testing-ip", cache);
         }
 
-        Map<String, Object> enrichCache = storeManager.enrich("testing-mac", "testing-ip");
+        Map<String, Object> enrichCache = storeManager.enrich(message);
         assertTrue(enrichCache.equals(result));
     }
 }

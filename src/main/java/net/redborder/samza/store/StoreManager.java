@@ -49,9 +49,10 @@ public class StoreManager {
         Map<String, Object> enrichment = new HashMap<>();
         enrichment.putAll(message);
 
-        for (KeyValueStore<String, Map<String, Object>> store : stores.values()) {
-            String key = (String) message.get(storesKeys.get(store));
-            Map<String, Object> contents = store.get(key);
+        System.out.println(storesKeys);
+        for (Map.Entry<String, KeyValueStore<String, Map<String, Object>>> store : stores.entrySet()) {
+            String key = (String) message.get(storesKeys.get(store.getKey()));
+            Map<String, Object> contents = store.getValue().get(key);
             if (contents != null) enrichment.putAll(contents);
         }
 
