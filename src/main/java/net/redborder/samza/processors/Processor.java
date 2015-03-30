@@ -41,7 +41,7 @@ public abstract class Processor {
                 Processor processor = (Processor) constructor.newInstance(new Object [] { storeManager });
                 processors.put(streamName, processor);
             } catch (ClassNotFoundException e) {
-                log.error("Couldnt find the class associated with the stream " + streamNameeeesoo);
+                log.error("Couldnt find the class associated with the stream " + streamName);
                 processors.put(streamName, new DummyProcessor());
             } catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
                 log.error("Couldnt create the instance associated with the stream " + streamName, e);
