@@ -15,6 +15,7 @@
 
 package net.redborder.samza.processors;
 
+import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
 import org.apache.samza.task.MessageCollector;
 
@@ -26,9 +27,10 @@ public class LocationProcessor extends Processor {
     private LocationV89Processor locv89;
     private LocationV10Processor locv10;
 
-    public LocationProcessor(StoreManager storeManager) {
-        locv89 = new LocationV89Processor(storeManager);
-        locv10 = new LocationV10Processor(storeManager);
+    public LocationProcessor(StoreManager storeManager, EnrichManager enrichManager) {
+        super(storeManager, enrichManager);
+        locv89 = new LocationV89Processor(storeManager, enrichManager);
+        locv10 = new LocationV10Processor(storeManager, enrichManager);
     }
 
     @Override

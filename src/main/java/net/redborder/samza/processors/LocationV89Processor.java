@@ -15,6 +15,7 @@
 
 package net.redborder.samza.processors;
 
+import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
 import org.apache.samza.storage.kv.KeyValueStore;
 import org.apache.samza.system.OutgoingMessageEnvelope;
@@ -36,7 +37,8 @@ public class LocationV89Processor extends Processor {
 
     private KeyValueStore<String, Map<String, Object>> store;
 
-    public LocationV89Processor(StoreManager storeManager) {
+    public LocationV89Processor(StoreManager storeManager, EnrichManager enrichManager) {
+        super(storeManager, enrichManager);
         store = storeManager.getStore(LOCATION_STORE);
     }
 

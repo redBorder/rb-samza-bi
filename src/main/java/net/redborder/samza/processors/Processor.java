@@ -33,6 +33,14 @@ public abstract class Processor {
     private static final Logger log = LoggerFactory.getLogger(Processor.class);
     private static Map<String, Processor> processors = new HashMap<>();
 
+    protected StoreManager storeManager;
+    protected EnrichManager enrichManager;
+
+    public Processor(StoreManager storeManager, EnrichManager enrichManager) {
+        this.storeManager = storeManager;
+        this.enrichManager = enrichManager;
+    }
+
     public static Processor getProcessor(String streamName, Config config, StoreManager storeManager) {
         if (!processors.containsKey(streamName)) {
             log.info("Asked for processor " + streamName + " but it wasn't found. Lets try to create it.");

@@ -94,5 +94,10 @@ public class FlowProcessorTest extends TestCase {
         message.putAll(cacheNmsp);
         assertTrue(message.equals(result));
     }
+
+    @Test
+    public void checkName() {
+        assertEquals("flow", flowProcessor.getName());
+    }
 }
 

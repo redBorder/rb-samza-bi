@@ -16,12 +16,10 @@
 package net.redborder.samza.processors;
 
 import junit.framework.TestCase;
+import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.MockKeyValueStore;
 import net.redborder.samza.util.MockMessageCollector;
-import org.apache.samza.system.OutgoingMessageEnvelope;
-import org.apache.samza.system.SystemStream;
-import org.apache.samza.task.MessageCollector;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -46,6 +44,7 @@ public class NmspProcessorTest extends TestCase {
     static MockKeyValueStore storeInfo;
 
     static NmspProcessor nmspProcessor;
+    static EnrichManager enrichManager;
 
     @Mock
     static StoreManager storeManager;
@@ -63,7 +62,8 @@ public class NmspProcessorTest extends TestCase {
         when(storeManager.getStore(NmspProcessor.NMSP_STORE_MEASURE)).thenReturn(storeMeasure);
         when(storeManager.getStore(NmspProcessor.NMSP_STORE_INFO)).thenReturn(storeInfo);
 
-        nmspProcessor = new NmspProcessor(storeManager);
+        enrichManager = new EnrichManager();
+        nmspProcessor = new NmspProcessor(storeManager, enrichManager);
     }
 
     @Before
@@ -319,5 +319,10 @@ public class NmspProcessorTest extends TestCase {
         nmspProcessor.process(messageInfo, collector);
         Map<String, Object> toDruid = collector.getResult().get(0);
         assertEquals(toDruid.get(SRC_VLAN), 40);
+    }
+
+    @Test
+    public void checkName() {
+        assertEquals("nmsp", nmspProcessor.getName());
     }
 }
