@@ -28,6 +28,7 @@ import static net.redborder.samza.util.constants.Dimension.CLIENT_MAC_VENDOR;
 
 @RunWith(MockitoJUnitRunner.class)
 public class MacVendorEnrichTest extends TestCase {
+
     @Test
     public void enrichesWithMacVendor() {
         MacVendorEnrich.ouiFilePath = ClassLoader.getSystemResource("mac_vendors").getFile();
