@@ -44,16 +44,9 @@ public class FlowProcessor extends Processor {
 
     @Override
     public void process(Map<String, Object> message, MessageCollector collector) {
-        String mac = (String) message.get(Dimension.CLIENT_MAC);
-        String ip = (String) message.get(Dimension.SRC_IP);
-        Map<String, Object> enrichData = this.storeManager.enrich(mac, ip);
+        Map<String, Object> messageEnrichmentStore = this.storeManager.enrich(message);
+        Map<String, Object> messageEnrichmentLocal = this.enrichManager.enrich(messageEnrichmentStore);
 
-        if (enrichData != null && !enrichData.isEmpty()) {
-            message.putAll(enrichData);
-        }
-
-
-
-        collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, message));
+        collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, messageEnrichmentLocal));
     }
 }
