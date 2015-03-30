@@ -51,6 +51,7 @@ public class MacVendorEnrichTest extends TestCase {
     public void logsWhenVendorFileNotFound() {
         MacVendorEnrich.ouiFilePath = "/this_path_doesnt_exist";
         MacVendorEnrich macVendorEnrich = new MacVendorEnrich();
+        assertTrue(macVendorEnrich.ouiMap.isEmpty());
     }
 }
 
