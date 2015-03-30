@@ -15,6 +15,7 @@
 
 package net.redborder.samza.processors;
 
+import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
 import org.apache.samza.storage.kv.KeyValueStore;
 import org.apache.samza.system.OutgoingMessageEnvelope;
@@ -37,7 +38,8 @@ public class NmspProcessor extends Processor {
     private KeyValueStore<String, Map<String, Object>> storeMeasure;
     private KeyValueStore<String, Map<String, Object>> storeInfo;
 
-    public NmspProcessor(StoreManager storeManager) {
+    public NmspProcessor(StoreManager storeManager, EnrichManager enrichManager) {
+        super(storeManager, enrichManager);
         storeMeasure = storeManager.getStore(NMSP_STORE_MEASURE);
         storeInfo = storeManager.getStore(NMSP_STORE_INFO);
     }

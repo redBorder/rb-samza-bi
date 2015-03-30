@@ -16,6 +16,7 @@
 package net.redborder.samza.processors;
 
 import junit.framework.TestCase;
+import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.MockKeyValueStore;
 import net.redborder.samza.util.MockMessageCollector;
@@ -43,6 +44,7 @@ public class NmspProcessorTest extends TestCase {
     static MockKeyValueStore storeInfo;
 
     static NmspProcessor nmspProcessor;
+    static EnrichManager enrichManager;
 
     @Mock
     static StoreManager storeManager;
@@ -60,7 +62,8 @@ public class NmspProcessorTest extends TestCase {
         when(storeManager.getStore(NmspProcessor.NMSP_STORE_MEASURE)).thenReturn(storeMeasure);
         when(storeManager.getStore(NmspProcessor.NMSP_STORE_INFO)).thenReturn(storeInfo);
 
-        nmspProcessor = new NmspProcessor(storeManager);
+        enrichManager = new EnrichManager();
+        nmspProcessor = new NmspProcessor(storeManager, enrichManager);
     }
 
     @Before

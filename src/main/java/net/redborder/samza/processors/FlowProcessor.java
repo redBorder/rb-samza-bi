@@ -29,12 +29,9 @@ import java.util.Map;
 public class FlowProcessor extends Processor {
     private static final Logger log = LoggerFactory.getLogger(FlowProcessor.class);
     private static final SystemStream OUTPUT_STREAM = new SystemStream("druid", "rb_flow");
-    private StoreManager storeManager;
-    private EnrichManager enrichManager;
 
     public FlowProcessor(StoreManager storeManager, EnrichManager enrichManager) {
-        this.storeManager = storeManager;
-        this.enrichManager = enrichManager;
+        super(storeManager, enrichManager);
     }
 
     @Override

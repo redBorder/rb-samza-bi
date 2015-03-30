@@ -16,13 +16,17 @@
 package net.redborder.samza.processors;
 
 import org.apache.samza.task.MessageCollector;
-import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
 public class DummyProcessor extends Processor {
     private static final Logger log = LoggerFactory.getLogger(DummyProcessor.class);
+
+    public DummyProcessor() {
+        super(null, null);
+    }
 
     @Override
     public String getName() {
