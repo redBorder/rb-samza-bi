@@ -1,8 +1,22 @@
+/*
+ * Copyright (c) 2015 ENEO Tecnologia S.L.
+ * This file is part of redBorder.
+ * redBorder is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * redBorder is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with redBorder. If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package net.redborder.samza.enrichments;
 
 import com.maxmind.geoip.Location;
 import com.maxmind.geoip.LookupService;
-import net.redborder.samza.util.constants.Dimension;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,6 +26,7 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+
 import static net.redborder.samza.util.constants.Dimension.*;
 
 /**
@@ -56,26 +71,26 @@ public class GeoIpEnrich implements IEnrich {
     /**
      * Reference on memory cache to city data base.
      */
-    LookupService _city;
+    LookupService city;
     /**
      * Reference on memory cache to city v6 data base.
      */
-    LookupService _city6;
+    LookupService city6;
     /**
      * Reference on memory cache to asn data base.
      */
-    LookupService _asn;
+    LookupService asn;
     /**
      * Reference on memory cache to asn v6 data base.
      */
-    LookupService _asn6;
+    LookupService asn6;
 
-    public GeoIpEnrich(){
+    public GeoIpEnrich() {
         try {
-            _city = new LookupService(CITY_DB_PATH, LookupService.GEOIP_MEMORY_CACHE);
-            _city6 = new LookupService(CITY_V6_DB_PATH, LookupService.GEOIP_MEMORY_CACHE);
-            _asn = new LookupService(ASN_DB_PATH, LookupService.GEOIP_MEMORY_CACHE);
-            _asn6 = new LookupService(ASN_V6_DB_PATH, LookupService.GEOIP_MEMORY_CACHE);
+            city = new LookupService(CITY_DB_PATH, LookupService.GEOIP_MEMORY_CACHE);
+            city6 = new LookupService(CITY_V6_DB_PATH, LookupService.GEOIP_MEMORY_CACHE);
+            asn = new LookupService(ASN_DB_PATH, LookupService.GEOIP_MEMORY_CACHE);
+            asn6 = new LookupService(ASN_V6_DB_PATH, LookupService.GEOIP_MEMORY_CACHE);
             VALID_IPV4_PATTERN = Pattern.compile(ipv4Pattern, Pattern.CASE_INSENSITIVE);
             VALID_IPV6_PATTERN = Pattern.compile(ipv6Pattern, Pattern.CASE_INSENSITIVE);
         } catch (IOException ex) {
@@ -87,6 +102,7 @@ public class GeoIpEnrich implements IEnrich {
 
     /**
      * <p>Query if there is a country code for a given IP.</p>
+     *
      * @param ip This is the address to query the data base.
      * @return The country code, example: US, ES, FR.
      */
@@ -96,9 +112,9 @@ public class GeoIpEnrich implements IEnrich {
         Location location;
 
         if (match.matches()) {
-            location = _city.getLocation(ip);
+            location = city.getLocation(ip);
         } else {
-            location = _city6.getLocationV6(ip);
+            location = city6.getLocationV6(ip);
         }
 
         if (location != null) {
@@ -110,6 +126,7 @@ public class GeoIpEnrich implements IEnrich {
 
     /**
      * <p>Query if there is a asn for a given IP.</p>
+     *
      * @param ip This is the address to query the data base.
      * @return The asn name.
      */
@@ -119,9 +136,9 @@ public class GeoIpEnrich implements IEnrich {
         String asnInfo = null;
 
         if (match.matches()) {
-            asnInfo = _asn.getOrg(ip);
+            asnInfo = asn.getOrg(ip);
         } else {
-            asnInfo = _asn6.getOrgV6(ip);
+            asnInfo = asn6.getOrgV6(ip);
         }
 
         if (asnInfo != null) {
@@ -133,7 +150,6 @@ public class GeoIpEnrich implements IEnrich {
                 if (asn[0] != null) asnName = asn[0];
             }
         }
-
         return asnName;
     }
 
@@ -146,16 +162,26 @@ public class GeoIpEnrich implements IEnrich {
         String dst = (String) message.get(DST_IP);
 
         if (src != null) {
-            String country_code = getCountryCode(src);
-            String asn_name = getAsnName(src);
+            String country_code = null;
+            String asn_name = null;
+
+            if (VALID_IPV4_PATTERN != null) {
+                country_code = getCountryCode(src);
+                asn_name = getAsnName(src);
+            }
 
             if (country_code != null) geoIPMap.put(SRC_COUNTRY_CODE, country_code);
             if (asn_name != null) geoIPMap.put(SRC_AS_NAME, asn_name);
         }
 
         if (dst != null) {
-            String country_code = getCountryCode(dst);
-            String asn_name = getAsnName(dst);
+            String country_code = null;
+            String asn_name = null;
+
+            if (VALID_IPV4_PATTERN != null) {
+                country_code = getCountryCode(dst);
+                asn_name = getAsnName(dst);
+            }
 
             if (country_code != null) geoIPMap.put(DST_COUNTRY_CODE, country_code);
             if (asn_name != null) geoIPMap.put(DST_AS_NAME, asn_name);
