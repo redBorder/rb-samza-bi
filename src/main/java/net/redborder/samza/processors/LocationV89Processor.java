@@ -26,6 +26,7 @@ import org.joda.time.DateTimeZone;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static net.redborder.samza.util.constants.Dimension.*;
@@ -92,11 +93,14 @@ public class LocationV89Processor extends Processor {
                 }
 
                 state = (String) location.get(LOC_DOT11STATUS);
-                toDruid.put(DOT11STATUS, state);
-                toCache.put(DOT11STATUS, state);
+
+                if(state != null) {
+                    toDruid.put(DOT11STATUS, state);
+                    toCache.put(DOT11STATUS, state);
+                }
 
                 if (state != null && state.equals(LOC_ASSOCIATED)) {
-                    ArrayList ip = (ArrayList) location.get(LOC_IPADDR);
+                    List<String> ip = (List<String>) location.get(LOC_IPADDR);
                     if (location.get(LOC_SSID) != null)
                         toCache.put(WIRELESS_ID, location.get(LOC_SSID));
                     if (location.get(LOC_AP_MACADDR) != null)
@@ -139,7 +143,7 @@ public class LocationV89Processor extends Processor {
             toDruid.put(PKTS, 0);
             toDruid.put(TYPE, "mse");
 
-            if (dateString == null) {
+            if (dateString != null) {
                 toDruid.put("timestamp", new DateTime(dateString).withZone(DateTimeZone.UTC).getMillis() / 1000);
             } else {
                 toDruid.put("timestamp", System.currentTimeMillis() / 1000);
