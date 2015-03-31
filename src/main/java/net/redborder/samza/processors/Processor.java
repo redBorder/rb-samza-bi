@@ -19,12 +19,14 @@ import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.enrichments.IEnrich;
 import net.redborder.samza.store.StoreManager;
 import org.apache.samza.config.Config;
+import org.apache.samza.config.ConfigException;
 import org.apache.samza.task.MessageCollector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,11 +45,18 @@ public abstract class Processor {
 
     public static Processor getProcessor(String streamName, Config config, StoreManager storeManager) {
         if (!processors.containsKey(streamName)) {
-            log.info("Asked for processor " + streamName + " but it wasn't found. Lets try to create it.");
+            List<String> enrichments;
             EnrichManager enrichManager = new EnrichManager();
-            String className = config.get("redborder.processors." + streamName);
 
-            List<String> enrichments = config.getList("redborder.enrichments.streams." + streamName);
+            log.info("Asked for processor " + streamName + " but it wasn't found. Lets try to create it.");
+
+            try {
+                enrichments = config.getList("redborder.enrichments.streams." + streamName);
+            } catch (ConfigException e) {
+                log.info("Stream " + streamName + " does not have enrichments enabled");
+                enrichments = new ArrayList<>();
+            }
+
             for (String enrichment : enrichments) {
                 try {
                     Class enrichClass = Class.forName("redborder.enrichments.types." + enrichment);
@@ -61,6 +70,7 @@ public abstract class Processor {
             }
 
             try {
+                String className = config.get("redborder.processors." + streamName);
                 Class foundClass = Class.forName(className);
                 Constructor constructor = foundClass.getConstructor(StoreManager.class, EnrichManager.class);
                 Processor processor = (Processor) constructor.newInstance(new Object [] { storeManager, enrichManager});
