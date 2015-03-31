@@ -59,14 +59,16 @@ public class FlowProcessorTest extends TestCase {
 
         context = mock(TaskContext.class);
 
+        config = mock(Config.class);
+        when(config.getList("redborder.stores")).thenReturn(stores);
+
         String storesListAsString = properties.getProperty("redborder.stores");
         for (String store : storesListAsString.split(",")) {
             stores.add(store);
             when(context.getStore(store)).thenReturn(new MockKeyValueStore());
+            String storeKey = properties.getProperty("redborder.store." + store + ".key");
+            when(config.get("redborder.store." + store + ".key", Dimension.CLIENT_MAC)).thenReturn(storeKey);
         }
-
-        config = mock(Config.class);
-        when(config.getList("redborder.stores")).thenReturn(stores);
 
         storeManager = new StoreManager(config, context);
         enrichManager = new EnrichManager();
@@ -74,25 +76,65 @@ public class FlowProcessorTest extends TestCase {
     }
 
     @Test
-    public void enrichment() {
-        Map<String, Object> cacheNmsp = new HashMap<>();
+    public void enrichmentCorrectly() {
         MockMessageCollector collector = new MockMessageCollector();
+        Map<String, Object> expected = new HashMap<>();
 
-        if (stores.contains("nmsp-measure")) {
-            cacheNmsp.put("wireless_station", "11:11:11:11:11:11");
-            cacheNmsp.put("dot11Status", "ASSOCIATED");
-            storeManager.getStore("nmsp-measure").put("00:00:00:00:00:00", cacheNmsp);
+        // The message that we will enrich
+        Map<String, Object> message = new HashMap<>();
+        message.put(Dimension.CLIENT_MAC, "00:00:00:00:00:00");
+        expected.putAll(message);
+
+        for (String store : stores) {
+            Map<String, Object> cache = new HashMap<>();
+            // The data that will be in each cache ...
+            cache.put("column_" + store, "value_" + store);
+            cache.put("column2_" + store, "value2" + store);
+            storeManager.getStore(store).put("00:00:00:00:00:00", cache);
+            // ... will end in the expected message too
+            expected.put("column_" + store, "value_" + store);
+            expected.put("column2_" + store, "value2" + store);
         }
 
-        Map<String, Object> message = new HashMap<>();
-
-        message.put(Dimension.CLIENT_MAC, "00:00:00:00:00:00");
+        // Send the message
         flowProcessor.process(message, collector);
 
+        // Lets see if the collector received it correctly
         Map<String, Object> result = collector.getResult().get(0);
+        assertEquals(expected, result);
+    }
 
-        message.putAll(cacheNmsp);
-        assertTrue(message.equals(result));
+    @Test
+    public void enrichmentWithOverride() {
+        MockMessageCollector collector = new MockMessageCollector();
+        Map<String, Object> expected = new HashMap<>();
+
+        // This is practically the same case than the normal enrichment, but
+        // this time every store have the same columns, therefore the final message
+        // will only contain the columns that are saved in the last of the stores
+
+        // The message that we will enrich
+        Map<String, Object> message = new HashMap<>();
+        message.put(Dimension.CLIENT_MAC, "00:00:00:00:00:00");
+        expected.putAll(message);
+
+        for (String store : stores) {
+            Map<String, Object> cache = new HashMap<>();
+            // The data that will be in each cache ...
+            cache.put("column", "value_" + store);
+            cache.put("column2", "value2_" + store);
+            storeManager.getStore(store).put("00:00:00:00:00:00", cache);
+            // ... will end in the expected message too
+            expected.put("column", "value_" + store);
+            expected.put("column2", "value2_" + store);
+        }
+
+        // Send the message
+        flowProcessor.process(message, collector);
+
+        // Lets see if the collector received it correctly
+        Map<String, Object> result = collector.getResult().get(0);
+        assertEquals(expected, result);
     }
 
     @Test

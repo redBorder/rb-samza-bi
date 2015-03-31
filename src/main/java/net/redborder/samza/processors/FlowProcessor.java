@@ -17,7 +17,6 @@ package net.redborder.samza.processors;
 
 import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
-import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.system.OutgoingMessageEnvelope;
 import org.apache.samza.system.SystemStream;
 import org.apache.samza.task.MessageCollector;

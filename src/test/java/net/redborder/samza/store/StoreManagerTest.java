@@ -63,7 +63,8 @@ public class StoreManagerTest extends TestCase {
         config = mock(Config.class);
         when(config.getList("redborder.stores")).thenReturn(stores);
         for (String store : stores) {
-            when(config.get("redborder.store." + store + ".key", Dimension.CLIENT_MAC)).thenReturn(properties.getProperty("redborder.store." + store + ".key"));
+            String storeKey = properties.getProperty("redborder.store." + store + ".key");
+            when(config.get("redborder.store." + store + ".key", Dimension.CLIENT_MAC)).thenReturn(storeKey);
         }
 
         storeManager = new StoreManager(config, context);
@@ -105,7 +106,7 @@ public class StoreManagerTest extends TestCase {
         }
 
         Map<String, Object> enrichCache = storeManager.enrich(message);
-        assertTrue(enrichCache.equals(result));
+        assertEquals(result, enrichCache);
     }
 }
 

@@ -16,15 +16,13 @@
 package net.redborder.samza.enrichments;
 
 import junit.framework.TestCase;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+
 import static net.redborder.samza.util.constants.Dimension.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -32,8 +30,12 @@ public class GeoIpEnrichTest extends TestCase {
 
     @Test
     public void enrichesWitGeoIp() {
-
         Map<String, Object> result = new HashMap<>();
+
+        GeoIpEnrich.ASN_DB_PATH = "/this_path_does_not_exist";
+        GeoIpEnrich.ASN_V6_DB_PATH = "/this_path_does_not_exist";
+        GeoIpEnrich.CITY_DB_PATH = "/this_path_does_not_exist";
+        GeoIpEnrich.CITY_V6_DB_PATH = "/this_path_does_not_exist";
 
         GeoIpEnrich geoIpEnrich = new GeoIpEnrich();
         Map<String, Object> message = new HashMap<>();

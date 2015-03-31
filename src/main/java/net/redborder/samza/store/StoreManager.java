@@ -21,15 +21,13 @@ import org.apache.samza.storage.kv.KeyValueStore;
 import org.apache.samza.task.TaskContext;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Date: 26/3/15 10:32.
- */
 public class StoreManager {
 
-    private static Map<String, KeyValueStore<String, Map<String, Object>>> stores = new HashMap<>();
+    private static Map<String, KeyValueStore<String, Map<String, Object>>> stores = new LinkedHashMap<>();
     private static Map<String, String> storesKeys = new HashMap<>();
 
     public StoreManager(Config config, TaskContext context) {
@@ -49,7 +47,6 @@ public class StoreManager {
         Map<String, Object> enrichment = new HashMap<>();
         enrichment.putAll(message);
 
-        System.out.println(storesKeys);
         for (Map.Entry<String, KeyValueStore<String, Map<String, Object>>> store : stores.entrySet()) {
             String key = (String) message.get(storesKeys.get(store.getKey()));
             Map<String, Object> contents = store.getValue().get(key);
