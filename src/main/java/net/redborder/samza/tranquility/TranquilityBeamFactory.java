@@ -49,9 +49,9 @@ public class TranquilityBeamFactory implements BeamFactory
     public Beam<Object> makeBeam(SystemStream stream, Config config)
     {
         final int maxRows = 20000;
-        final int partitions = 2;
-        final int replicas = 1;
-        final String zkConnect = "samza01:2181";
+        final int partitions = Integer.valueOf(config.get("redborder.beam.partitions", "2"));
+        final int replicas = Integer.valueOf(config.get("redborder.beam.replicas", "1"));
+        final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
         final String dataSource = stream.getStream();
 
         final List<String> dimensions = ImmutableList.of(
