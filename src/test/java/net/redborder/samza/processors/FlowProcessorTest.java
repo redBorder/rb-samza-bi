@@ -20,8 +20,10 @@ import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.MockKeyValueStore;
 import net.redborder.samza.util.MockMessageCollector;
+import net.redborder.samza.util.MockTaskContext;
 import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
+import org.apache.samza.metrics.Counter;
 import org.apache.samza.task.TaskContext;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -46,9 +48,7 @@ public class FlowProcessorTest extends TestCase {
     @Mock
     static Config config;
 
-    @Mock
     static TaskContext context;
-
     static List<String> stores = new ArrayList<>();
 
     @BeforeClass
@@ -57,7 +57,7 @@ public class FlowProcessorTest extends TestCase {
         InputStream inputStream = new FileInputStream("src/main/config/enrichment.properties");
         properties.load(inputStream);
 
-        context = mock(TaskContext.class);
+        context = new MockTaskContext();
 
         config = mock(Config.class);
         when(config.getList("redborder.stores")).thenReturn(stores);
@@ -65,14 +65,13 @@ public class FlowProcessorTest extends TestCase {
         String storesListAsString = properties.getProperty("redborder.stores");
         for (String store : storesListAsString.split(",")) {
             stores.add(store);
-            when(context.getStore(store)).thenReturn(new MockKeyValueStore());
             String storeKey = properties.getProperty("redborder.store." + store + ".key");
             when(config.get("redborder.store." + store + ".key", Dimension.CLIENT_MAC)).thenReturn(storeKey);
         }
 
         storeManager = new StoreManager(config, context);
         enrichManager = new EnrichManager();
-        flowProcessor = new FlowProcessor(storeManager, enrichManager);
+        flowProcessor = new FlowProcessor(storeManager, enrichManager, config, context);
     }
 
     @Test

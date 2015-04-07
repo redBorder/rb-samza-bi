@@ -20,6 +20,9 @@ import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.MockKeyValueStore;
 import net.redborder.samza.util.MockMessageCollector;
+import net.redborder.samza.util.MockTaskContext;
+import org.apache.samza.config.Config;
+import org.apache.samza.task.TaskContext;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -49,12 +52,19 @@ public class NmspProcessorTest extends TestCase {
     @Mock
     static StoreManager storeManager;
 
+    @Mock
+    static Config config;
+
+    static TaskContext taskContext;
+
 
     @BeforeClass
     public static void initTest() {
         // This store uses an in-memory map instead of samza K/V RockDB
         storeMeasure = new MockKeyValueStore();
         storeInfo = new MockKeyValueStore();
+        config = mock(Config.class);
+        taskContext = new MockTaskContext();
 
         // Mock the storeManager in order to return the mock store
         // that we just instantiated
@@ -63,7 +73,7 @@ public class NmspProcessorTest extends TestCase {
         when(storeManager.getStore(NmspProcessor.NMSP_STORE_INFO)).thenReturn(storeInfo);
 
         enrichManager = new EnrichManager();
-        nmspProcessor = new NmspProcessor(storeManager, enrichManager);
+        nmspProcessor = new NmspProcessor(storeManager, enrichManager, config, taskContext);
     }
 
     @Before

@@ -25,7 +25,7 @@ public class DummyProcessor extends Processor {
     private static final Logger log = LoggerFactory.getLogger(DummyProcessor.class);
 
     public DummyProcessor() {
-        super(null, null);
+        super(null, null, null, null);
     }
 
     @Override

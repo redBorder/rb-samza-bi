@@ -83,7 +83,7 @@ public abstract class Processor {
             try {
                 String className = config.get("redborder.processors." + streamName);
                 Class foundClass = Class.forName(className);
-                Constructor constructor = foundClass.getConstructor(StoreManager.class, EnrichManager.class);
+                Constructor constructor = foundClass.getConstructor(StoreManager.class, EnrichManager.class, Config.class, TaskContext.class);
                 Processor processor = (Processor) constructor.newInstance(new Object [] { storeManager, enrichManager, config, context});
                 processors.put(streamName, processor);
             } catch (ClassNotFoundException e) {
