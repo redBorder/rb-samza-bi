@@ -17,9 +17,11 @@ package net.redborder.samza.processors;
 
 import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
+import org.apache.samza.config.Config;
 import org.apache.samza.system.OutgoingMessageEnvelope;
 import org.apache.samza.system.SystemStream;
 import org.apache.samza.task.MessageCollector;
+import org.apache.samza.task.TaskContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,8 +32,8 @@ public class MetricsProcessor extends Processor {
     private static final Logger log = LoggerFactory.getLogger(MetricsProcessor.class);
     private static final SystemStream OUTPUT_STREAM = new SystemStream("druid_monitor", "rb_monitor");
 
-    public MetricsProcessor(StoreManager storeManager, EnrichManager enrichManager) {
-        super(storeManager, enrichManager);
+    public MetricsProcessor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
+        super(storeManager, enrichManager, config, context);
     }
 
     @Override
