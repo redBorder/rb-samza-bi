@@ -65,7 +65,7 @@ public class MetricsProcessor extends Processor {
 
                     toDruid.put("sensor_name", header.get("host") + ":" + header.get("container-name"));
                     toDruid.put("type", className);
-                    toDruid.put("monitor", contentEntry.getKey());
+                    toDruid.put("monitor", className + "_" + contentEntry.getKey());
                     toDruid.put("value", contentEntry.getValue());
                     toDruid.put("timestamp", timestamp);
 
