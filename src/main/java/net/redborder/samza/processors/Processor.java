@@ -59,9 +59,15 @@ public abstract class Processor {
 
             for (String enrichment : enrichments) {
                 try {
-                    Class enrichClass = Class.forName("redborder.enrichments.types." + enrichment);
-                    IEnrich enrich = (IEnrich) enrichClass.newInstance();
-                    enrichManager.addEnrichment(enrich);
+                    String className = config.get("redborder.enrichments.types." + enrichment);
+
+                    if (className != null) {
+                        Class enrichClass = Class.forName(className);
+                        IEnrich enrich = (IEnrich) enrichClass.newInstance();
+                        enrichManager.addEnrichment(enrich);
+                    } else {
+                        log.warn("Couldn't find property redborder.enrichments.types." + enrichment + " on config properties");
+                    }
                 } catch (ClassNotFoundException e) {
                     log.error("Couldn't find the class associated with the enrichment " + enrichment);
                 } catch (InstantiationException | IllegalAccessException e) {
