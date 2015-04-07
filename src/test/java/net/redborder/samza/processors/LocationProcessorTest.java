@@ -120,4 +120,9 @@ public class LocationProcessorTest extends TestCase {
         Map<String, Object> enrichmentMessage = collector.getResult().get(0);
         assertEquals(result, enrichmentMessage);
     }
+
+    @Test
+    public void checkName() {
+        assertEquals("loc", locationProcessor.getName());
+    }
 }
