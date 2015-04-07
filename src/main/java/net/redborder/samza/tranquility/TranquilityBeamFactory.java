@@ -48,9 +48,10 @@ public class TranquilityBeamFactory implements BeamFactory
     @Override
     public Beam<Object> makeBeam(SystemStream stream, Config config)
     {
-        final int maxRows = 20000;
+        final int maxRows = Integer.valueOf(config.get("redborder.beam.maxrows", "200000"));
         final int partitions = Integer.valueOf(config.get("redborder.beam.partitions", "2"));
         final int replicas = Integer.valueOf(config.get("redborder.beam.replicas", "1"));
+        final String intermediatePersist = config.get("redborder.beam.intermediatePersist", "PT20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
         final String dataSource = stream.getStream();
 
@@ -106,7 +107,7 @@ public class TranquilityBeamFactory implements BeamFactory
                 .discoveryPath("/druid/discoveryPath")
                 .location(DruidLocation.create("overlord", "druid:local:firehose:%s", dataSource))
                 .rollup(DruidRollup.create(DruidDimensions.specific(dimensions), aggregators, QueryGranularity.MINUTE))
-                .druidTuning(DruidTuning.create(maxRows, new Period("PT10M"), 3))
+                .druidTuning(DruidTuning.create(maxRows, new Period(intermediatePersist), 3))
                 .tuning(ClusteredBeamTuning.builder()
                         .partitions(partitions)
                         .replicants(replicas)
