@@ -53,22 +53,24 @@ public class MetricsProcessor extends Processor {
             for (Map.Entry<String, Object> contentEntry : contents.entrySet()) {
                 Map<String, Object> toDruid = new HashMap<>();
                 String className = classEntry.getKey();
-                String[] classNameSeparated = className.split(".");
+                if(className.contains("net.redborder")) {
+                    String[] classNameSeparated = className.split(".");
 
-                if (classNameSeparated.length != 0) {
-                    className = classNameSeparated[classNameSeparated.length - 1];
+                    if (classNameSeparated.length != 0) {
+                        className = classNameSeparated[classNameSeparated.length - 1];
+                    }
+
+                    Long timestamp = (Long) header.get("time");
+                    timestamp = timestamp / 1000L;
+
+                    toDruid.put("sensor_name", header.get("host") + ":" + header.get("container-name"));
+                    toDruid.put("type", className);
+                    toDruid.put("monitor", contentEntry.getKey());
+                    toDruid.put("value", contentEntry.getValue());
+                    toDruid.put("timestamp", timestamp);
+
+                    collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
                 }
-
-                Long timestamp = (Long) header.get("time");
-                timestamp = timestamp / 1000L;
-
-                toDruid.put("sensor_name", header.get("host") + ":" + header.get("container-name"));
-                toDruid.put("type", className);
-                toDruid.put("monitor", contentEntry.getKey());
-                toDruid.put("value", contentEntry.getValue());
-                toDruid.put("timestamp", timestamp);
-
-                collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
             }
         }
     }
