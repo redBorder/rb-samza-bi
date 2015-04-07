@@ -17,10 +17,13 @@ package net.redborder.samza.processors;
 
 import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
+import org.apache.samza.config.Config;
+import org.apache.samza.metrics.Counter;
 import org.apache.samza.storage.kv.KeyValueStore;
 import org.apache.samza.system.OutgoingMessageEnvelope;
 import org.apache.samza.system.SystemStream;
 import org.apache.samza.task.MessageCollector;
+import org.apache.samza.task.TaskContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,8 +41,10 @@ public class LocationV10Processor extends Processor {
     private KeyValueStore<String, Map<String, Object>> store;
     private Map<Integer, String> cache;
 
-    public LocationV10Processor(StoreManager storeManager, EnrichManager enrichManager) {
-        super(storeManager, enrichManager);
+    private Counter counter;
+
+    public LocationV10Processor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
+        super(storeManager, enrichManager, config, context);
 
         store = storeManager.getStore(LOCATION_STORE);
 
@@ -55,6 +60,8 @@ public class LocationV10Processor extends Processor {
         cache.put(8, "BLACK_LISTED");
         cache.put(256, "WAIT_AUTHENTICATED");
         cache.put(257, "WAIT_ASSOCIATED");
+
+        counter = context.getMetricsRegistry().newCounter(getClass().getName(), "messages");
     }
 
     @Override
@@ -80,6 +87,7 @@ public class LocationV10Processor extends Processor {
             } else {
                log.warn("MSE version 10 notificationType is unknown: " + notificationType);
             }
+            counter.inc();
         }
     }
 
