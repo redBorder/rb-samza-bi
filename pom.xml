@@ -15,7 +15,7 @@
 
     <properties>
         <jetty.version>8.1.11.v20130520</jetty.version>
-        <samza.version>0.9.0</samza.version>
+        <samza.version>0.8.0</samza.version>
     </properties>
 
     <distributionManagement>
