@@ -17,9 +17,12 @@ package net.redborder.samza.processors;
 
 import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
+import org.apache.samza.config.Config;
+import org.apache.samza.metrics.Counter;
 import org.apache.samza.system.OutgoingMessageEnvelope;
 import org.apache.samza.system.SystemStream;
 import org.apache.samza.task.MessageCollector;
+import org.apache.samza.task.TaskContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,8 +32,11 @@ public class FlowProcessor extends Processor {
     private static final Logger log = LoggerFactory.getLogger(FlowProcessor.class);
     private static final SystemStream OUTPUT_STREAM = new SystemStream("druid", "rb_flow");
 
-    public FlowProcessor(StoreManager storeManager, EnrichManager enrichManager) {
-        super(storeManager, enrichManager);
+    private Counter messagesCounter;
+
+    public FlowProcessor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
+        super(storeManager, enrichManager, config, context);
+        this.messagesCounter = context.getMetricsRegistry().newCounter(getClass().getName(), "messages");
     }
 
     @Override
@@ -43,6 +49,7 @@ public class FlowProcessor extends Processor {
         Map<String, Object> messageEnrichmentStore = this.storeManager.enrich(message);
         Map<String, Object> messageEnrichmentLocal = this.enrichManager.enrich(messageEnrichmentStore);
 
+        this.messagesCounter.inc();
         collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, messageEnrichmentLocal));
     }
 }

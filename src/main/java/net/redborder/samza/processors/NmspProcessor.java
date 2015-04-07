@@ -17,10 +17,13 @@ package net.redborder.samza.processors;
 
 import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
+import org.apache.samza.config.Config;
+import org.apache.samza.metrics.Counter;
 import org.apache.samza.storage.kv.KeyValueStore;
 import org.apache.samza.system.OutgoingMessageEnvelope;
 import org.apache.samza.system.SystemStream;
 import org.apache.samza.task.MessageCollector;
+import org.apache.samza.task.TaskContext;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -28,7 +31,8 @@ import java.util.List;
 import java.util.Map;
 
 import static net.redborder.samza.util.constants.Dimension.*;
-import static net.redborder.samza.util.constants.DimensionValue.*;
+import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_INFO;
+import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_MEASURE;
 
 public class NmspProcessor extends Processor {
     private static final SystemStream OUTPUT_STREAM = new SystemStream("druid", "rb_flow");
@@ -37,9 +41,11 @@ public class NmspProcessor extends Processor {
 
     private KeyValueStore<String, Map<String, Object>> storeMeasure;
     private KeyValueStore<String, Map<String, Object>> storeInfo;
+    private Counter messagesCounter;
 
-    public NmspProcessor(StoreManager storeManager, EnrichManager enrichManager) {
-        super(storeManager, enrichManager);
+    public NmspProcessor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
+        super(storeManager, enrichManager, config, context);
+        this.messagesCounter = context.getMetricsRegistry().newCounter(getClass().getName(), "messages");
         storeMeasure = storeManager.getStore(NMSP_STORE_MEASURE);
         storeInfo = storeManager.getStore(NMSP_STORE_INFO);
     }
@@ -131,5 +137,7 @@ public class NmspProcessor extends Processor {
             toDruid.put("timestamp", System.currentTimeMillis() / 1000);
             collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
         }
+
+        this.messagesCounter.inc();
     }
 }

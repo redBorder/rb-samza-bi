@@ -21,6 +21,7 @@ import net.redborder.samza.store.StoreManager;
 import org.apache.samza.config.Config;
 import org.apache.samza.config.ConfigException;
 import org.apache.samza.task.MessageCollector;
+import org.apache.samza.task.TaskContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,13 +38,17 @@ public abstract class Processor {
 
     protected StoreManager storeManager;
     protected EnrichManager enrichManager;
+    protected Config config;
+    protected TaskContext context;
 
-    public Processor(StoreManager storeManager, EnrichManager enrichManager) {
+    public Processor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
         this.storeManager = storeManager;
         this.enrichManager = enrichManager;
+        this.config = config;
+        this.context = context;
     }
 
-    public static Processor getProcessor(String streamName, Config config, StoreManager storeManager) {
+    public static Processor getProcessor(String streamName, Config config, TaskContext context, StoreManager storeManager) {
         if (!processors.containsKey(streamName)) {
             List<String> enrichments;
             EnrichManager enrichManager = new EnrichManager();
@@ -79,7 +84,7 @@ public abstract class Processor {
                 String className = config.get("redborder.processors." + streamName);
                 Class foundClass = Class.forName(className);
                 Constructor constructor = foundClass.getConstructor(StoreManager.class, EnrichManager.class);
-                Processor processor = (Processor) constructor.newInstance(new Object [] { storeManager, enrichManager});
+                Processor processor = (Processor) constructor.newInstance(new Object [] { storeManager, enrichManager, config, context});
                 processors.put(streamName, processor);
             } catch (ClassNotFoundException e) {
                 log.error("Couldn't find the class associated with the stream " + streamName);
