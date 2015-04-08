@@ -34,13 +34,6 @@
             <source>${basedir}/src/main/resources/log4j.xml</source>
             <outputDirectory>lib</outputDirectory>
         </file>
-        <!-- filtered=true, so we do variable expansion so the yarn package path
-          always points to the correct spot on any machine -->
-        <file>
-            <source>${basedir}/src/main/config/enrichment.properties</source>
-            <outputDirectory>config</outputDirectory>
-            <filtered>true</filtered>
-        </file>
     </files>
     <dependencySets>
         <dependencySet>
@@ -63,6 +56,7 @@
                 <include>org.slf4j:slf4j-log4j12</include>
                 <include>org.apache.kafka:kafka_2.10</include>
                 <include>org.apache.hadoop:hadoop-hdfs</include>
+                <include>org.codehaus.jackson:jackson-mapper-asl</include>
             </includes>
             <useTransitiveFiltering>true</useTransitiveFiltering>
         </dependencySet>
