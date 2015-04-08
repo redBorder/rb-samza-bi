@@ -15,7 +15,7 @@
 
     <properties>
         <jetty.version>8.1.11.v20130520</jetty.version>
-        <samza.version>0.8.0</samza.version>
+        <samza.version>0.9.0</samza.version>
     </properties>
 
     <distributionManagement>
@@ -51,11 +51,6 @@
         <dependency>
             <groupId>org.apache.samza</groupId>
             <artifactId>samza-core_2.10</artifactId>
-            <version>${samza.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.samza</groupId>
-            <artifactId>samza-serializers_2.10</artifactId>
             <version>${samza.version}</version>
         </dependency>
         <dependency>
