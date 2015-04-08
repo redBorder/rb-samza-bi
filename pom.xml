@@ -69,6 +69,12 @@
             <groupId>org.apache.samza</groupId>
             <artifactId>samza-yarn_2.10</artifactId>
             <version>${samza.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.samza</groupId>
