@@ -63,7 +63,7 @@ public class MetricsProcessor extends Processor {
                     Long timestamp = (Long) header.get("time");
                     timestamp = timestamp / 1000L;
 
-                    toDruid.put("sensor_name", header.get("container-name"));
+                    toDruid.put("sensor_name", (String) header.get("container-name") + header.get("source"));
                     toDruid.put("type", className);
                     toDruid.put("monitor", className + "_" + contentEntry.getKey());
                     toDruid.put("value", contentEntry.getValue());
