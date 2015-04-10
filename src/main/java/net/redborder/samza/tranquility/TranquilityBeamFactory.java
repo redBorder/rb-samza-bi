@@ -112,7 +112,7 @@ public class TranquilityBeamFactory implements BeamFactory
                         .partitions(partitions)
                         .replicants(replicas)
                         .segmentGranularity(Granularity.HOUR)
-                        .warmingPeriod(new Period("PT0M"))
+                        .warmingPeriod(new Period("PT5M"))
                         .windowPeriod(new Period("PT15M"))
                         .build())
                 .timestampSpec(new TimestampSpec(TIMESTAMP, "posix"))

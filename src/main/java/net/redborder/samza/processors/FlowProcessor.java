@@ -49,6 +49,8 @@ public class FlowProcessor extends Processor {
         Map<String, Object> messageEnrichmentStore = this.storeManager.enrich(message);
         Map<String, Object> messageEnrichmentLocal = this.enrichManager.enrich(messageEnrichmentStore);
 
+        log.trace(messageEnrichmentLocal.toString());
+
         this.messagesCounter.inc();
         collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, messageEnrichmentLocal));
     }
