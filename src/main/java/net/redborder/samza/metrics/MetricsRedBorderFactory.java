@@ -35,7 +35,6 @@ public class MetricsRedBorderFactory implements MetricsReporterFactory {
         SystemConfig systemConfig = new SystemConfig(config);
         SerializerConfig serializerConfig = new SerializerConfig(config);
         StreamConfig streamConfig = new StreamConfig(config);
-
         String jobName = jobConfig.getName().get();
 
         String jobId;
@@ -105,7 +104,6 @@ public class MetricsRedBorderFactory implements MetricsReporterFactory {
         private SystemStream systemStream;
 
         private ScheduledExecutorService executor;
-        private String source;
 
         public MetricsReporterRB(SystemProducer producer, SystemStream systemStream, String jobName, String jobId, String taskClass, String containerName, Serializer<MetricsSnapshot> serializer) {
             this.producer = producer;
@@ -128,7 +126,6 @@ public class MetricsRedBorderFactory implements MetricsReporterFactory {
 
         @Override
         public void register(String source, ReadableMetricsRegistry registry) {
-            this.source = source;
             registries.put(source, registry);
             producer.register(source);
         }
@@ -182,7 +179,7 @@ public class MetricsRedBorderFactory implements MetricsReporterFactory {
                     e.printStackTrace();
                 }
 
-                MetricsSnapshot metricsSnapshot = new MetricsSnapshot(new MetricsHeader(jobName, jobId, containerName, source, "", "", host, System.currentTimeMillis(), resetTime)
+                MetricsSnapshot metricsSnapshot = new MetricsSnapshot(new MetricsHeader(jobName, jobId, containerName, registry.getKey(), "", "", host, System.currentTimeMillis(), resetTime)
                         , new Metrics(metricsMsg));
 
                 if(serializer != null){
