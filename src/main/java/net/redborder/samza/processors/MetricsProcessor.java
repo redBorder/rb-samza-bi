@@ -52,7 +52,7 @@ public class MetricsProcessor extends Processor {
 
             for (Map.Entry<String, Object> contentEntry : contents.entrySet()) {
                 Map<String, Object> toDruid = new HashMap<>();
-                String className = classEntry.getKey();
+                String className = classEntry.getKey().toLowerCase();
                 if(className.contains("net.redborder")) {
                     String[] classNameSeparated = className.split("\\.");
 

@@ -1,36 +1,29 @@
 package net.redborder.samza.metrics;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
+import org.apache.samza.config.*;
 import org.apache.samza.metrics.*;
 import org.apache.samza.metrics.reporter.Metrics;
 import org.apache.samza.metrics.reporter.MetricsHeader;
 import org.apache.samza.metrics.reporter.MetricsSnapshot;
 import org.apache.samza.metrics.reporter.MetricsSnapshotReporter;
 import org.apache.samza.serializers.Serde;
+import org.apache.samza.serializers.SerdeFactory;
+import org.apache.samza.serializers.Serializer;
 import org.apache.samza.system.OutgoingMessageEnvelope;
+import org.apache.samza.system.SystemFactory;
 import org.apache.samza.system.SystemProducer;
 import org.apache.samza.system.SystemStream;
 import org.apache.samza.util.DaemonThreadFactory;
-import org.apache.samza.util.Logging;
-import org.apache.samza.SamzaException;
-import org.apache.samza.config.Config;
-import org.apache.samza.config.JobConfig;
-import org.apache.samza.config.MetricsConfig;
-import org.apache.samza.config.SystemConfig;
-import org.apache.samza.config.StreamConfig;
-import org.apache.samza.config.SerializerConfig;
-import org.apache.samza.config.TaskConfig;
 import org.apache.samza.util.Util;
-import org.apache.samza.serializers.Serializer;
-import org.apache.samza.serializers.SerdeFactory;
-import org.apache.samza.system.SystemFactory;
+
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class MetricsRedBorderFactory implements MetricsReporterFactory {
 
@@ -44,7 +37,14 @@ public class MetricsRedBorderFactory implements MetricsReporterFactory {
         StreamConfig streamConfig = new StreamConfig(config);
 
         String jobName = jobConfig.getName().get();
-        String jobId = jobConfig.getJobId().get();
+
+        String jobId;
+        try {
+            jobId = jobConfig.getJobId().get();
+        } catch (NoSuchElementException e) {
+            jobId = "1";
+        }
+
         String taskClass = taskConfig.getTaskClass().get();
 
         String metricsSystemStreamName = metricsConfig.getMetricsReporterStream(name).get();
@@ -59,12 +59,19 @@ public class MetricsRedBorderFactory implements MetricsReporterFactory {
         SystemFactory systemFactory = Util.getObj(systemFactoryClassName);
         SystemProducer producer = systemFactory.getProducer(systemName, config, registry);
 
-        String streamSerdeName = streamConfig.getStreamMsgSerde(systemStream).get();
-        String systemSerdeName = systemConfig.getSystemMsgSerde(systemName).get();
+        String streamSerdeName = null;
+        try {
+            streamSerdeName = streamConfig.getStreamMsgSerde(systemStream).get();
+        } catch (NoSuchElementException e) { }
+
+        String systemSerdeName = null;
+        try {
+            systemSerdeName = systemConfig.getSystemMsgSerde(systemName).get();
+        } catch (NoSuchElementException e) { }
+
 
         String serdeName;
-
-        if(streamSerdeName != null) {
+        if (streamSerdeName != null) {
             serdeName = streamSerdeName;
         } else {
             serdeName = systemSerdeName;
