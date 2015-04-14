@@ -107,7 +107,7 @@ public class TranquilityBeamFactory implements BeamFactory
                 .discoveryPath("/druid/discoveryPath")
                 .location(DruidLocation.create("overlord", "druid:local:firehose:%s", dataSource))
                 .rollup(DruidRollup.create(DruidDimensions.specific(dimensions), aggregators, QueryGranularity.MINUTE))
-                .druidTuning(DruidTuning.create(maxRows, new Period(intermediatePersist), 3))
+                .druidTuning(DruidTuning.create(maxRows, new Period(intermediatePersist), 0))
                 .tuning(ClusteredBeamTuning.builder()
                         .partitions(partitions)
                         .replicants(replicas)
