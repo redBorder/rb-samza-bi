@@ -27,6 +27,7 @@ import org.apache.samza.task.TaskContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -94,38 +95,42 @@ public class LocationV10Processor extends Processor {
     @SuppressWarnings("unchecked cast")
     public void processAssociation(Map<String, Object> message, MessageCollector collector) {
         try {
-            log.trace("Processing mse10Association " + message);
-            Map<String, Object> toCache = new HashMap<>();
-            Map<String, Object> toDruid = new HashMap<>();
-            String clientMac = (String) message.get(LOC_DEVICEID);
+            List<Map<String, Object>> messages = (ArrayList) message.get("notifications");
 
-            if (message.get(LOC_SSID) != null)
-                toCache.put(WIRELESS_ID, message.get(LOC_SSID));
+            for(Map<String, Object> msg : messages) {
+                log.trace("Processing mse10Association " + msg);
+                Map<String, Object> toCache = new HashMap<>();
+                Map<String, Object> toDruid = new HashMap<>();
+                String clientMac = (String) msg.get(LOC_DEVICEID);
 
-            if (message.get(LOC_BAND) != null)
-                toCache.put(NMSP_DOT11PROTOCOL, message.get(LOC_BAND));
+                if (msg.get(LOC_SSID) != null)
+                    toCache.put(WIRELESS_ID, msg.get(LOC_SSID));
 
-            if (message.get(LOC_STATUS) != null) {
-                Integer msgStatus = (Integer) message.get(LOC_STATUS);
-                toCache.put(DOT11STATUS, cache.get(msgStatus));
+                if (msg.get(LOC_BAND) != null)
+                    toCache.put(NMSP_DOT11PROTOCOL, msg.get(LOC_BAND));
+
+                if (msg.get(LOC_STATUS) != null) {
+                    Integer msgStatus = (Integer) msg.get(LOC_STATUS);
+                    toCache.put(DOT11STATUS, cache.get(msgStatus));
+                }
+
+                if (msg.get(LOC_AP_MACADDR) != null)
+                    toCache.put(WIRELESS_STATION, msg.get(LOC_AP_MACADDR));
+
+                if (msg.get(LOC_USERNAME) != null && !msg.get(LOC_USERNAME).equals(""))
+                    toCache.put(CLIENT_ID, msg.get(LOC_USERNAME));
+
+                toDruid.putAll(toCache);
+                toDruid.put(SENSOR_NAME, msg.get(LOC_SUBSCRIPTION_NAME));
+                toDruid.put(CLIENT_MAC, clientMac);
+                toDruid.put(TIMESTAMP, ((Long) msg.get(TIMESTAMP)) / 1000L);
+                toDruid.put(BYTES, 0);
+                toDruid.put(PKTS, 0);
+                toDruid.put(TYPE, "mse10");
+
+                store.put(clientMac, toCache);
+                collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
             }
-
-            if (message.get(LOC_AP_MACADDR) != null)
-                toCache.put(WIRELESS_STATION, message.get(LOC_AP_MACADDR));
-
-            if (!message.get(LOC_USERNAME).equals(""))
-                toCache.put(CLIENT_ID, message.get(LOC_USERNAME));
-
-            toDruid.putAll(toCache);
-            toDruid.put(SENSOR_NAME, message.get(LOC_SUBSCRIPTION_NAME));
-            toDruid.put(CLIENT_MAC, clientMac);
-            toDruid.put(TIMESTAMP, ((Long) message.get(TIMESTAMP)) / 1000L);
-            toDruid.put(BYTES, 0);
-            toDruid.put(PKTS, 0);
-            toDruid.put(TYPE, "mse10");
-
-            store.put(clientMac, toCache);
-            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
         } catch (Exception ex) {
             log.warn("MSE10 association event dropped: " + message, ex);
         }
@@ -134,42 +139,58 @@ public class LocationV10Processor extends Processor {
     @SuppressWarnings("unchecked cast")
     public void processLocationUpdate(Map<String, Object> message, MessageCollector collector) {
         try {
-            log.trace("Processing mse10LocationUpdate " + message);
+            List<Map<String, Object>> messages = (ArrayList) message.get("notifications");
 
-            Map<String, Object> toCache = new HashMap<>();
-            Map<String, Object> toDruid = new HashMap<>();
+            for(Map<String, Object> msg : messages) {
+                log.trace("Processing mse10LocationUpdate " + msg);
 
-            String clientMac = (String) message.get(LOC_DEVICEID);
-            String locationMapHierarchy = (String) message.get(LOC_MAP_HIERARCHY_V10);
+                Map<String, Object> toCache = new HashMap<>();
+                Map<String, Object> toDruid = new HashMap<>();
 
-            if (locationMapHierarchy != null) {
-                String[] locations = locationMapHierarchy.split(">");
+                String clientMac = (String) msg.get(LOC_DEVICEID);
+                String locationMapHierarchy = (String) msg.get(LOC_MAP_HIERARCHY_V10);
 
-                if (locations.length >= 1)
-                    toCache.put(CLIENT_CAMPUS, locations[0]);
-                if (locations.length >= 2)
-                    toCache.put(CLIENT_BUILDING, locations[1]);
-                if (locations.length >= 3)
-                    toCache.put(CLIENT_FLOOR, locations[2]);
-                if (locations.length >= 4)
-                    toCache.put(CLIENT_ZONE, locations[3]);
+                if (msg.get(LOC_AP_MACADDR) != null)
+                    toCache.put(WIRELESS_STATION, msg.get(LOC_AP_MACADDR));
+
+                if (locationMapHierarchy != null) {
+                    String[] locations = locationMapHierarchy.split(">");
+
+                    if (locations.length >= 1)
+                        toCache.put(CLIENT_CAMPUS, locations[0]);
+                    if (locations.length >= 2)
+                        toCache.put(CLIENT_BUILDING, locations[1]);
+                    if (locations.length >= 3)
+                        toCache.put(CLIENT_FLOOR, locations[2]);
+                    if (locations.length >= 4)
+                        toCache.put(CLIENT_ZONE, locations[3]);
+                }
+
+                Map<String, Object> assocCache = store.get(clientMac);
+
+                if(assocCache!=null){
+                    toCache.putAll(assocCache);
+                }else{
+                    toCache.put(DOT11STATUS, "PROBING");
+                }
+
+                toDruid.putAll(toCache);
+                toDruid.put(SENSOR_NAME, msg.get(LOC_SUBSCRIPTION_NAME));
+
+                if (msg.containsKey(TIMESTAMP)) {
+                    toDruid.put(TIMESTAMP, ((Long) msg.get(TIMESTAMP)) / 1000L);
+                } else {
+                    toDruid.put(TIMESTAMP, System.currentTimeMillis() / 1000L);
+                }
+
+                toDruid.put(BYTES, 0);
+                toDruid.put(PKTS, 0);
+                toDruid.put(CLIENT_MAC, clientMac);
+                toDruid.put(TYPE, "mse10");
+
+                store.put(clientMac, toCache);
+                collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
             }
-
-            toDruid.putAll(toCache);
-            toDruid.put(SENSOR_NAME, message.get(LOC_SUBSCRIPTION_NAME));
-
-            if (message.containsKey(TIMESTAMP)) {
-                toDruid.put(TIMESTAMP, ((Long) message.get(TIMESTAMP)) / 1000L);
-            } else {
-                toDruid.put(TIMESTAMP, System.currentTimeMillis() / 1000L);
-            }
-
-            toDruid.put(BYTES, 0);
-            toDruid.put(PKTS, 0);
-            toDruid.put(TYPE, "mse10");
-
-            store.put(clientMac, toCache);
-            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
         } catch (Exception ex) {
             log.warn("MSE10 locationUpdate event dropped: " + message, ex);
         }

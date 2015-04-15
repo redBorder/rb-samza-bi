@@ -20,6 +20,7 @@ import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.MockKeyValueStore;
 import net.redborder.samza.util.MockMessageCollector;
 import net.redborder.samza.util.MockTaskContext;
+import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.task.TaskContext;
 import org.junit.BeforeClass;
@@ -28,10 +29,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.mockito.Matchers.matches;
 import static org.mockito.Mockito.mock;
@@ -74,7 +72,7 @@ public class LocationProcessorTest extends TestCase {
     }
 
     @Test
-    public void locationProcessorV10() {
+    public void locationProcessorV89() {
         MockMessageCollector collector = new MockMessageCollector();
         Map<String, Object> result = new HashMap<>();
         Map<String, Object> message = new HashMap<>();
@@ -129,6 +127,111 @@ public class LocationProcessorTest extends TestCase {
         result.put("wireless_station", "68:bc:0c:65:0a:a0");
 
         Map<String, Object> enrichmentMessage = collector.getResult().get(0);
+        assertEquals(result, enrichmentMessage);
+    }
+
+    @Test
+    public void locationProcessorV10() {
+        MockMessageCollector collector = new MockMessageCollector();
+        Map<String, Object> result = new HashMap<>();
+        List<Map<String, Object>> contentsLoc = new ArrayList<>();
+        Map<String, Object> contentLoc = new HashMap<>();
+        Map<String, Object> enrichmentMessage;
+
+        Map<String, Object> messageLocUp = new HashMap<>();
+        contentLoc.put(Dimension.LOC_NOTIFICATION_TYPE, "locationupdate");
+        contentLoc.put(Dimension.LOC_SUBSCRIPTION_NAME, "rb-loc");
+        contentLoc.put(Dimension.LOC_DEVICEID, "00:00:00:00:00:00");
+        contentLoc.put("entity", "WIRELESS_CLIENTS");
+        contentLoc.put(Dimension.LOC_SSID, "rb-corp");
+        contentLoc.put(Dimension.LOC_BAND, null);
+        contentLoc.put(Dimension.LOC_AP_MACADDR, "AA:AA:AA:AA:AA:AA");
+        contentLoc.put(Dimension.LOC_MAP_HIERARCHY_V10, "CampusA>BuildingB>FloorC>ZoneD");
+        contentLoc.put(Dimension.TIMESTAMP, 1424767310026L);
+        Map<String, Object> coordinate = new HashMap<>();
+        coordinate.put("x", 171.231);
+        coordinate.put("y", 1.241);
+        coordinate.put("z", 0.0);
+        contentLoc.put("locationCoordinate", coordinate);
+        contentsLoc.add(contentLoc);
+        messageLocUp.put("notifications", contentsLoc);
+
+        locationProcessor.process(messageLocUp, collector);
+
+        result.put(Dimension.TIMESTAMP, 1424767310L);
+        result.put(Dimension.CLIENT_ZONE, "ZoneD");
+        result.put(Dimension.CLIENT_FLOOR, "FloorC");
+        result.put(Dimension.CLIENT_BUILDING, "BuildingB");
+        result.put(Dimension.CLIENT_CAMPUS, "CampusA");
+        result.put(Dimension.CLIENT_FLOOR, "FloorC");
+        result.put(Dimension.CLIENT_MAC, "00:00:00:00:00:00");
+        result.put(Dimension.DOT11STATUS, "PROBING");
+        result.put(Dimension.WIRELESS_STATION, "AA:AA:AA:AA:AA:AA");
+        result.put(Dimension.PKTS, 0);
+        result.put(Dimension.BYTES, 0);
+        result.put(Dimension.TYPE, "mse10");
+        result.put(Dimension.SENSOR_NAME, "rb-loc");
+
+        enrichmentMessage = collector.getResult().get(0);
+        assertEquals(result, enrichmentMessage);
+
+        result.clear();
+
+        List<Map<String, Object>> contentsAssoc = new ArrayList<>();
+        Map<String, Object> contentAssoc = new HashMap<>();
+
+        Map<String, Object> messageAssoc = new HashMap<>();
+        contentAssoc.put(Dimension.LOC_NOTIFICATION_TYPE, "association");
+        contentAssoc.put(Dimension.LOC_SUBSCRIPTION_NAME, "rb-assoc");
+        contentAssoc.put(Dimension.LOC_DEVICEID, "00:00:00:00:00:00");
+        contentAssoc.put("entity", "WIRELESS_CLIENTS");
+        contentAssoc.put(Dimension.LOC_SSID, "rb-corp");
+        contentAssoc.put(Dimension.LOC_BAND, "IEEE_802_11_B");
+        contentAssoc.put(Dimension.LOC_AP_MACADDR, "AA:AA:AA:AA:AA:AA");
+        contentAssoc.put(Dimension.LOC_IPADDR, Arrays.asList(new String[]{"25.145.34.131"}));
+        contentAssoc.put(Dimension.LOC_STATUS, 3);
+        contentAssoc.put(Dimension.LOC_USERNAME, "");
+        contentAssoc.put(Dimension.TIMESTAMP, 1424767310026L);
+        contentsAssoc.add(contentAssoc);
+        messageAssoc.put("notifications", contentsAssoc);
+
+        locationProcessor.process(messageAssoc, collector);
+
+        result.put(Dimension.TIMESTAMP, 1424767310L);
+        result.put(Dimension.CLIENT_MAC, "00:00:00:00:00:00");
+        result.put(Dimension.WIRELESS_ID, "rb-corp");
+        result.put(Dimension.DOT11STATUS, "ASSOCIATED");
+        result.put(Dimension.PKTS, 0);
+        result.put(Dimension.BYTES, 0);
+        result.put(Dimension.SENSOR_NAME, "rb-assoc");
+        result.put(Dimension.WIRELESS_STATION, "AA:AA:AA:AA:AA:AA");
+        result.put(Dimension.DOT11PROTOCOL, "IEEE_802_11_B");
+        result.put(Dimension.TYPE, "mse10");
+
+        enrichmentMessage = collector.getResult().get(0);
+        assertEquals(result, enrichmentMessage);
+
+        result.clear();
+
+        locationProcessor.process(messageAssoc, collector);
+        locationProcessor.process(messageLocUp, collector);
+
+        result.put(Dimension.CLIENT_ZONE, "ZoneD");
+        result.put(Dimension.DOT11STATUS, "ASSOCIATED");
+        result.put(Dimension.BYTES, 0);
+        result.put(Dimension.WIRELESS_STATION, "AA:AA:AA:AA:AA:AA");
+        result.put(Dimension.PKTS, 0);
+        result.put(Dimension.TYPE, "mse10");
+        result.put(Dimension.CLIENT_CAMPUS, "CampusA");
+        result.put(Dimension.CLIENT_BUILDING, "BuildingB");
+        result.put(Dimension.TIMESTAMP, 1424767310L);
+        result.put(Dimension.CLIENT_MAC, "00:00:00:00:00:00");
+        result.put(Dimension.WIRELESS_ID, "rb-corp");
+        result.put(Dimension.SENSOR_NAME, "rb-loc");
+        result.put(Dimension.CLIENT_FLOOR, "FloorC");
+        result.put(Dimension.DOT11PROTOCOL, "IEEE_802_11_B");
+
+        enrichmentMessage = collector.getResult().get(1);
         assertEquals(result, enrichmentMessage);
     }
 
