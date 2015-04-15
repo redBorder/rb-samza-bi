@@ -43,15 +43,15 @@ import static net.redborder.samza.util.constants.Dimension.*;
 import static net.redborder.samza.util.constants.Aggregators.*;
 
 
-public class TranquilityBeamFactory implements BeamFactory
+public class FlowBeamFactory implements BeamFactory
 {
     @Override
     public Beam<Object> makeBeam(SystemStream stream, Config config)
     {
-        final int maxRows = Integer.valueOf(config.get("redborder.beam.maxrows", "200000"));
-        final int partitions = Integer.valueOf(config.get("redborder.beam.partitions", "2"));
-        final int replicas = Integer.valueOf(config.get("redborder.beam.replicas", "1"));
-        final String intermediatePersist = config.get("redborder.beam.intermediatePersist", "PT20m");
+        final int maxRows = Integer.valueOf(config.get("redborder.beam.flow.maxrows", "200000"));
+        final int partitions = Integer.valueOf(config.get("redborder.beam.flow.partitions", "2"));
+        final int replicas = Integer.valueOf(config.get("redborder.beam.flow.replicas", "1"));
+        final String intermediatePersist = config.get("redborder.beam.flow.intermediatePersist", "PT20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
         final String dataSource = stream.getStream();
 

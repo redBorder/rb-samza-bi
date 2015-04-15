@@ -43,9 +43,10 @@ public class MonitorBeamFactory implements BeamFactory
     @Override
     public Beam<Object> makeBeam(SystemStream stream, Config config)
     {
-        final int maxRows = 20000;
-        final int partitions = Integer.valueOf(config.get("redborder.beam.partitions", "2"));
-        final int replicas = Integer.valueOf(config.get("redborder.beam.replicas", "1"));
+        final int maxRows = Integer.valueOf(config.get("redborder.beam.monitor.maxrows", "200000"));
+        final int partitions = Integer.valueOf(config.get("redborder.beam.monitor.partitions", "2"));
+        final int replicas = Integer.valueOf(config.get("redborder.beam.monitor.replicas", "1"));
+        final String intermediatePersist = config.get("redborder.beam.monitor.intermediatePersist", "PT20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
         final String dataSource = stream.getStream();
 
@@ -84,13 +85,13 @@ public class MonitorBeamFactory implements BeamFactory
                 .discoveryPath("/druid/discoveryPath")
                 .location(DruidLocation.create("overlord", "druid:local:firehose:%s", dataSource))
                 .rollup(DruidRollup.create(DruidDimensions.schemalessWithExclusions(exclusions), aggregators, QueryGranularity.MINUTE))
-                .druidTuning(DruidTuning.create(maxRows, new Period("PT10M"), 0))
+                .druidTuning(DruidTuning.create(maxRows, new Period(intermediatePersist), 0))
                 .tuning(ClusteredBeamTuning.builder()
                         .partitions(partitions)
                         .replicants(replicas)
                         .segmentGranularity(Granularity.HOUR)
                         .warmingPeriod(new Period("PT5M"))
-                        .windowPeriod(new Period("PT0M"))
+                        .windowPeriod(new Period("PT15M"))
                         .build())
                 .timestampSpec(new TimestampSpec(TIMESTAMP, "posix"))
                 .buildBeam();
