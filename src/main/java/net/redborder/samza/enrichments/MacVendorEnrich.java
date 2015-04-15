@@ -27,7 +27,7 @@ import static net.redborder.samza.util.constants.Dimension.*;
 public class MacVendorEnrich implements IEnrich {
     private static final Logger log = LoggerFactory.getLogger(MacVendorEnrich.class);
 
-    public static String ouiFilePath = "/opt/rb/etc/objects/oui-vendors";
+    public static String ouiFilePath = "/opt/rb/etc/objects/mac_vendors";
     public Map<String, String> ouiMap;
 
     public MacVendorEnrich() {
@@ -49,7 +49,7 @@ public class MacVendorEnrich implements IEnrich {
 
                 while (line != null) {
                     String[] tokens = line.split("\\|");
-                    ouiMap.put(tokens[0].substring(2, 8), tokens[1]);
+                    ouiMap.put(tokens[0], tokens[1]);
                     line = br.readLine();
                 }
             } catch (IOException ex) {
