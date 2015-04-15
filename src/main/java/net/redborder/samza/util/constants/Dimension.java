@@ -21,6 +21,7 @@ public class Dimension {
     public final static String WIRELESS_STATION = "wireless_station";
     public final static String WIRELESS_ID = "wireless_id";
     public final static String SRC_IP = "src";
+    public final static String SENSOR_IP = "sensor_ip";
     public final static String DST_IP = "dst";
     public final static String SENSOR_NAME = "sensor_name";
     public final static String CLIENT_LATLNG = "client_latlong";
