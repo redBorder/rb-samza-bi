@@ -16,6 +16,7 @@
 package net.redborder.samza.processors;
 
 import net.redborder.samza.enrichments.EnrichManager;
+import net.redborder.samza.functions.SplitFlowFunction;
 import net.redborder.samza.store.StoreManager;
 import org.apache.samza.config.Config;
 import org.apache.samza.metrics.Counter;
@@ -26,6 +27,7 @@ import org.apache.samza.task.TaskContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
 
 public class FlowProcessor extends Processor {
@@ -48,10 +50,12 @@ public class FlowProcessor extends Processor {
     public void process(Map<String, Object> message, MessageCollector collector) {
         Map<String, Object> messageEnrichmentStore = this.storeManager.enrich(message);
         Map<String, Object> messageEnrichmentLocal = this.enrichManager.enrich(messageEnrichmentStore);
+        List<Map<String, Object>> splittedMsg = SplitFlowFunction.split(messageEnrichmentLocal);
 
-        log.trace(messageEnrichmentLocal.toString());
-
-        this.messagesCounter.inc();
-        collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, messageEnrichmentLocal));
+        for (Map<String, Object> msg : splittedMsg) {
+            log.trace(messageEnrichmentLocal.toString());
+            this.messagesCounter.inc();
+            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, msg));
+        }
     }
 }

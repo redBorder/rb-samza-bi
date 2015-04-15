@@ -18,12 +18,10 @@ package net.redborder.samza.processors;
 import junit.framework.TestCase;
 import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
-import net.redborder.samza.util.MockKeyValueStore;
 import net.redborder.samza.util.MockMessageCollector;
 import net.redborder.samza.util.MockTaskContext;
 import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
-import org.apache.samza.metrics.Counter;
 import org.apache.samza.task.TaskContext;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -82,6 +80,9 @@ public class FlowProcessorTest extends TestCase {
         // The message that we will enrich
         Map<String, Object> message = new HashMap<>();
         message.put(Dimension.CLIENT_MAC, "00:00:00:00:00:00");
+        message.put(Dimension.BYTES, 23L);
+        message.put(Dimension.PKTS, 2L);
+        message.put(Dimension.TIMESTAMP, 1429088471L);
         expected.putAll(message);
 
         for (String store : stores) {
@@ -115,6 +116,9 @@ public class FlowProcessorTest extends TestCase {
         // The message that we will enrich
         Map<String, Object> message = new HashMap<>();
         message.put(Dimension.CLIENT_MAC, "00:00:00:00:00:00");
+        message.put(Dimension.BYTES, 23L);
+        message.put(Dimension.PKTS, 2L);
+        message.put(Dimension.TIMESTAMP, 1429088471L);
         expected.putAll(message);
 
         for (String store : stores) {

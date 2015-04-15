@@ -19,6 +19,7 @@ import junit.framework.TestCase;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.MockMessageCollector;
 import net.redborder.samza.util.MockTaskContext;
+import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.config.ConfigException;
 import org.apache.samza.task.TaskContext;
@@ -86,6 +87,9 @@ public class ProcessorTest extends TestCase {
 
         Map<String, Object> message = new HashMap<>();
         message.put(CLIENT_MAC, "AA:AA:AA:AA:AA:AA");
+        message.put(BYTES, 43L);
+        message.put(PKTS, 3L);
+        message.put(Dimension.TIMESTAMP, 1429088471L);
 
         MockMessageCollector collector = new MockMessageCollector();
         p.process(message, collector);
