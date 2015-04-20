@@ -27,7 +27,7 @@ import org.apache.samza.task.TaskContext;
 import java.util.Map;
 
 public class MonitorProcessor extends Processor {
-    private static final SystemStream OUTPUT_STREAM = new SystemStream("druid", "rb_monitor");
+    private static final SystemStream OUTPUT_STREAM = new SystemStream("druid_monitor", "rb_monitor");
     private Counter counter;
 
     public MonitorProcessor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
@@ -37,7 +37,7 @@ public class MonitorProcessor extends Processor {
 
     @Override
     public String getName() {
-        return "loc";
+        return "monitor";
     }
 
     @Override
