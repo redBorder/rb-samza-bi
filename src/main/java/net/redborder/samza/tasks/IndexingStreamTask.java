@@ -3,7 +3,6 @@ package net.redborder.samza.tasks;
 import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.metrics.Counter;
-import org.apache.samza.storage.kv.KeyValueStore;
 import org.apache.samza.system.IncomingMessageEnvelope;
 import org.apache.samza.system.OutgoingMessageEnvelope;
 import org.apache.samza.system.SystemStream;
@@ -13,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-public class TenantClassifyStreamTask implements StreamTask, InitableTask {
+public class IndexingStreamTask implements StreamTask, InitableTask {
 
     private static final String FLOW_DATASOURCE = "rb_flow";
     private static final String ENRICHMENT_TOPIC = "rb_enrichment";
@@ -36,7 +35,7 @@ public class TenantClassifyStreamTask implements StreamTask, InitableTask {
         SystemStream systemStream = null;
 
         if (stream.equals(ENRICHMENT_TOPIC)) {
-            String tenant_id = (String) message.get(Dimension.TENANT_ID);
+            String tenant_id = (String) message.get(Dimension.DEPLOYMENT_ID);
 
             if (tenant_id != null)
                 systemStream = new SystemStream("druid", FLOW_DATASOURCE + "_" + tenant_id);

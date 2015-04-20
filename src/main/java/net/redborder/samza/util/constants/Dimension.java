@@ -75,7 +75,7 @@ public class Dimension {
     public final static String HNBGEOLOCATION = "hnbgeolocation";
     public final static String RAT = "rat";
     public final static String DOT11PROTOCOL = "dot11_protocol";
-    public final static String TENANT_ID = "tenant_id";
+    public final static String DEPLOYMENT_ID = "deployment_id";
 
 
     // Darklist
