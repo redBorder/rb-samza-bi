@@ -13,34 +13,45 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-/**
- * Date: 13/4/15 16:50.
- */
-public class TenantClassifyStreamTask  implements StreamTask, InitableTask {
+public class TenantClassifyStreamTask implements StreamTask, InitableTask {
+
+    private static final String FLOW_DATASOURCE = "rb_flow";
+    private static final String ENRICHMENT_TOPIC = "rb_enrichment";
+    private static final String MONITOR_TOPIC = "rb_monitor";
+    private static final SystemStream monitorSystemStream = new SystemStream("druid", MONITOR_TOPIC);
+
 
     private static final Logger log = LoggerFactory.getLogger(EnrichmentStreamTask.class);
-    public final static String TENANT_STORE = "tenant";
-
-    private KeyValueStore<String, SystemStream> store;
     private Counter counter;
 
     @Override
     public void init(Config config, TaskContext context) throws Exception {
-        this.store = (KeyValueStore<String, SystemStream>) context.getStore(TENANT_STORE);
-        initStore();
         this.counter = context.getMetricsRegistry().newCounter(getClass().getName(), "messages");
     }
 
     @Override
     public void process(IncomingMessageEnvelope envelope, MessageCollector collector, TaskCoordinator coordinator) throws Exception {
+        String stream = envelope.getSystemStreamPartition().getSystemStream().getStream();
         Map<String, Object> message = (Map<String, Object>) envelope.getMessage();
-        String sensor_ip = (String) message.get(Dimension.SENSOR_IP);
-        SystemStream outputStream = store.get(sensor_ip);
-        collector.send(new OutgoingMessageEnvelope(outputStream, null, message));
-        counter.inc();
-    }
+        SystemStream systemStream = null;
 
-    public void initStore(){
+        if (stream.equals(ENRICHMENT_TOPIC)) {
+            String tenant_id = (String) message.get(Dimension.TENANT_ID);
 
+            if (tenant_id != null)
+                systemStream = new SystemStream("druid", FLOW_DATASOURCE + "_" + tenant_id);
+            else
+                systemStream = new SystemStream("druid", FLOW_DATASOURCE);
+
+        } else if (stream.equals(MONITOR_TOPIC)) {
+            systemStream = monitorSystemStream;
+        }
+
+        if (systemStream != null) {
+            collector.send(new OutgoingMessageEnvelope(systemStream, null, message));
+            counter.inc();
+        } else {
+            log.warn("Not defined input stream name: " + stream);
+        }
     }
 }
