@@ -13,6 +13,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static net.redborder.samza.util.constants.Dimension.*;
+
 @RunWith(MockitoJUnitRunner.class)
 public class SplitFlowFunctionTest extends TestCase {
     public DateTime currentTime = new DateTime();
@@ -25,9 +27,9 @@ public class SplitFlowFunctionTest extends TestCase {
     @Test
     public void withoutFirstSwitched() {
         Map<String, Object> message = new HashMap<>();
-        message.put("timestamp", secs(currentTime));
-        message.put("bytes", 999);
-        message.put("pkts", 99);
+        message.put(TIMESTAMP, secs(currentTime));
+        message.put(BYTES, 999);
+        message.put(PKTS, 99);
 
         List<Map<String, Object>> result = SplitFlowFunction.split(message);
         assertEquals(message, result.get(0));
@@ -36,11 +38,11 @@ public class SplitFlowFunctionTest extends TestCase {
     @Test
     public void withoutTimestamp() {
         Map<String, Object> message = new HashMap<>();
-        message.put("bytes", 999);
-        message.put("pkts", 99);
+        message.put(BYTES, 999);
+        message.put(PKTS, 99);
 
         List<Map<String, Object>> result = SplitFlowFunction.split(message);
-        message.put("timestamp", secs(currentTime));
+        message.put(TIMESTAMP, secs(currentTime));
         assertEquals(message, result.get(0));
     }
 
@@ -51,15 +53,15 @@ public class SplitFlowFunctionTest extends TestCase {
         DateTime timestampDate = formatter.parseDateTime("2014-01-01 22:10:42");
         DateTime timeNowDate = formatter.parseDateTime("2014-01-01 22:15:16");
 
-        message.put("timestamp", secs(timestampDate));
-        message.put("first_switched", secs(firstSwitchDate));
-        message.put("bytes", 999);
-        message.put("pkts", 99);
+        message.put(TIMESTAMP, secs(timestampDate));
+        message.put(FIRST_SWITCHED, secs(firstSwitchDate));
+        message.put(BYTES, 999);
+        message.put(PKTS, 99);
 
         Map<String, Object> expected = new HashMap<>();
-        expected.put("timestamp", secs(timestampDate));
-        expected.put("bytes", 999L);
-        expected.put("pkts", 99L);
+        expected.put(TIMESTAMP, secs(timestampDate));
+        expected.put(BYTES, 999L);
+        expected.put(PKTS, 99L);
 
         List<Map<String, Object>> result = SplitFlowFunction.split(message, timeNowDate);
         assertEquals(expected, result.get(0));
@@ -72,10 +74,10 @@ public class SplitFlowFunctionTest extends TestCase {
         DateTime timestampDate = formatter.parseDateTime("2014-01-01 22:13:42");
         DateTime timeNowDate = formatter.parseDateTime("2014-01-01 22:15:16");
 
-        message.put("timestamp", secs(timestampDate));
-        message.put("first_switched", secs(firstSwitchDate));
-        message.put("bytes", 999);
-        message.put("pkts", 99);
+        message.put(TIMESTAMP, secs(timestampDate));
+        message.put(FIRST_SWITCHED, secs(firstSwitchDate));
+        message.put(BYTES, 999);
+        message.put(PKTS, 99);
 
         List<Map<String, Object>> expectedPackets = new ArrayList<>();
         Map<String, Object> expected;
@@ -83,30 +85,30 @@ public class SplitFlowFunctionTest extends TestCase {
 
         expected = new HashMap<>();
         pktTime = formatter.parseDateTime("2014-01-01 22:11:00");
-        expected.put("timestamp", secs(pktTime));
-        expected.put("bytes", 228L);
-        expected.put("pkts", 22L);
+        expected.put(TIMESTAMP, secs(pktTime));
+        expected.put(BYTES, 228L);
+        expected.put(PKTS, 22L);
         expectedPackets.add(expected);
 
         expected = new HashMap<>();
         pktTime = formatter.parseDateTime("2014-01-01 22:12:00");
-        expected.put("timestamp", secs(pktTime));
-        expected.put("bytes", 285L);
-        expected.put("pkts", 28L);
+        expected.put(TIMESTAMP, secs(pktTime));
+        expected.put(BYTES, 285L);
+        expected.put(PKTS, 28L);
         expectedPackets.add(expected);
 
         expected = new HashMap<>();
         pktTime = formatter.parseDateTime("2014-01-01 22:13:00");
-        expected.put("timestamp", secs(pktTime));
-        expected.put("bytes", 285L);
-        expected.put("pkts", 28L);
+        expected.put(TIMESTAMP, secs(pktTime));
+        expected.put(BYTES, 285L);
+        expected.put(PKTS, 28L);
         expectedPackets.add(expected);
 
         expected = new HashMap<>();
         pktTime = formatter.parseDateTime("2014-01-01 22:13:42");
-        expected.put("timestamp", secs(pktTime));
-        expected.put("bytes", 201L);
-        expected.put("pkts", 21L);
+        expected.put(TIMESTAMP, secs(pktTime));
+        expected.put(BYTES, 201L);
+        expected.put(PKTS, 21L);
         expectedPackets.add(expected);
 
         List<Map<String, Object>> result = SplitFlowFunction.split(message, timeNowDate);
@@ -120,10 +122,10 @@ public class SplitFlowFunctionTest extends TestCase {
         DateTime timestampDate = formatter.parseDateTime("2014-01-01 22:01:42");
         DateTime timeNowDate = formatter.parseDateTime("2014-01-01 22:22:16");
 
-        message.put("timestamp", secs(timestampDate));
-        message.put("first_switched", secs(firstSwitchDate));
-        message.put("bytes", 999);
-        message.put("pkts", 99);
+        message.put(TIMESTAMP, secs(timestampDate));
+        message.put(FIRST_SWITCHED, secs(firstSwitchDate));
+        message.put(BYTES, 999);
+        message.put(PKTS, 99);
 
         List<Map<String, Object>> expectedPackets = new ArrayList<>();
         Map<String, Object> expected;
@@ -131,16 +133,16 @@ public class SplitFlowFunctionTest extends TestCase {
 
         expected = new HashMap<>();
         pktTime = formatter.parseDateTime("2014-01-01 22:01:00");
-        expected.put("timestamp", secs(pktTime));
-        expected.put("bytes", 511L);
-        expected.put("pkts", 50L);
+        expected.put(TIMESTAMP, secs(pktTime));
+        expected.put(BYTES, 511L);
+        expected.put(PKTS, 50L);
         expectedPackets.add(expected);
 
         expected = new HashMap<>();
         pktTime = formatter.parseDateTime("2014-01-01 22:01:42");
-        expected.put("timestamp", secs(pktTime));
-        expected.put("bytes", 488L);
-        expected.put("pkts", 49L);
+        expected.put(TIMESTAMP, secs(pktTime));
+        expected.put(BYTES, 488L);
+        expected.put(PKTS, 49L);
         expectedPackets.add(expected);
 
         List<Map<String, Object>> result = SplitFlowFunction.split(message, timeNowDate);
@@ -154,10 +156,10 @@ public class SplitFlowFunctionTest extends TestCase {
         DateTime timestampDate = formatter.parseDateTime("2014-01-01 21:55:42");
         DateTime timeNowDate = formatter.parseDateTime("2014-01-01 22:22:16");
 
-        message.put("timestamp", secs(timestampDate));
-        message.put("first_switched", secs(firstSwitchDate));
-        message.put("bytes", 999);
-        message.put("pkts", 99);
+        message.put(TIMESTAMP, secs(timestampDate));
+        message.put(FIRST_SWITCHED, secs(firstSwitchDate));
+        message.put(BYTES, 999);
+        message.put(PKTS, 99);
 
         List<Map<String, Object>> expected = new ArrayList<>();
 
@@ -172,16 +174,16 @@ public class SplitFlowFunctionTest extends TestCase {
         DateTime timestampDate = formatter.parseDateTime("2014-01-01 21:50:42");
         DateTime timeNowDate = formatter.parseDateTime("2014-01-01 22:12:16");
 
-        message.put("timestamp", secs(timestampDate));
-        message.put("first_switched", secs(firstSwitchDate));
-        message.put("bytes", 999);
-        message.put("pkts", 99);
+        message.put(TIMESTAMP, secs(timestampDate));
+        message.put(FIRST_SWITCHED, secs(firstSwitchDate));
+        message.put(BYTES, 999);
+        message.put(PKTS, 99);
 
         List<Map<String, Object>> expected = new ArrayList<>();
         Map<String, Object> msgExpected = new HashMap<>();
-        msgExpected.put("timestamp", secs(timestampDate));
-        msgExpected.put("bytes", 999L);
-        msgExpected.put("pkts", 99L);
+        msgExpected.put(TIMESTAMP, secs(timestampDate));
+        msgExpected.put(BYTES, 999L);
+        msgExpected.put(PKTS, 99L);
         expected.add(msgExpected);
 
         List<Map<String, Object>> result = SplitFlowFunction.split(message, timeNowDate);
@@ -195,10 +197,10 @@ public class SplitFlowFunctionTest extends TestCase {
         DateTime timestampDate = formatter.parseDateTime("2014-01-01 22:01:42");
         DateTime timeNowDate = formatter.parseDateTime("2014-01-01 21:36:16");
 
-        message.put("timestamp", secs(timestampDate));
-        message.put("first_switched", secs(firstSwitchDate));
-        message.put("bytes", 999);
-        message.put("pkts", 99);
+        message.put(TIMESTAMP, secs(timestampDate));
+        message.put(FIRST_SWITCHED, secs(firstSwitchDate));
+        message.put(BYTES, 999);
+        message.put(PKTS, 99);
 
         List<Map<String, Object>> expectedPackets = new ArrayList<>();
         Map<String, Object> expected;
@@ -206,9 +208,9 @@ public class SplitFlowFunctionTest extends TestCase {
 
         expected = new HashMap<>();
         pktTime = formatter.parseDateTime("2014-01-01 21:36:16");
-        expected.put("timestamp", secs(pktTime));
-        expected.put("bytes", 999L);
-        expected.put("pkts", 99L);
+        expected.put(TIMESTAMP, secs(pktTime));
+        expected.put(BYTES, 999L);
+        expected.put(PKTS, 99L);
         expectedPackets.add(expected);
 
         List<Map<String, Object>> result = SplitFlowFunction.split(message, timeNowDate);
@@ -222,10 +224,10 @@ public class SplitFlowFunctionTest extends TestCase {
         DateTime timestampDate = formatter.parseDateTime("2014-01-01 22:01:42");
         DateTime timeNowDate = formatter.parseDateTime("2014-01-01 21:47:16");
 
-        message.put("timestamp", secs(timestampDate));
-        message.put("first_switched", secs(firstSwitchDate));
-        message.put("bytes", 999);
-        message.put("pkts", 99);
+        message.put(TIMESTAMP, secs(timestampDate));
+        message.put(FIRST_SWITCHED, secs(firstSwitchDate));
+        message.put(BYTES, 999);
+        message.put(PKTS, 99);
 
         List<Map<String, Object>> expectedPackets = new ArrayList<>();
         Map<String, Object> expected;
@@ -233,26 +235,46 @@ public class SplitFlowFunctionTest extends TestCase {
 
         expected = new HashMap<>();
         pktTime = formatter.parseDateTime("2014-01-01 21:46:00");
-        expected.put("timestamp", secs(pktTime));
-        expected.put("bytes", 386L);
-        expected.put("pkts", 38L);
+        expected.put(TIMESTAMP, secs(pktTime));
+        expected.put(BYTES, 386L);
+        expected.put(PKTS, 38L);
         expectedPackets.add(expected);
 
         expected = new HashMap<>();
         pktTime = formatter.parseDateTime("2014-01-01 21:47:00");
-        expected.put("timestamp", secs(pktTime));
-        expected.put("bytes", 483L);
-        expected.put("pkts", 47L);
+        expected.put(TIMESTAMP, secs(pktTime));
+        expected.put(BYTES, 483L);
+        expected.put(PKTS, 47L);
         expectedPackets.add(expected);
 
         expected = new HashMap<>();
         pktTime = formatter.parseDateTime("2014-01-01 21:47:16");
-        expected.put("timestamp", secs(pktTime));
-        expected.put("bytes", 130L);
-        expected.put("pkts", 14L);
+        expected.put(TIMESTAMP, secs(pktTime));
+        expected.put(BYTES, 130L);
+        expected.put(PKTS, 14L);
         expectedPackets.add(expected);
 
         List<Map<String, Object>> result = SplitFlowFunction.split(message, timeNowDate);
         assertEquals(expectedPackets, result);
+    }
+
+    @Test
+    public void removesExtraDurationPackets() {
+        Map<String, Object> message = new HashMap<>();
+        DateTime firstSwitchDate = formatter.parseDateTime("2014-01-01 22:10:12");
+        DateTime timestampDate = formatter.parseDateTime("2014-01-01 22:13:42");
+        DateTime timeNowDate = formatter.parseDateTime("2014-01-01 22:15:16");
+
+        message.put(TIMESTAMP, secs(timestampDate));
+        message.put(FIRST_SWITCHED, secs(firstSwitchDate));
+        message.put(DURATION, 94);
+        message.put(BYTES, 999);
+        message.put(PKTS, 99);
+
+        List<Map<String, Object>> result = SplitFlowFunction.split(message, timeNowDate);
+        assertEquals(result.get(0).get(DURATION), 94);
+        assertNull(result.get(1).get(DURATION));
+        assertNull(result.get(2).get(DURATION));
+        assertNull(result.get(3).get(DURATION));
     }
 }

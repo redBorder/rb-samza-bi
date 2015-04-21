@@ -1,5 +1,6 @@
 package net.redborder.samza.functions;
 
+import net.redborder.samza.util.constants.Dimension;
 import org.joda.time.DateTime;
 import org.joda.time.Seconds;
 import org.slf4j.Logger;
@@ -30,9 +31,9 @@ public class SplitFlowFunction {
         List<Map<String, Object>> generatedPackets = new ArrayList<>();
 
         // last_switched is timestamp now
-        if (event.containsKey("first_switched") && event.containsKey("timestamp")) {
-            DateTime packet_start = new DateTime(Long.parseLong(event.get("first_switched").toString()) * 1000);
-            DateTime packet_end = new DateTime(Long.parseLong(event.get("timestamp").toString()) * 1000);
+        if (event.containsKey(Dimension.FIRST_SWITCHED) && event.containsKey(Dimension.TIMESTAMP)) {
+            DateTime packet_start = new DateTime(Long.parseLong(event.get(Dimension.FIRST_SWITCHED).toString()) * 1000);
+            DateTime packet_end = new DateTime(Long.parseLong(event.get(Dimension.TIMESTAMP).toString()) * 1000);
             int now_hour = now.getHourOfDay();
             int packet_end_hour = packet_end.getHourOfDay();
 
@@ -53,7 +54,7 @@ public class SplitFlowFunction {
                 // If the lower limit date time is overpassed, correct it
                 warnWithTime("Packet {} first switched was corrected because it overpassed the lower limit (event too old).", event);
                 packet_start = limit;
-                event.put("first_switched", limit.getMillis() / 1000);
+                event.put(Dimension.FIRST_SWITCHED, limit.getMillis() / 1000);
             }
 
             // Correct events in the future
@@ -61,11 +62,11 @@ public class SplitFlowFunction {
                     (packet_end.getMillis() - now.getMillis() > 1000 * 60 * 60))) {
 
                 warnWithTime("Packet {} ended in a future segment and I modified its last and/or first switched values.", event);
-                event.put("timestamp", now.getMillis() / 1000);
+                event.put(Dimension.TIMESTAMP, now.getMillis() / 1000);
                 packet_end = now;
 
                 if (!packet_end.isAfter(packet_start)) {
-                    event.put("first_switched", now.getMillis() / 1000);
+                    event.put(Dimension.FIRST_SWITCHED, now.getMillis() / 1000);
                     packet_start = now;
                 }
             }
@@ -77,16 +78,16 @@ public class SplitFlowFunction {
             long pkts = 0;
 
             try {
-                if (event.containsKey("bytes"))
-                    bytes = Long.parseLong(event.get("bytes").toString());
+                if (event.containsKey(Dimension.BYTES))
+                    bytes = Long.parseLong(event.get(Dimension.BYTES).toString());
             } catch (NumberFormatException e) {
                 log.warn("Invalid number of bytes in packet {}.", event);
                 return generatedPackets;
             }
 
             try {
-                if (event.containsKey("pkts"))
-                    pkts =  Long.parseLong(event.get("pkts").toString());
+                if (event.containsKey(Dimension.PKTS))
+                    pkts =  Long.parseLong(event.get(Dimension.PKTS).toString());
             } catch (NumberFormatException e) {
                 log.warn("Invalid number of packets in packet {}.", event);
                 return generatedPackets;
@@ -114,34 +115,40 @@ public class SplitFlowFunction {
 
                 Map<String, Object> to_send = new HashMap<>();
                 to_send.putAll(event);
-                to_send.put("timestamp", this_end.getMillis() / 1000);
-                to_send.put("bytes", this_bytes);
-                to_send.put("pkts", this_pkts);
-                to_send.remove("first_switched");
+                to_send.put(Dimension.TIMESTAMP, this_end.getMillis() / 1000);
+                to_send.put(Dimension.BYTES, this_bytes);
+                to_send.put(Dimension.PKTS, this_pkts);
+                to_send.remove(Dimension.FIRST_SWITCHED);
                 generatedPackets.add(to_send);
             } while (this_end.isBefore(packet_end));
 
             if (bytes != bytes_count || pkts != pkts_count) {
                 int last_index = generatedPackets.size() - 1;
                 Map<String, Object> last = generatedPackets.get(last_index);
-                long new_pkts = ((long) last.get("pkts")) + (pkts - pkts_count);
-                long new_bytes = ((long) last.get("bytes")) + (bytes - bytes_count);
+                long new_pkts = ((long) last.get(Dimension.PKTS)) + (pkts - pkts_count);
+                long new_bytes = ((long) last.get(Dimension.BYTES)) + (bytes - bytes_count);
 
-                if (new_pkts > 0) last.put("pkts", new_pkts);
-                if (new_bytes > 0) last.put("bytes", new_bytes);
+                if (new_pkts > 0) last.put(Dimension.PKTS, new_pkts);
+                if (new_bytes > 0) last.put(Dimension.BYTES, new_bytes);
 
                 generatedPackets.set(last_index, last);
             }
-        } else if (event.containsKey("timestamp")) {
-            Long bytes = Long.parseLong(event.get("bytes").toString());
-            event.put("bytes", bytes);
+        } else if (event.containsKey(Dimension.TIMESTAMP)) {
+            Long bytes = Long.parseLong(event.get(Dimension.BYTES).toString());
+            event.put(Dimension.BYTES, bytes);
             generatedPackets.add(event);
         } else {
-            Long bytes = Long.parseLong(event.get("bytes").toString());
-            event.put("bytes", bytes);
+            Long bytes = Long.parseLong(event.get(Dimension.BYTES).toString());
+            event.put(Dimension.BYTES, bytes);
             log.warn("Packet without timestamp -> {}.", event);
-            event.put("timestamp", now.getMillis() / 1000);
+            event.put(Dimension.TIMESTAMP, now.getMillis() / 1000);
             generatedPackets.add(event);
+        }
+
+        // We will leave the duration of the message only on the first generated packet
+        for (Map<String, Object> packet : generatedPackets) {
+            if (generatedPackets.indexOf(packet) == 0) continue;
+            packet.remove(Dimension.DURATION);
         }
 
         return generatedPackets;

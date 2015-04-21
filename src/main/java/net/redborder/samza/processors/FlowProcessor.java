@@ -16,6 +16,7 @@
 package net.redborder.samza.processors;
 
 import net.redborder.samza.enrichments.EnrichManager;
+import net.redborder.samza.functions.CalculateDurationFunction;
 import net.redborder.samza.functions.SplitFlowFunction;
 import net.redborder.samza.store.StoreManager;
 import org.apache.samza.config.Config;
@@ -50,6 +51,8 @@ public class FlowProcessor extends Processor {
     public void process(Map<String, Object> message, MessageCollector collector) {
         Map<String, Object> messageEnrichmentStore = this.storeManager.enrich(message);
         Map<String, Object> messageEnrichmentLocal = this.enrichManager.enrich(messageEnrichmentStore);
+
+        messageEnrichmentLocal = CalculateDurationFunction.execute(messageEnrichmentLocal);
         List<Map<String, Object>> splittedMsg = SplitFlowFunction.split(messageEnrichmentLocal);
 
         for (Map<String, Object> msg : splittedMsg) {

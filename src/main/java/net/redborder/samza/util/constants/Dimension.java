@@ -30,6 +30,8 @@ public class Dimension {
     public final static String CLIENT_SNR = "client_snr";
     public final static String CLIENT_SNR_NUM = "client_snr_num";
     public final static String TIMESTAMP = "timestamp";
+    public final static String FIRST_SWITCHED = "first_switched";
+    public final static String DURATION = "duration";
     public final static String PKTS = "pkts";
     public final static String BYTES = "bytes";
     public final static String TYPE = "type";
@@ -77,7 +79,6 @@ public class Dimension {
     public final static String DOT11PROTOCOL = "dot11_protocol";
     public final static String DEPLOYMENT_ID = "deployment_id";
 
-
     // Darklist
     public final static String DARKLIST_SCORE = "darklist_score";
     public final static String DARKLIST_SCORE_NAME = "darklist_score_name";
@@ -94,6 +95,8 @@ public class Dimension {
     public final static String NMSP_WIRELESS_ID = "wireless_id";
 
     // Location
+    public final static String LOC_TIMESTAMP_MILLIS = "timestampMillis";
+    public final static String LOC_MSEUDI = "mseUdi";
     public final static String LOC_NOTIFICATIONS = "notifications";
     public final static String LOC_NOTIFICATION_TYPE = "notificationType";
     public final static String LOC_STREAMING_NOTIFICATION = "StreamingNotification";
@@ -102,6 +105,7 @@ public class Dimension {
     public final static String LOC_GEOCOORDINATEv9 = "geoCoordinate";
     public final static String LOC_MAPINFOv8 = "MapInfo";
     public final static String LOC_MAPINFOv9 = "mapInfo";
+    public final static String LOC_MAPCOORDINATEv8 = "MapCoordinate";
     public final static String LOC_MACADDR = "macAddress";
     public final static String LOC_MAP_HIERARCHY = "mapHierarchyString";
     public final static String LOC_MAP_HIERARCHY_V10 = "locationMapHierarchy";
@@ -117,4 +121,10 @@ public class Dimension {
     public final static String LOC_BAND = "band";
     public final static String LOC_STATUS = "status";
     public final static String LOC_USERNAME = "username";
+    public final static String LOC_ENTITY = "entity";
+    public final static String LOC_COORDINATE = "locationCoordinate";
+    public final static String LOC_COORDINATE_X = "x";
+    public final static String LOC_COORDINATE_Y = "y";
+    public final static String LOC_COORDINATE_Z = "z";
+    public final static String LOC_COORDINATE_UNIT = "unit";
 }

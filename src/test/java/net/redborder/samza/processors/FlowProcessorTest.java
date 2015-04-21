@@ -20,7 +20,6 @@ import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.MockMessageCollector;
 import net.redborder.samza.util.MockTaskContext;
-import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.task.TaskContext;
 import org.junit.BeforeClass;
@@ -36,6 +35,8 @@ import java.util.*;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+
+import static net.redborder.samza.util.constants.Dimension.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class FlowProcessorTest extends TestCase {
@@ -64,7 +65,7 @@ public class FlowProcessorTest extends TestCase {
         for (String store : storesListAsString.split(",")) {
             stores.add(store);
             String storeKey = properties.getProperty("redborder.store." + store + ".key");
-            when(config.get("redborder.store." + store + ".key", Dimension.CLIENT_MAC)).thenReturn(storeKey);
+            when(config.get("redborder.store." + store + ".key", CLIENT_MAC)).thenReturn(storeKey);
         }
 
         storeManager = new StoreManager(config, context);
@@ -79,11 +80,12 @@ public class FlowProcessorTest extends TestCase {
 
         // The message that we will enrich
         Map<String, Object> message = new HashMap<>();
-        message.put(Dimension.CLIENT_MAC, "00:00:00:00:00:00");
-        message.put(Dimension.BYTES, 23L);
-        message.put(Dimension.PKTS, 2L);
-        message.put(Dimension.TIMESTAMP, 1429088471L);
+        message.put(CLIENT_MAC, "00:00:00:00:00:00");
+        message.put(BYTES, 23L);
+        message.put(PKTS, 2L);
+        message.put(TIMESTAMP, Long.valueOf(1429088471L));
         expected.putAll(message);
+        expected.put(DURATION, 0L);
 
         for (String store : stores) {
             Map<String, Object> cache = new HashMap<>();
@@ -115,11 +117,12 @@ public class FlowProcessorTest extends TestCase {
 
         // The message that we will enrich
         Map<String, Object> message = new HashMap<>();
-        message.put(Dimension.CLIENT_MAC, "00:00:00:00:00:00");
-        message.put(Dimension.BYTES, 23L);
-        message.put(Dimension.PKTS, 2L);
-        message.put(Dimension.TIMESTAMP, 1429088471L);
+        message.put(CLIENT_MAC, "00:00:00:00:00:00");
+        message.put(BYTES, 23L);
+        message.put(PKTS, 2L);
+        message.put(TIMESTAMP, Long.valueOf(1429088471L));
         expected.putAll(message);
+        expected.put(DURATION, 0L);
 
         for (String store : stores) {
             Map<String, Object> cache = new HashMap<>();

@@ -19,7 +19,6 @@ import junit.framework.TestCase;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.MockMessageCollector;
 import net.redborder.samza.util.MockTaskContext;
-import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.config.ConfigException;
 import org.apache.samza.task.TaskContext;
@@ -34,7 +33,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static net.redborder.samza.util.constants.Dimension.*;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -89,12 +87,13 @@ public class ProcessorTest extends TestCase {
         message.put(CLIENT_MAC, "AA:AA:AA:AA:AA:AA");
         message.put(BYTES, 43L);
         message.put(PKTS, 3L);
-        message.put(Dimension.TIMESTAMP, 1429088471L);
+        message.put(TIMESTAMP, Long.valueOf(1429088471L));
 
         MockMessageCollector collector = new MockMessageCollector();
         p.process(message, collector);
 
         Map<String, Object> result = collector.getResult().get(0);
+        message.put(DURATION, 0L);
         assertEquals(message, result);
     }
 }
