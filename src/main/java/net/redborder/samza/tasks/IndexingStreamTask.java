@@ -9,15 +9,14 @@ import org.apache.samza.system.SystemStream;
 import org.apache.samza.task.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import static net.redborder.samza.util.constants.Contants.*;
 
 import java.util.Map;
 
 public class IndexingStreamTask implements StreamTask, InitableTask {
 
-    private static final String FLOW_DATASOURCE = "rb_flow";
-    private static final String ENRICHMENT_TOPIC = "rb_enrichment";
-    private static final String MONITOR_TOPIC = "rb_monitor";
-    private static final SystemStream monitorSystemStream = new SystemStream("druid", MONITOR_TOPIC);
+
+    private static final SystemStream monitorSystemStream = new SystemStream("druid_monitor", MONITOR_TOPIC);
 
 
     private static final Logger log = LoggerFactory.getLogger(EnrichmentStreamTask.class);
@@ -34,7 +33,7 @@ public class IndexingStreamTask implements StreamTask, InitableTask {
         Map<String, Object> message = (Map<String, Object>) envelope.getMessage();
         SystemStream systemStream = null;
 
-        if (stream.equals(ENRICHMENT_TOPIC)) {
+        if (stream.equals(ENRICHMENT_OUTPUT_TOPIC)) {
             String tenant_id = (String) message.get(Dimension.DEPLOYMENT_ID);
 
             if (tenant_id != null)

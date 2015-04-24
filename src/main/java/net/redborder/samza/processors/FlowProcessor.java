@@ -19,6 +19,7 @@ import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.functions.CalculateDurationFunction;
 import net.redborder.samza.functions.SplitFlowFunction;
 import net.redborder.samza.store.StoreManager;
+import net.redborder.samza.util.constants.Contants;
 import org.apache.samza.config.Config;
 import org.apache.samza.metrics.Counter;
 import org.apache.samza.system.OutgoingMessageEnvelope;
@@ -33,7 +34,7 @@ import java.util.Map;
 
 public class FlowProcessor extends Processor {
     private static final Logger log = LoggerFactory.getLogger(FlowProcessor.class);
-    private static final SystemStream OUTPUT_STREAM = new SystemStream("druid", "rb_flow");
+    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Contants.ENRICHMENT_OUTPUT_TOPIC);
 
     private Counter messagesCounter;
 
