@@ -72,6 +72,7 @@ public class LocationProcessorTest extends TestCase {
         MockMessageCollector collector = new MockMessageCollector();
         Map<String, Object> result = new HashMap<>();
         Map<String, Object> message = new HashMap<>();
+        String deployment_id = "tenant_A";
 
         Map<String, Object> content = new HashMap<>();
         content.put(TIMESTAMP, "2015-03-31T02:57:38.570-0700");
@@ -101,6 +102,7 @@ public class LocationProcessorTest extends TestCase {
         location.put(LOC_MAPINFOv8, mapInfo);
         content.put(LOC_LOCATION, location);
         message.put(LOC_STREAMING_NOTIFICATION, content);
+        message.put(DEPLOYMENT_ID, deployment_id);
 
         locationProcessor.process(message, collector);
 
@@ -121,6 +123,7 @@ public class LocationProcessorTest extends TestCase {
         result.put(CLIENT_SNR_NUM, 0);
         result.put(SRC, "10.50.22.1");
         result.put(WIRELESS_STATION, "68:bc:0c:65:0a:a0");
+        result.put(DEPLOYMENT_ID, deployment_id);
 
         Map<String, Object> enrichmentMessage = collector.getResult().get(0);
         assertEquals(result, enrichmentMessage);
@@ -133,6 +136,7 @@ public class LocationProcessorTest extends TestCase {
         List<Map<String, Object>> contentsLoc = new ArrayList<>();
         Map<String, Object> contentLoc = new HashMap<>();
         Map<String, Object> enrichmentMessage;
+        String deployment_id = "tenant_A";
 
         Map<String, Object> messageLocUp = new HashMap<>();
         contentLoc.put(LOC_NOTIFICATION_TYPE, "locationupdate");
@@ -151,6 +155,8 @@ public class LocationProcessorTest extends TestCase {
         contentLoc.put(LOC_COORDINATE, coordinate);
         contentsLoc.add(contentLoc);
         messageLocUp.put(LOC_NOTIFICATIONS, contentsLoc);
+        messageLocUp.put(DEPLOYMENT_ID, deployment_id);
+
 
         locationProcessor.process(messageLocUp, collector);
 
@@ -167,6 +173,7 @@ public class LocationProcessorTest extends TestCase {
         result.put(BYTES, 0);
         result.put(TYPE, "mse10");
         result.put(SENSOR_NAME, "rb-loc");
+        result.put(DEPLOYMENT_ID, deployment_id);
 
         enrichmentMessage = collector.getResult().get(0);
         assertEquals(result, enrichmentMessage);
@@ -190,6 +197,7 @@ public class LocationProcessorTest extends TestCase {
         contentAssoc.put(TIMESTAMP, Long.valueOf(1424767310026L));
         contentsAssoc.add(contentAssoc);
         messageAssoc.put(LOC_NOTIFICATIONS, contentsAssoc);
+        messageAssoc.put(DEPLOYMENT_ID, deployment_id);
 
         locationProcessor.process(messageAssoc, collector);
 
@@ -226,6 +234,30 @@ public class LocationProcessorTest extends TestCase {
         result.put(SENSOR_NAME, "rb-loc");
         result.put(CLIENT_FLOOR, "FloorC");
         result.put(DOT11PROTOCOL, "IEEE_802_11_B");
+        result.put(DEPLOYMENT_ID, deployment_id);
+
+        enrichmentMessage = collector.getResult().get(1);
+        assertEquals(result, enrichmentMessage);
+
+        result.clear();
+
+        messageLocUp.put(DEPLOYMENT_ID, "other_tenant");
+        locationProcessor.process(messageAssoc, collector);
+        locationProcessor.process(messageLocUp, collector);
+
+        result.put(CLIENT_ZONE, "ZoneD");
+        result.put(DOT11STATUS, "PROBING");
+        result.put(BYTES, 0);
+        result.put(WIRELESS_STATION, "AA:AA:AA:AA:AA:AA");
+        result.put(PKTS, 0);
+        result.put(TYPE, "mse10");
+        result.put(CLIENT_CAMPUS, "CampusA");
+        result.put(CLIENT_BUILDING, "BuildingB");
+        result.put(TIMESTAMP, Long.valueOf(1424767310L));
+        result.put(CLIENT_MAC, "00:00:00:00:00:00");
+        result.put(SENSOR_NAME, "rb-loc");
+        result.put(CLIENT_FLOOR, "FloorC");
+        result.put(DEPLOYMENT_ID, "other_tenant");
 
         enrichmentMessage = collector.getResult().get(1);
         assertEquals(result, enrichmentMessage);

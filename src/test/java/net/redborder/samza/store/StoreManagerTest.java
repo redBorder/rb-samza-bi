@@ -90,23 +90,33 @@ public class StoreManagerTest extends TestCase {
     }
 
     @Test
-    public void enrichment() {
+    public void enrichmentUsingDeploymentId() {
         Map<String, Object> result = new HashMap<>();
+
+        String deplyment_id_a = "tenant_A";
+        String deplyment_id_b = "tenant_B";
+
 
         Map<String, Object> message = new HashMap<>();
         message.put(Dimension.CLIENT_MAC, "testing-mac");
+        message.put(Dimension.DEPLOYMENT_ID, deplyment_id_a);
 
         result.putAll(message);
 
         for (String store : stores) {
             Map<String, Object> cache = new HashMap<>();
-            cache.put(store + "-enrichment-key", store + "-enrichment-value");
+            cache.put(store + "-enrichment-key" + deplyment_id_a, store + "-enrichment-value");
             result.putAll(cache);
-            storeManager.getStore(store).put("testing-mac", cache);
+            storeManager.getStore(store).put("testing-mac" + deplyment_id_a, cache);
         }
 
         Map<String, Object> enrichCache = storeManager.enrich(message);
         assertEquals(result, enrichCache);
+
+        message.put(Dimension.DEPLOYMENT_ID, deplyment_id_b);
+
+        Map<String, Object> enrichCacheWithoutDeployment = storeManager.enrich(message);
+        assertEquals(message, enrichCacheWithoutDeployment);
     }
 }
 

@@ -145,6 +145,41 @@ public class NmspProcessorTest extends TestCase {
     }
 
     @Test
+    public void enrichesWithRssiUsingDeploymendId() {
+        MockMessageCollector collector = new MockMessageCollector();
+
+        Map<String, Object> message = new HashMap<>();
+        List<String> ap_macs = Arrays.asList("11:11:11:11:11:11", "22:22:22:22:22:22", "33:33:33:33:33:33");
+        List<Integer> rssi = Arrays.asList(-80, -54, -32);
+
+        message.put(CLIENT_MAC, "00:00:00:00:00:00");
+        message.put(NMSP_AP_MAC, ap_macs);
+        message.put(NMSP_RSSI, rssi);
+        message.put(DEPLOYMENT_ID, "tenant_A");
+        message.put(TYPE, NMSP_TYPE_MEASURE);
+        nmspProcessor.process(message, collector);
+
+        Map<String, Object> fromCacheA = storeMeasure.get("00:00:00:00:00:00"+"tenant_A");
+
+        int client_rssi_numA = (int) fromCacheA.get(CLIENT_RSSI_NUM);
+        String client_rssiA = (String) fromCacheA.get(CLIENT_RSSI);
+
+        assertEquals("RssiCheck", client_rssi_numA, -32);
+        assertEquals(client_rssiA, "excelent");
+
+        message.put(CLIENT_MAC, "00:00:00:00:00:00");
+        message.put(NMSP_AP_MAC, ap_macs);
+        message.put(NMSP_RSSI, rssi);
+        message.put(DEPLOYMENT_ID, "tenant_B");
+        message.put(TYPE, NMSP_TYPE_MEASURE);
+        nmspProcessor.process(message, collector);
+
+        Map<String, Object> fromCacheB = storeMeasure.get("00:00:00:00:00:00");
+
+        assertNull(fromCacheB);
+    }
+
+    @Test
     public void enrichWithStatus() {
         MockMessageCollector collector = new MockMessageCollector();
 

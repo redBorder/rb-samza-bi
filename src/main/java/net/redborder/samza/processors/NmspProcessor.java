@@ -18,6 +18,7 @@ package net.redborder.samza.processors;
 import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.constants.Contants;
+import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.metrics.Counter;
 import org.apache.samza.storage.kv.KeyValueStore;
@@ -63,6 +64,8 @@ public class NmspProcessor extends Processor {
 
         String type = (String) message.get(TYPE);
         String mac = (String) message.remove(CLIENT_MAC);
+        String deployment_id = message.get(Dimension.DEPLOYMENT_ID) == null ? "" : (String) message.get(Dimension.DEPLOYMENT_ID);
+
 
         if (type != null && type.equals(NMSP_TYPE_MEASURE)) {
             List<String> apMacs = (List<String>) message.get(NMSP_AP_MAC);
@@ -86,7 +89,7 @@ public class NmspProcessor extends Processor {
                 else
                     toCache.put(CLIENT_RSSI, "excelent");
 
-                Map<String, Object> infoCache = storeInfo.get(mac);
+                Map<String, Object> infoCache = storeInfo.get(mac+deployment_id);
                 String dot11Status;
 
                 if (infoCache == null) {
@@ -116,7 +119,7 @@ public class NmspProcessor extends Processor {
                 toDruid.putAll(toCache);
                 toDruid.put(NMSP_DOT11STATUS, dot11Status);
 
-                storeMeasure.put(mac, toCache);
+                storeMeasure.put(mac+deployment_id, toCache);
                 toDruid.put("timestamp", System.currentTimeMillis() / 1000);
                 collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
             }
@@ -133,8 +136,12 @@ public class NmspProcessor extends Processor {
             toDruid.put(BYTES, 0);
             toDruid.put(PKTS, 0);
             toDruid.put(TYPE, "nmsp-info");
+
+            if (!deployment_id.equals(""))
+                toDruid.put(DEPLOYMENT_ID, deployment_id);
+
             toDruid.put(CLIENT_MAC, mac);
-            storeInfo.put(mac, toCache);
+            storeInfo.put(mac+deployment_id, toCache);
             toDruid.put("timestamp", System.currentTimeMillis() / 1000);
             collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
         }
