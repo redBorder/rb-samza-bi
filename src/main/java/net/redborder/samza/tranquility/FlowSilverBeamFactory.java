@@ -39,19 +39,19 @@ import org.joda.time.Period;
 import java.util.List;
 import java.util.Map;
 
-import static net.redborder.samza.util.constants.Dimension.*;
 import static net.redborder.samza.util.constants.Aggregators.*;
+import static net.redborder.samza.util.constants.Dimension.*;
 
 
-public class FlowBeamFactory implements BeamFactory
+public class FlowSilverBeamFactory implements BeamFactory
 {
     @Override
     public Beam<Object> makeBeam(SystemStream stream, Config config)
     {
-        final int maxRows = Integer.valueOf(config.get("redborder.beam.flow.maxrows", "200000"));
-        final int partitions = Integer.valueOf(config.get("redborder.beam.flow.partitions", "2"));
-        final int replicas = Integer.valueOf(config.get("redborder.beam.flow.replicas", "1"));
-        final String intermediatePersist = config.get("redborder.beam.flow.intermediatePersist", "PT20m");
+        final int maxRows = Integer.valueOf(config.get("redborder.beam.flow.silver.maxrows", "200000"));
+        final int partitions = Integer.valueOf(config.get("redborder.beam.flow.silver.partitions", "2"));
+        final int replicas = Integer.valueOf(config.get("redborder.beam.flow.silver.replicas", "1"));
+        final String intermediatePersist = config.get("redborder.beam.flow.silver.intermediatePersist", "PT20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
         final String dataSource = stream.getStream();
 
@@ -70,7 +70,7 @@ public class FlowBeamFactory implements BeamFactory
                 DARKLIST_SCORE_NAME, DARKLIST_CATEGORY, DARKLIST_PROTOCOL,
                 DARKLIST_DIRECTION, DARKLIST_SCORE);
 
-        final List<AggregatorFactory> aggregators = ImmutableList.<AggregatorFactory>of(
+        final List<AggregatorFactory> aggregators = ImmutableList.of(
                 new CountAggregatorFactory(EVENTS_AGGREGATOR),
                 new LongSumAggregatorFactory(SUM_BYTES_AGGREGATOR, BYTES),
                 new LongSumAggregatorFactory(SUM_PKTS_AGGREGATOR, PKTS),

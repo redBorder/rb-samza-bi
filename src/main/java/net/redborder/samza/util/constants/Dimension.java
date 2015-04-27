@@ -78,6 +78,7 @@ public class Dimension {
     public final static String RAT = "rat";
     public final static String DOT11PROTOCOL = "dot11_protocol";
     public final static String DEPLOYMENT_ID = "deployment_id";
+    public final static String TIER = "tier";
 
     // Darklist
     public final static String DARKLIST_SCORE = "darklist_score";

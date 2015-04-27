@@ -9,15 +9,13 @@ import org.apache.samza.system.SystemStream;
 import org.apache.samza.task.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static net.redborder.samza.util.constants.Constants.*;
 
 import java.util.Map;
 
+import static net.redborder.samza.util.constants.Constants.*;
+
 public class IndexingStreamTask implements StreamTask, InitableTask {
-
-
     private static final SystemStream monitorSystemStream = new SystemStream("druid_monitor", MONITOR_TOPIC);
-
 
     private static final Logger log = LoggerFactory.getLogger(EnrichmentStreamTask.class);
     private Counter counter;
@@ -35,11 +33,19 @@ public class IndexingStreamTask implements StreamTask, InitableTask {
 
         if (stream.equals(ENRICHMENT_OUTPUT_TOPIC)) {
             String tenant_id = (String) message.get(Dimension.DEPLOYMENT_ID);
+            String tier = (String) message.get(Dimension.TIER);
+            String flowBeam = "druid_flow_silver";
+
+            switch (tier) {
+                case "gold":
+                    flowBeam = "druid_flow_gold";
+                    break;
+            }
 
             if (tenant_id != null)
-                systemStream = new SystemStream("druid", FLOW_DATASOURCE + "_" + tenant_id);
+                systemStream = new SystemStream(flowBeam, FLOW_DATASOURCE + "_" + tenant_id);
             else
-                systemStream = new SystemStream("druid", FLOW_DATASOURCE);
+                systemStream = new SystemStream(flowBeam, FLOW_DATASOURCE);
 
         } else if (stream.equals(MONITOR_TOPIC)) {
             systemStream = monitorSystemStream;
