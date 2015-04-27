@@ -17,7 +17,7 @@ package net.redborder.samza.processors;
 
 import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
-import net.redborder.samza.util.constants.Contants;
+import net.redborder.samza.util.constants.Constants;
 import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.metrics.Counter;
@@ -38,7 +38,7 @@ import static net.redborder.samza.util.constants.DimensionValue.LOC_ASSOCIATED;
 
 public class LocationV89Processor extends Processor {
     final public static String LOCATION_STORE = "location";
-    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Contants.ENRICHMENT_OUTPUT_TOPIC);
+    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_OUTPUT_TOPIC);
 
     private KeyValueStore<String, Map<String, Object>> store;
 

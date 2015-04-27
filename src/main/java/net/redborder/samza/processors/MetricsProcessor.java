@@ -17,7 +17,7 @@ package net.redborder.samza.processors;
 
 import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
-import net.redborder.samza.util.constants.Contants;
+import net.redborder.samza.util.constants.Constants;
 import org.apache.samza.config.Config;
 import org.apache.samza.system.OutgoingMessageEnvelope;
 import org.apache.samza.system.SystemStream;
@@ -31,7 +31,7 @@ import java.util.Map;
 
 public class MetricsProcessor extends Processor {
     private static final Logger log = LoggerFactory.getLogger(MetricsProcessor.class);
-    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Contants.MONITOR_TOPIC);
+    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.MONITOR_TOPIC);
 
     public MetricsProcessor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
         super(storeManager, enrichManager, config, context);

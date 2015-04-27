@@ -9,7 +9,7 @@ import org.apache.samza.system.SystemStream;
 import org.apache.samza.task.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import static net.redborder.samza.util.constants.Contants.*;
+import static net.redborder.samza.util.constants.Constants.*;
 
 import java.util.Map;
 
