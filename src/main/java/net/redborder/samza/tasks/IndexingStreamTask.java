@@ -36,10 +36,12 @@ public class IndexingStreamTask implements StreamTask, InitableTask {
             String tier = (String) message.get(Dimension.TIER);
             String flowBeam = "druid_flow_silver";
 
-            switch (tier) {
-                case "gold":
-                    flowBeam = "druid_flow_gold";
-                    break;
+            if (tier != null) {
+                switch (tier) {
+                    case "gold":
+                        flowBeam = "druid_flow_gold";
+                        break;
+                }
             }
 
             if (tenant_id != null)

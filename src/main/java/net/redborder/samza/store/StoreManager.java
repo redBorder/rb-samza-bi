@@ -49,7 +49,7 @@ public class StoreManager {
 
         for (Map.Entry<String, KeyValueStore<String, Map<String, Object>>> store : stores.entrySet()) {
             String key = (String) message.get(storesKeys.get(store.getKey()));
-            String deployment_id = message.get(Dimension.DEPLOYMENT_ID) == null ? "" : (String) message.get(Dimension.DEPLOYMENT_ID);
+            String deployment_id = message.get(Dimension.DEPLOYMENT_ID) == null ? "" : String.valueOf(message.get(Dimension.DEPLOYMENT_ID));
             Map<String, Object> contents = store.getValue().get(key + deployment_id);
             if (contents != null) enrichment.putAll(contents);
         }
