@@ -55,7 +55,6 @@
                 <include>net.redborder:rb-samza-bi</include>
                 <include>org.slf4j:slf4j-log4j12</include>
                 <include>org.apache.kafka:kafka_2.10</include>
-                <include>org.apache.hadoop:hadoop-hdfs</include>
                 <include>org.codehaus.jackson:jackson-mapper-asl</include>
             </includes>
             <useTransitiveFiltering>true</useTransitiveFiltering>
