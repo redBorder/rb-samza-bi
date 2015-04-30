@@ -20,10 +20,7 @@ import org.apache.samza.config.Config;
 import org.apache.samza.storage.kv.KeyValueStore;
 import org.apache.samza.task.TaskContext;
 
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class StoreManager {
 
@@ -31,7 +28,7 @@ public class StoreManager {
     private static Map<String, String> storesKeys = new HashMap<>();
 
     public StoreManager(Config config, TaskContext context) {
-        List<String> storesList = config.getList("redborder.stores");
+        List<String> storesList = config.getList("redborder.stores", Collections.<String>emptyList());
 
         for (String store : storesList) {
             storesKeys.put(store, config.get("redborder.store." + store + ".key", Dimension.CLIENT_MAC));

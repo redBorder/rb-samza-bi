@@ -61,7 +61,7 @@ public class StoreManagerTest extends TestCase {
         }
 
         config = mock(Config.class);
-        when(config.getList("redborder.stores")).thenReturn(stores);
+        when(config.getList("redborder.stores", Collections.<String>emptyList())).thenReturn(stores);
         for (String store : stores) {
             String storeKey = properties.getProperty("redborder.store." + store + ".key");
             when(config.get("redborder.store." + store + ".key", Dimension.CLIENT_MAC)).thenReturn(storeKey);

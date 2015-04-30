@@ -59,7 +59,7 @@ public class FlowProcessorTest extends TestCase {
         context = new MockTaskContext();
 
         config = mock(Config.class);
-        when(config.getList("redborder.stores")).thenReturn(stores);
+        when(config.getList("redborder.stores", Collections.<String>emptyList())).thenReturn(stores);
 
         String storesListAsString = properties.getProperty("redborder.stores");
         for (String store : storesListAsString.split(",")) {
