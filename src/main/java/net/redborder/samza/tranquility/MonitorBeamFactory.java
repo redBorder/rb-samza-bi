@@ -25,6 +25,7 @@ import com.metamx.tranquility.typeclass.Timestamper;
 import io.druid.data.input.impl.TimestampSpec;
 import io.druid.granularity.QueryGranularity;
 import io.druid.query.aggregation.*;
+import io.druid.query.aggregation.histogram.ApproximateHistogramAggregatorFactory;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -52,11 +53,14 @@ public class MonitorBeamFactory implements BeamFactory
 
         final List<String> exclusions = ImmutableList.of("unit", "type");
 
-        final List<AggregatorFactory> aggregators = ImmutableList.<AggregatorFactory>of(
+        final List<AggregatorFactory> aggregators = ImmutableList.of(
                 new CountAggregatorFactory("events"),
                 new DoubleSumAggregatorFactory("sum_value", "value"),
                 new MaxAggregatorFactory("max_value", "value"),
-                new MinAggregatorFactory("min_value", "value"));
+                new MinAggregatorFactory("min_value", "value"),
+                new ApproximateHistogramAggregatorFactory("hist_percent", "value", 50, 20, 0F, 100F),
+                new ApproximateHistogramAggregatorFactory("hist", "value", 50, 40, 0F, 2000F)
+        );
 
         // The Timestamper should return the timestamp of the class your Samza task produces. Samza envelopes contain
         // Objects, so you'll generally have to cast them here.

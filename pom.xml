@@ -105,6 +105,11 @@
             <version>0.4.2</version>
         </dependency>
         <dependency>
+            <groupId>io.druid.extensions</groupId>
+            <artifactId>druid-histogram</artifactId>
+            <version>0.7.1.1</version>
+        </dependency>
+        <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
             <version>${jetty.version}</version>
