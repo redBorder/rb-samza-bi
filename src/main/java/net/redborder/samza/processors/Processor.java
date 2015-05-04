@@ -32,7 +32,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class Processor {
+public abstract class Processor<T> {
     private static final Logger log = LoggerFactory.getLogger(Processor.class);
     private static Map<String, Processor> processors = new HashMap<>();
 
@@ -98,7 +98,7 @@ public abstract class Processor {
         return processors.get(streamName);
     }
 
-    public abstract void process(Map<String, Object> message, MessageCollector collector);
+    public abstract void process(T message, MessageCollector collector);
 
     public abstract String getName();
 }

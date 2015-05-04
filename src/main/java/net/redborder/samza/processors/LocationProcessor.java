@@ -26,7 +26,7 @@ import java.util.Map;
 
 import static net.redborder.samza.util.constants.Dimension.LOC_STREAMING_NOTIFICATION;
 
-public class LocationProcessor extends Processor {
+public class LocationProcessor extends Processor<Map<String, Object>> {
     private LocationV89Processor locv89;
     private LocationV10Processor locv10;
     private Counter counter;

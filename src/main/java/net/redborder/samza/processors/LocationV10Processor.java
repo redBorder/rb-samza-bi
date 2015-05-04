@@ -36,7 +36,7 @@ import java.util.Map;
 
 import static net.redborder.samza.util.constants.Dimension.*;
 
-public class LocationV10Processor extends Processor {
+public class LocationV10Processor extends Processor<Map<String, Object>> {
     private static final Logger log = LoggerFactory.getLogger(LocationV10Processor.class);
     private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_OUTPUT_TOPIC);
     final public static String LOCATION_STORE = "location";

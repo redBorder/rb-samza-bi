@@ -45,7 +45,7 @@ public class EnrichmentStreamTask implements StreamTask, InitableTask {
     @Override
     public void process(IncomingMessageEnvelope envelope, MessageCollector collector, TaskCoordinator coordinator) throws Exception {
         String stream = envelope.getSystemStreamPartition().getSystemStream().getStream();
-        Map<String, Object> message = (Map<String, Object>) envelope.getMessage();
+        Object message = envelope.getMessage();
 
         Processor processor = Processor.getProcessor(stream, this.config, this.context, this.storeManager);
         processor.process(message, collector);

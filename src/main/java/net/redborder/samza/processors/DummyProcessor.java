@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-public class DummyProcessor extends Processor {
+public class DummyProcessor extends Processor<Map<String, Object>> {
     private static final Logger log = LoggerFactory.getLogger(DummyProcessor.class);
 
     public DummyProcessor() {

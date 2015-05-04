@@ -36,7 +36,7 @@ import static net.redborder.samza.util.constants.Dimension.*;
 import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_INFO;
 import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_MEASURE;
 
-public class NmspProcessor extends Processor {
+public class NmspProcessor extends Processor<Map<String, Object>> {
     private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_OUTPUT_TOPIC);
     public final static String NMSP_STORE_MEASURE = "nmsp-measure";
     public final static String NMSP_STORE_INFO = "nmsp-info";

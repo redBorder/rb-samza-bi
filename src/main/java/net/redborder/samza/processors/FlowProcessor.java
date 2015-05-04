@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Map;
 
-public class FlowProcessor extends Processor {
+public class FlowProcessor extends Processor<Map<String, Object>> {
     private static final Logger log = LoggerFactory.getLogger(FlowProcessor.class);
     private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_OUTPUT_TOPIC);
 
