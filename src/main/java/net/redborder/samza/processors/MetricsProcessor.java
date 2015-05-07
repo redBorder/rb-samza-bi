@@ -141,6 +141,8 @@ public class MetricsProcessor extends Processor<Object> {
 
                 collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
             }
+        } else {
+            log.info("Unrecognized object type on metrics");
         }
     }
 }

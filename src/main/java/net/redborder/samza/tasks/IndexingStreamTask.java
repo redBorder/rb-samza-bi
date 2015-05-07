@@ -32,23 +32,26 @@ public class IndexingStreamTask implements StreamTask, InitableTask {
         SystemStream systemStream = null;
 
         if (stream.equals(ENRICHMENT_OUTPUT_TOPIC)) {
-            String tenant_id = (String) message.get(Dimension.DEPLOYMENT_ID);
-            String tier = (String) message.get(Dimension.TIER);
+            Object deploymentId = message.get(Dimension.DEPLOYMENT_ID);
+            Object tier = message.get(Dimension.TIER);
             String flowBeam = "druid_flow_silver";
 
             if (tier != null) {
-                switch (tier) {
+                String tierStr = String.valueOf(tier);
+
+                switch (tierStr) {
                     case "gold":
                         flowBeam = "druid_flow_gold";
                         break;
                 }
             }
 
-            if (tenant_id != null)
-                systemStream = new SystemStream(flowBeam, FLOW_DATASOURCE + "_" + tenant_id);
-            else
+            if (deploymentId != null) {
+                String deploymentIdStr = String.valueOf(deploymentId);
+                systemStream = new SystemStream(flowBeam, FLOW_DATASOURCE + "_" + deploymentIdStr);
+            } else {
                 systemStream = new SystemStream(flowBeam, FLOW_DATASOURCE);
-
+            }
         } else if (stream.equals(MONITOR_TOPIC)) {
             systemStream = monitorSystemStream;
         }
