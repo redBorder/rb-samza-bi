@@ -74,8 +74,8 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                 else
                     toCache.put(CLIENT_RSSI, "excelent");
 
-                Map<String, Object> infoCache = storeInfo.get(mac+deployment_id);
-                String dot11Status;
+                Map<String, Object> infoCache = storeInfo.get(mac + deployment_id);
+                String dot11Status = "PROBING";
 
                 if (infoCache == null) {
                     toCache.put(CLIENT_RSSI_NUM, rssi);
@@ -83,13 +83,19 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                     toCache.put(NMSP_DOT11STATUS, "ASSOCIATED");
                     dot11Status = "PROBING";
                 } else {
-                    String apAssociated = (String) infoCache.get(WIRELESS_STATION);
-                    if (apMacs.contains(apAssociated)) {
-                        Integer rssiAssociated = clientRssis.get(apMacs.indexOf(apAssociated));
-                        toCache.put(CLIENT_RSSI_NUM, rssiAssociated);
-                        toCache.putAll(infoCache);
-                        dot11Status = "ASSOCIATED";
+                    Long last_seen = (Long) infoCache.get("last_seen");
+                    if ((last_seen + 3600) > (System.currentTimeMillis() / 1000)) {
+                        String apAssociated = (String) infoCache.get(WIRELESS_STATION);
+                        if (apMacs.contains(apAssociated)) {
+                            Integer rssiAssociated = clientRssis.get(apMacs.indexOf(apAssociated));
+                            toCache.put(CLIENT_RSSI_NUM, rssiAssociated);
+                            toCache.putAll(infoCache);
+                            dot11Status = "ASSOCIATED";
+                        } else {
+                            toDruid = null;
+                        }
                     } else {
+                        storeInfo.delete(mac + deployment_id);
                         toCache.put(CLIENT_RSSI_NUM, rssi);
                         toCache.put(WIRELESS_STATION, apMac);
                         toCache.put(NMSP_DOT11STATUS, "ASSOCIATED");
@@ -97,16 +103,18 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                     }
                 }
 
-                toDruid.put(BYTES, 0);
-                toDruid.put(PKTS, 0);
-                toDruid.put(TYPE, "nmsp-measure");
-                toDruid.put(CLIENT_MAC, mac);
-                toDruid.putAll(toCache);
-                toDruid.put(NMSP_DOT11STATUS, dot11Status);
+                if(toDruid != null) {
+                    toDruid.put(BYTES, 0);
+                    toDruid.put(PKTS, 0);
+                    toDruid.put(TYPE, "nmsp-measure");
+                    toDruid.put(CLIENT_MAC, mac);
+                    toDruid.putAll(toCache);
+                    toDruid.put(NMSP_DOT11STATUS, dot11Status);
 
-                storeMeasure.put(mac+deployment_id, toCache);
-                toDruid.put("timestamp", System.currentTimeMillis() / 1000);
-                collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
+                    storeMeasure.put(mac + deployment_id, toCache);
+                    toDruid.put("timestamp", System.currentTimeMillis() / 1000);
+                    collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
+                }
             }
         } else if (type != null && type.equals(NMSP_TYPE_INFO)) {
             Object vlan = message.remove(NMSP_VLAN_ID);
@@ -116,7 +124,9 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                 toCache.put(SRC_VLAN, vlan);
             }
 
+            Long timestamp = message.get("timestamp") != null ? Long.valueOf(String.valueOf(message.get("timestamp"))) : System.currentTimeMillis() / 1000;
             toCache.putAll(message);
+            toCache.put("last_seen", timestamp);
             toDruid.putAll(toCache);
             toDruid.put(BYTES, 0);
             toDruid.put(PKTS, 0);
@@ -126,8 +136,8 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                 toDruid.put(DEPLOYMENT_ID, deployment_id);
 
             toDruid.put(CLIENT_MAC, mac);
-            storeInfo.put(mac+deployment_id, toCache);
-            toDruid.put("timestamp", System.currentTimeMillis() / 1000);
+            storeInfo.put(mac + deployment_id, toCache);
+            toDruid.put("timestamp", timestamp);
             collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
         }
 

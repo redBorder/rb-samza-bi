@@ -271,6 +271,7 @@ public class NmspProcessorTest extends TestCase {
         Map<String, Object> fromCache;
 
         nmspProcessor.process(messageMeasure1, collector);
+        messageMeasure1.put(CLIENT_MAC, "00:00:00:00:00:00");
 
         Map<String, Object> toDruidMeasure1 = collector.getResult().get(0);
 
@@ -281,17 +282,33 @@ public class NmspProcessorTest extends TestCase {
         assertEquals("ASSOCIATED", fromCache.get(DOT11STATUS));
 
         nmspProcessor.process(messageInfo, collector);
+        messageInfo.put(CLIENT_MAC, "00:00:00:00:00:00");
         collector.getResult();
 
-        nmspProcessor.process(messageMeasure2, collector);
 
-        Map<String, Object> toDruidMeasure2 = collector.getResult().get(0);
+        nmspProcessor.process(messageMeasure2, collector);
+        messageMeasure2.put(CLIENT_MAC, "00:00:00:00:00:00");
+
+        List<Map<String, Object>> toDruidMeasure2 = collector.getResult();
 
         fromCache = storeMeasure.get("00:00:00:00:00:00");
 
         assertNull(fromCache.get(WIRELESS_ID));
-        assertEquals("PROBING", toDruidMeasure2.get(DOT11STATUS));
+        assertTrue(toDruidMeasure2.isEmpty());
         assertEquals("ASSOCIATED", fromCache.get(DOT11STATUS));
+
+
+        messageInfo.put("timestamp", (System.currentTimeMillis() / 1000) - 3600);
+        nmspProcessor.process(messageInfo, collector);
+        collector.getResult();
+
+        nmspProcessor.process(messageMeasure1, collector);
+        Map<String, Object> toDruidMeasureOutOfTime = collector.getResult().get(0);
+        System.out.println(toDruidMeasureOutOfTime);
+
+        assertEquals("PROBING", toDruidMeasureOutOfTime.get(DOT11STATUS));
+        assertEquals("33:33:33:33:33:33", toDruidMeasureOutOfTime.get(WIRELESS_STATION));
+        assertEquals("00:00:00:00:00:00", toDruidMeasureOutOfTime.get(CLIENT_MAC));
     }
 
     @Test
