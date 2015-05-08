@@ -34,7 +34,7 @@ public class IndexingStreamTask implements StreamTask, InitableTask {
         if (stream.equals(ENRICHMENT_OUTPUT_TOPIC)) {
             Object deploymentId = message.get(Dimension.DEPLOYMENT_ID);
             Object tier = message.get(Dimension.TIER);
-            String flowBeam = "druid_flow_silver";
+            String flowBeam = "druid_flow_bronze";
 
             if (tier != null) {
                 String tierStr = String.valueOf(tier);
@@ -42,6 +42,9 @@ public class IndexingStreamTask implements StreamTask, InitableTask {
                 switch (tierStr) {
                     case "gold":
                         flowBeam = "druid_flow_gold";
+                        break;
+                    case "silver":
+                        flowBeam = "druid_flow_silver";
                         break;
                 }
             }
