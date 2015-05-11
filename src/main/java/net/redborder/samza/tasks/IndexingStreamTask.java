@@ -50,7 +50,7 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
                 AutoScalingManager.incrementEvents(dataSource);
                 systemStream = new SystemStream("druid_flow", AutoScalingManager.getDataSourcerWithPR(dataSource));
             } else {
-                systemStream = new SystemStream("druid_flow", FLOW_DATASOURCE + "1_1");
+                systemStream = new SystemStream("druid_flow", FLOW_DATASOURCE + "_1_1");
             }
         } else if (stream.equals(MONITOR_TOPIC)) {
             systemStream = monitorSystemStream;

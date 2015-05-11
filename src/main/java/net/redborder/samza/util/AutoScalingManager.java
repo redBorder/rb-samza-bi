@@ -34,7 +34,7 @@ public class AutoScalingManager {
     }
 
     public static String getDataSourcerWithPR(String dataSource) {
-        return dataSourceState.get(dataSource) != null ? dataSourceState.get(dataSource) : dataSource + "1_1";
+        return dataSourceState.get(dataSource) != null ? dataSourceState.get(dataSource) : dataSource + "_1_1";
     }
 
     public static void updateStates() {
@@ -100,7 +100,7 @@ public class AutoScalingManager {
 
     public static String getDataSource(String dataSource){
         String data [] = dataSource.split("_");
-        String subData [] = Arrays.copyOfRange(data, 0, data.length - 3);
+        String subData [] = Arrays.copyOfRange(data, 0, data.length - 2);
         return StringUtils.join(subData, "_");
     }
 }
