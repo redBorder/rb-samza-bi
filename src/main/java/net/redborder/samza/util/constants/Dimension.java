@@ -65,6 +65,35 @@ public class Dimension {
     public final static String DEPLOYMENT_ID = "deployment_id";
     public final static String TIER = "tier";
 
+    // Event
+    public final static String ACTION = "action";
+    public final static String CLASSIFICATION = "classification";
+    public final static String DOMAIN_NAME = "domain_name";
+    public final static String ETHLENGTH_RANGE = "ethlength_range";
+    public final static String GROUP_NAME = "group_name";
+    public final static String SIG_GENERATOR = "sig_generator";
+    public final static String ICMPTYPE = "icmptype";
+    public final static String IPLEN_RANGE = "iplen_range";
+    public final static String REV = "rev";
+    public final static String SENSOR_ID = "sensor_id";
+    public final static String PRIORITY = "priority";
+    public final static String MSG = "msg";
+    public final static String SIG_ID = "sig_id";
+    public final static String ETHSRC = "ethsrc";
+    public final static String ETHSRC_VENDOR = "ethsrc_vendor";
+    public final static String ETHDST = "ethdst";
+    public final static String ETHDST_VENDOR = "ethdst_vendor";
+    public final static String DST = "dst";
+    public final static String TTL = "ttl";
+    public final static String VLAN = "vlan";
+    public final static String MARKET = "market";
+    public final static String ORGANIZATION = "organization";
+    public final static String CLIENT_LATLONG = "client_latlong";
+    public final static String SHA256 = "sha256";
+    public final static String FILE_SIZE = "file_size";
+    public final static String FILE_URI = "file_uri";
+    public final static String FILE_HOSTNAME = "file_hostname";
+
     // Darklist
     public final static String DARKLIST_SCORE = "darklist_score";
     public final static String DARKLIST_SCORE_NAME = "darklist_score_name";
