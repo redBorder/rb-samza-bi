@@ -40,8 +40,11 @@ public class LocationProcessorTest extends TestCase {
     public static void initTest() {
         // This store uses an in-memory map instead of samza K/V RockDB
         storeLocation = new MockKeyValueStore();
-        config = mock(Config.class);
         taskContext = new MockTaskContext();
+
+        // Lets mock the config to enable sending messages to kafka
+        config = mock(Config.class);
+        when(config.getBoolean("redborder.options.notify_enrichment_messages")).thenReturn(true);
 
         // Mock the storeManager in order to return the mock store
         // that we just instantiated

@@ -31,39 +31,51 @@ public class IndexingStreamTask implements StreamTask, InitableTask {
         Map<String, Object> message = (Map<String, Object>) envelope.getMessage();
         SystemStream systemStream = null;
 
-        if (stream.equals(ENRICHMENT_OUTPUT_TOPIC)) {
-            Object deploymentId = message.get(Dimension.DEPLOYMENT_ID);
-            Object tier = message.get(Dimension.TIER);
-            String flowBeam = "druid_flow_bronze";
-
-            if (tier != null) {
-                String tierStr = String.valueOf(tier);
-
-                switch (tierStr) {
-                    case "gold":
-                        flowBeam = "druid_flow_gold";
-                        break;
-                    case "silver":
-                        flowBeam = "druid_flow_silver";
-                        break;
-                }
-            }
-
-            if (deploymentId != null) {
-                String deploymentIdStr = String.valueOf(deploymentId);
-                systemStream = new SystemStream(flowBeam, FLOW_DATASOURCE + "_" + deploymentIdStr);
-            } else {
-                systemStream = new SystemStream(flowBeam, FLOW_DATASOURCE);
-            }
+        if (stream.equals(ENRICHMENT_FLOW_OUTPUT_TOPIC)) {
+            systemStream = new SystemStream(getSystemStreamName(message, "flow"), getDatasource(message, FLOW_DATASOURCE));
+        } else if (stream.equals(ENRICHMENT_EVENT_OUTPUT_TOPIC)) {
+            systemStream = new SystemStream(getSystemStreamName(message, "event"), getDatasource(message, EVENT_DATASOURCE));
         } else if (stream.equals(MONITOR_TOPIC)) {
             systemStream = monitorSystemStream;
+        } else {
+            log.warn("Undefined input stream name: " + stream);
         }
 
         if (systemStream != null) {
             collector.send(new OutgoingMessageEnvelope(systemStream, null, message));
             counter.inc();
-        } else {
-            log.warn("Not defined input stream name: " + stream);
         }
+    }
+
+    private String getSystemStreamName(Map<String, Object> message, String topic) {
+        Object tier = message.get(Dimension.TIER);
+        String flowBeam = "druid_" + topic + "_bronze";
+
+        if (tier != null) {
+            String tierStr = String.valueOf(tier);
+
+            switch (tierStr) {
+                case "gold":
+                    flowBeam = "druid_" + topic + "_gold";
+                    break;
+                case "silver":
+                    flowBeam = "druid_" + topic + "_silver";
+                    break;
+            }
+        }
+
+        return flowBeam;
+    }
+
+    private String getDatasource(Map<String, Object> message, String defaultDatasource) {
+        Object deploymentId = message.get(Dimension.DEPLOYMENT_ID);
+        String datasource = defaultDatasource;
+
+        if (deploymentId != null) {
+            String deploymentIdStr = String.valueOf(deploymentId);
+            datasource = defaultDatasource + "_" + deploymentIdStr;
+        }
+
+        return datasource;
     }
 }
