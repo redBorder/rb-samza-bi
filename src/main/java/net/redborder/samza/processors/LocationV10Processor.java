@@ -23,12 +23,12 @@ import static net.redborder.samza.util.constants.Dimension.*;
 
 public class LocationV10Processor extends Processor<Map<String, Object>> {
     private static final Logger log = LoggerFactory.getLogger(LocationV10Processor.class);
-    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_OUTPUT_TOPIC);
+    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_FLOW_OUTPUT_TOPIC);
     final public static String LOCATION_STORE = "location";
 
     private KeyValueStore<String, Map<String, Object>> store;
     private Map<Integer, String> cache;
-
+    private boolean mustSend;
     private Counter counter;
 
     public LocationV10Processor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
@@ -50,6 +50,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
         cache.put(257, "WAIT_ASSOCIATED");
 
         counter = context.getMetricsRegistry().newCounter(getClass().getName(), "messages");
+        mustSend = config.getBoolean("redborder.options.notify_enrichment_messages");
     }
 
     @Override
@@ -117,7 +118,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                 toDruid.put(TYPE, "mse10");
 
                 store.put(clientMac+deployment_id, toCache);
-                collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
+                if (mustSend) collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
             }
         } catch (Exception ex) {
             log.warn("MSE10 association event dropped: " + message, ex);
@@ -181,7 +182,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                     toDruid.put(DEPLOYMENT_ID, deployment_id);
 
                 store.put(clientMac+deployment_id, toCache);
-                collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
+                if (mustSend) collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
             }
         } catch (Exception ex) {
             log.warn("MSE10 locationUpdate event dropped: " + message, ex);

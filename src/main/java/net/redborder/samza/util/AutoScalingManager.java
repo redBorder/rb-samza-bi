@@ -14,17 +14,23 @@ public class AutoScalingManager {
 
     private static Map<String, Long> eventsState = new ConcurrentHashMap<>();
     private static Map<String, String> dataSourceState = new ConcurrentHashMap<>();
+    private static Map<String, Integer> tiersLimit = new ConcurrentHashMap<>();
 
     private static Double upPercent = 0.80;
     private static Double downPercent = 0.20;
     private static long eventsPerTask = 10000;
     private static Integer currentPartitions;
 
+
     public static void config(Config config, Integer partitions) {
         eventsPerTask = config.getLong("redborder.indexing.eventsPerTask");
         upPercent = config.getDouble("redborder.indexing.upPercent");
         downPercent = config.getDouble("redborder.indexing.downPercent");
         currentPartitions = partitions;
+        tiersLimit.put("gold", 1000);
+        tiersLimit.put("silver", 1000);
+        tiersLimit.put("bronze", 1000);
+
     }
 
     public static void incrementEvents(String dataSource) {
@@ -34,7 +40,7 @@ public class AutoScalingManager {
     }
 
     public static String getDataSourcerWithPR(String dataSource) {
-        return dataSourceState.get(dataSource) != null ? dataSourceState.get(dataSource) : dataSource + "_1_1";
+        return dataSourceState.get(dataSource) != null ? dataSourceState.get(dataSource) : dataSource + "_bronze_1_1";
     }
 
     public static void updateStates() {
@@ -47,24 +53,31 @@ public class AutoScalingManager {
             String currentDataSource = dataSourceState.get(dataSource);
             Integer partitions;
             Integer replicas;
+            String tier;
             log.info("Current dataSource: " + currentDataSource);
 
             if (currentDataSource == null) {
                 Integer round = Math.round(events / eventsPerTask);
                 partitions = round == 0 ? 1 : round;
                 replicas = 1;
+                tier = "bronze";
             } else {
                 partitions = getPartitions(currentDataSource);
                 replicas = getReplicas(currentDataSource);
+                tier = getTier(currentDataSource);
 
                 Long actualEvents = partitions * eventsPerTask;
 
-                log.info("Support events: " + actualEvents + " toDown: " + actualEvents * downPercent + " toUp: " + actualEvents * upPercent);
-                log.info("Current events: " + events);
-                log.info("Current partitions: " + partitions);
+                log.debug("Support events: " + actualEvents + " toDown: " + actualEvents * downPercent + " toUp: " + actualEvents * upPercent);
+                log.debug("Current events: " + events);
+                log.debug("Current partitions: " + partitions);
 
                 if (actualEvents * upPercent <= events) {
-                    partitions++;
+                    if(tiersLimit.get(tier) < partitions) {
+                        partitions++;
+                    } else{
+                        log.warn("This dataSource is " + tier + " and it has " + partitions + " partitions! LIMITED.");
+                    }
                 } else if (actualEvents * downPercent >= events) {
                     if (partitions > 1) {
                         partitions--;
@@ -76,7 +89,7 @@ public class AutoScalingManager {
                 log.info("New partitions: " + partitions);
             }
 
-            String updateDataSource = dataSource + "_" + partitions + "_" + replicas;
+            String updateDataSource = dataSource + "_" + tier + "_" + partitions + "_" + replicas;
             log.info("Datasource: " + dataSource + " -> " + updateDataSource);
             dataSourceState.put(dataSource, updateDataSource);
         }
@@ -90,7 +103,7 @@ public class AutoScalingManager {
 
     public static Integer getPartitions(String dataSource) {
         String data [] = dataSource.split("_");
-        return Integer.valueOf(data[data.length - 1]);
+        return Integer.valueOf(data[data.length - 2]);
     }
 
     public static Integer getReplicas(String dataSource) {
@@ -98,9 +111,16 @@ public class AutoScalingManager {
         return Integer.valueOf(data[data.length - 1]);
     }
 
+    public static String getTier(String dataSource){
+        String data [] = dataSource.split("_");
+        return data[data.length - 3];
+    }
+
     public static String getDataSource(String dataSource){
         String data [] = dataSource.split("_");
-        String subData [] = Arrays.copyOfRange(data, 0, data.length - 2);
+        String subData [] = Arrays.copyOfRange(data, 0, data.length - 3);
         return StringUtils.join(subData, "_");
     }
+
+
 }

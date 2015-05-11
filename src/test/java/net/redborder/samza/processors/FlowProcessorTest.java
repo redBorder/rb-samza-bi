@@ -38,7 +38,7 @@ public class FlowProcessorTest extends TestCase {
     @BeforeClass
     public static void initTest() throws IOException {
         Properties properties = new Properties();
-        InputStream inputStream = new FileInputStream("src/main/config/enrichment.properties");
+        InputStream inputStream = new FileInputStream("src/main/config/flowEnrichment.properties");
         properties.load(inputStream);
 
         context = new MockTaskContext();
