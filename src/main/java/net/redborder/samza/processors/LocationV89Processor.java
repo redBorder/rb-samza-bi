@@ -23,16 +23,17 @@ import static net.redborder.samza.util.constants.DimensionValue.LOC_ASSOCIATED;
 
 public class LocationV89Processor extends Processor<Map<String, Object>> {
     final public static String LOCATION_STORE = "location";
-    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_OUTPUT_TOPIC);
+    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_FLOW_OUTPUT_TOPIC);
 
     private KeyValueStore<String, Map<String, Object>> store;
-
+    private boolean mustSend;
     private Counter counter;
 
     public LocationV89Processor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
         super(storeManager, enrichManager, config, context);
         store = storeManager.getStore(LOCATION_STORE);
         counter = context.getMetricsRegistry().newCounter(getClass().getName(), "messages");
+        mustSend = config.getBoolean("redborder.options.notify_enrichment_messages");
     }
 
     @Override
@@ -148,7 +149,7 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
 
             if (macAddress != null) store.put(macAddress + deployment_id, toCache);
             counter.inc();
-            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
+            if (mustSend) collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
         }
     }
 }

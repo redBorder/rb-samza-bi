@@ -11,14 +11,12 @@ import org.apache.samza.task.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import static net.redborder.samza.util.constants.Constants.*;
 
 public class IndexingStreamTask implements StreamTask, InitableTask, WindowableTask {
     private static final SystemStream monitorSystemStream = new SystemStream("druid_monitor", MONITOR_TOPIC);
-
     private static final Logger log = LoggerFactory.getLogger(EnrichmentStreamTask.class);
     private Counter counter;
 
@@ -41,27 +39,33 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
         Map<String, Object> message = (Map<String, Object>) envelope.getMessage();
         SystemStream systemStream = null;
 
-        if (stream.equals(ENRICHMENT_OUTPUT_TOPIC)) {
-            Object deploymentId = message.get(Dimension.DEPLOYMENT_ID);
-
-            if (deploymentId != null) {
-                String deploymentIdStr = String.valueOf(deploymentId);
-                String dataSource = FLOW_DATASOURCE + "_" + deploymentIdStr;
-                AutoScalingManager.incrementEvents(dataSource);
-                systemStream = new SystemStream("druid_flow", AutoScalingManager.getDataSourcerWithPR(dataSource));
-            } else {
-                systemStream = new SystemStream("druid_flow", FLOW_DATASOURCE + "1_1");
-            }
+        if (stream.equals(ENRICHMENT_FLOW_OUTPUT_TOPIC)) {
+            systemStream = new SystemStream("druid_flow", getDatasource(message, FLOW_DATASOURCE));
+        } else if (stream.equals(ENRICHMENT_EVENT_OUTPUT_TOPIC)) {
+            systemStream = new SystemStream("druid_flow", getDatasource(message, EVENT_DATASOURCE));
         } else if (stream.equals(MONITOR_TOPIC)) {
             systemStream = monitorSystemStream;
+        } else {
+            log.warn("Undefined input stream name: " + stream);
         }
 
         if (systemStream != null) {
             collector.send(new OutgoingMessageEnvelope(systemStream, null, message));
             counter.inc();
-        } else {
-            log.warn("Not defined input stream name: " + stream);
         }
     }
 
+    private String getDatasource(Map<String, Object> message, String defaultDatasource) {
+        Object deploymentId = message.get(Dimension.DEPLOYMENT_ID);
+        String datasource = defaultDatasource;
+
+        if (deploymentId != null) {
+            String deploymentIdStr = String.valueOf(deploymentId);
+            datasource = defaultDatasource + "_" + deploymentIdStr;
+            AutoScalingManager.incrementEvents(datasource);
+            datasource = AutoScalingManager.getDataSourcerWithPR(datasource);
+        }
+
+        return datasource;
+    }
 }

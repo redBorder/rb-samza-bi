@@ -48,8 +48,11 @@ public class NmspProcessorTest extends TestCase {
         // This store uses an in-memory map instead of samza K/V RockDB
         storeMeasure = new MockKeyValueStore();
         storeInfo = new MockKeyValueStore();
-        config = mock(Config.class);
         taskContext = new MockTaskContext();
+
+        // Mock the config to notify enrichment messages to kafka
+        config = mock(Config.class);
+        when(config.getBoolean("redborder.options.notify_enrichment_messages")).thenReturn(true);
 
         // Mock the storeManager in order to return the mock store
         // that we just instantiated
