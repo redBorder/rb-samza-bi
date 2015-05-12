@@ -29,14 +29,12 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
     private KeyValueStore<String, Map<String, Object>> storeMeasure;
     private KeyValueStore<String, Map<String, Object>> storeInfo;
     private Counter messagesCounter;
-    private boolean mustSend;
 
     public NmspProcessor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
         super(storeManager, enrichManager, config, context);
         this.messagesCounter = context.getMetricsRegistry().newCounter(getClass().getName(), "messages");
         storeMeasure = storeManager.getStore(NMSP_STORE_MEASURE);
         storeInfo = storeManager.getStore(NMSP_STORE_INFO);
-        mustSend = config.getBoolean("redborder.options.notify_enrichment_messages");
     }
 
     @Override
@@ -115,7 +113,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
 
                     storeMeasure.put(mac + deployment_id, toCache);
                     toDruid.put("timestamp", System.currentTimeMillis() / 1000);
-                    if (mustSend) collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
+                    collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
                 }
             }
         } else if (type != null && type.equals(NMSP_TYPE_INFO)) {
@@ -140,7 +138,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
             toDruid.put(CLIENT_MAC, mac);
             storeInfo.put(mac + deployment_id, toCache);
             toDruid.put("timestamp", timestamp);
-            if (mustSend) collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
+            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
         }
 
         this.messagesCounter.inc();

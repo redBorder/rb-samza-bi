@@ -28,7 +28,6 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
 
     private KeyValueStore<String, Map<String, Object>> store;
     private Map<Integer, String> cache;
-    private boolean mustSend;
     private Counter counter;
 
     public LocationV10Processor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
@@ -50,7 +49,6 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
         cache.put(257, "WAIT_ASSOCIATED");
 
         counter = context.getMetricsRegistry().newCounter(getClass().getName(), "messages");
-        mustSend = config.getBoolean("redborder.options.notify_enrichment_messages");
     }
 
     @Override
@@ -118,7 +116,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                 toDruid.put(TYPE, "mse10");
 
                 store.put(clientMac+deployment_id, toCache);
-                if (mustSend) collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
+                collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
             }
         } catch (Exception ex) {
             log.warn("MSE10 association event dropped: " + message, ex);
@@ -182,7 +180,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                     toDruid.put(DEPLOYMENT_ID, deployment_id);
 
                 store.put(clientMac+deployment_id, toCache);
-                if (mustSend) collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
+                collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
             }
         } catch (Exception ex) {
             log.warn("MSE10 locationUpdate event dropped: " + message, ex);

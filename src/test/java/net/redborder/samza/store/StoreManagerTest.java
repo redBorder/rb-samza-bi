@@ -34,7 +34,7 @@ public class StoreManagerTest extends TestCase {
     @BeforeClass
     public static void initTest() throws IOException {
         Properties properties = new Properties();
-        InputStream inputStream = new FileInputStream("src/main/config/flowEnrichment.properties");
+        InputStream inputStream = new FileInputStream("src/main/config/enrichment.properties");
         properties.load(inputStream);
 
         context = mock(TaskContext.class);

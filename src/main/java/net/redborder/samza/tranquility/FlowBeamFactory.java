@@ -13,7 +13,6 @@ import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
 import io.druid.query.aggregation.LongSumAggregatorFactory;
 import io.druid.query.aggregation.hyperloglog.HyperUniquesAggregatorFactory;
-import net.redborder.samza.tasks.EnrichmentStreamTask;
 import net.redborder.samza.util.AutoScalingManager;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -30,8 +29,6 @@ import java.util.Map;
 
 import static net.redborder.samza.util.constants.Aggregators.*;
 import static net.redborder.samza.util.constants.Dimension.*;
-import static net.redborder.samza.util.constants.Dimension.TIMESTAMP;
-import static net.redborder.samza.util.constants.Dimension.WIRELESS_STATION;
 
 /**
  * Date: 11/5/15 10:45.
@@ -42,14 +39,14 @@ public class FlowBeamFactory implements BeamFactory {
     @Override
     public Beam<Object> makeBeam(SystemStream stream, Config config)
     {
-        final int maxRows = Integer.valueOf(config.get("redborder.beam.flow.bronze.maxrows", "200000"));
+        final int maxRows = Integer.valueOf(config.get("redborder.beam.flow.maxrows", "200000"));
         final String dataSource = stream.getStream();
-        final Integer partitions  = AutoScalingManager.getPartitions(dataSource);
+        final String intermediatePersist = config.get("redborder.beam.flow.intermediatePersist", "PT20m");
+        final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
+
+        final Integer partitions = AutoScalingManager.getPartitions(dataSource);
         final Integer replicas = AutoScalingManager.getReplicas(dataSource);
         final String realDataSource = AutoScalingManager.getDataSource(dataSource);
-        log.info("DataSource: " + dataSource + " [ " + partitions + ", " + replicas +" ]");
-        final String intermediatePersist = config.get("redborder.beam.flow.bronze.intermediatePersist", "PT20m");
-        final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
 
         final List<String> dimensions = ImmutableList.of(
                 APPLICATION_ID_NAME, BITFLOW_DIRECTION, CONVERSATION, DIRECTION,
