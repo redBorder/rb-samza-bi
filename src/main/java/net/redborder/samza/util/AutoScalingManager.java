@@ -87,7 +87,7 @@ public class AutoScalingManager {
                     }
                 }
 
-                log.info("New partitions: " + partitions);
+                log.debug("New partitions: " + partitions);
             }
 
             String updateDataSource = dataSource + "_" + tier + "_" + partitions + "_" + replicas;

@@ -64,7 +64,7 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
         if(tier==null)
             tier = "bronze";
 
-        String datasource = defaultDatasource + "_" + tier + "_1_1";
+        String datasource = defaultDatasource + "_" + "none" + "_" + tier + "_1_1";
 
         if (deploymentId != null) {
             String deploymentIdStr = String.valueOf(deploymentId);
