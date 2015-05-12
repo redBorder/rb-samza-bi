@@ -54,7 +54,7 @@ public class AutoScalingManager {
             Integer partitions;
             Integer replicas;
             String tier;
-            log.info("Current dataSource: " + currentDataSource);
+            log.debug("Current dataSource: " + currentDataSource);
 
             if (currentDataSource == null) {
                 Integer round = Math.round(events / eventsPerTask);
