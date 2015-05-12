@@ -60,7 +60,11 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
     private String getDatasource(Map<String, Object> message, String defaultDatasource) {
         Object deploymentId = message.get(Dimension.DEPLOYMENT_ID);
         Object tier = message.get(Dimension.TIER);
-        String datasource = defaultDatasource + "_bronze_1_1";
+
+        if(tier==null)
+            tier = "bronze";
+
+        String datasource = defaultDatasource + "_" + tier + "_1_1";
 
         if (deploymentId != null) {
             String deploymentIdStr = String.valueOf(deploymentId);
