@@ -73,7 +73,8 @@ public class AutoScalingManager {
                 log.debug("Current partitions: " + partitions);
 
                 if (actualEvents * upPercent <= events) {
-                    if(tiersLimit.get(tier) < partitions) {
+                    Integer limit = tiersLimit.get(tier) != null ? tiersLimit.get(tier) : 1;
+                    if(limit < partitions) {
                         partitions++;
                     } else{
                         log.warn("This dataSource is " + tier + " and it has " + partitions + " partitions! LIMITED.");
@@ -90,7 +91,7 @@ public class AutoScalingManager {
             }
 
             String updateDataSource = dataSource + "_" + tier + "_" + partitions + "_" + replicas;
-            log.info("Datasource: " + dataSource + " -> " + updateDataSource);
+            log.debug("Datasource: " + dataSource + " -> " + updateDataSource);
             dataSourceState.put(dataSource, updateDataSource);
         }
         log.info("Ending updateState autoscaling ...");
