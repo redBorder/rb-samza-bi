@@ -44,7 +44,7 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
         } else if (stream.equals(ENRICHMENT_EVENT_OUTPUT_TOPIC)) {
             systemStream = new SystemStream("druid_event", getDatasource(message, EVENT_DATASOURCE));
         } else if (stream.equals(STATE_TOPIC)) {
-            systemStream = new SystemStream("druid_state", getDatasource(message, EVENT_DATASOURCE));
+            systemStream = new SystemStream("druid_state", getDatasource(message, STATE_DATASOURCE));
         } else if (stream.equals(MONITOR_TOPIC)) {
             systemStream = monitorSystemStream;
         } else {
