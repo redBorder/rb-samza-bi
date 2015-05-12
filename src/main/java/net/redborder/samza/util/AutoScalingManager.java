@@ -118,7 +118,7 @@ public class AutoScalingManager {
 
     public static String getDataSource(String dataSource){
         String data [] = dataSource.split("_");
-        String subData [] = Arrays.copyOfRange(data, 0, data.length - 3);
+        String subData [] = Arrays.copyOfRange(data, 0, data.length - 4);
         return StringUtils.join(subData, "_");
     }
 
