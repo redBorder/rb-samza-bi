@@ -1,5 +1,6 @@
 package net.redborder.samza.tasks;
 
+import net.redborder.samza.util.AutoScalingManager;
 import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.metrics.Counter;
@@ -14,15 +15,22 @@ import java.util.Map;
 
 import static net.redborder.samza.util.constants.Constants.*;
 
-public class IndexingStreamTask implements StreamTask, InitableTask {
+public class IndexingStreamTask implements StreamTask, InitableTask, WindowableTask {
     private static final SystemStream monitorSystemStream = new SystemStream("druid_monitor", MONITOR_TOPIC);
-
     private static final Logger log = LoggerFactory.getLogger(EnrichmentStreamTask.class);
     private Counter counter;
 
     @Override
     public void init(Config config, TaskContext context) throws Exception {
         this.counter = context.getMetricsRegistry().newCounter(getClass().getName(), "messages");
+        AutoScalingManager.config(config, context.getSystemStreamPartitions().size());
+
+    }
+
+    @Override
+    public void window(MessageCollector messageCollector, TaskCoordinator taskCoordinator) throws Exception {
+        AutoScalingManager.updateStates();
+        AutoScalingManager.resetStats();
     }
 
     @Override
@@ -32,11 +40,11 @@ public class IndexingStreamTask implements StreamTask, InitableTask {
         SystemStream systemStream = null;
 
         if (stream.equals(ENRICHMENT_FLOW_OUTPUT_TOPIC)) {
-            systemStream = new SystemStream(getSystemStreamName(message, "flow"), getDatasource(message, FLOW_DATASOURCE));
+            systemStream = new SystemStream("druid_flow", getDatasource(message, FLOW_DATASOURCE));
         } else if (stream.equals(ENRICHMENT_EVENT_OUTPUT_TOPIC)) {
-            systemStream = new SystemStream(getSystemStreamName(message, "event"), getDatasource(message, EVENT_DATASOURCE));
+            systemStream = new SystemStream("druid_event", getDatasource(message, EVENT_DATASOURCE));
         } else if (stream.equals(STATE_TOPIC)) {
-            systemStream = new SystemStream(getSystemStreamName(message, "state"), getDatasource(message, STATE_DATASOURCE));
+            systemStream = new SystemStream("druid_state", getDatasource(message, EVENT_DATASOURCE));
         } else if (stream.equals(MONITOR_TOPIC)) {
             systemStream = monitorSystemStream;
         } else {
@@ -49,26 +57,6 @@ public class IndexingStreamTask implements StreamTask, InitableTask {
         }
     }
 
-    private String getSystemStreamName(Map<String, Object> message, String topic) {
-        Object tier = message.get(Dimension.TIER);
-        String flowBeam = "druid_" + topic + "_bronze";
-
-        if (tier != null) {
-            String tierStr = String.valueOf(tier);
-
-            switch (tierStr) {
-                case "gold":
-                    flowBeam = "druid_" + topic + "_gold";
-                    break;
-                case "silver":
-                    flowBeam = "druid_" + topic + "_silver";
-                    break;
-            }
-        }
-
-        return flowBeam;
-    }
-
     private String getDatasource(Map<String, Object> message, String defaultDatasource) {
         Object deploymentId = message.get(Dimension.DEPLOYMENT_ID);
         String datasource = defaultDatasource;
@@ -76,6 +64,8 @@ public class IndexingStreamTask implements StreamTask, InitableTask {
         if (deploymentId != null) {
             String deploymentIdStr = String.valueOf(deploymentId);
             datasource = defaultDatasource + "_" + deploymentIdStr;
+            AutoScalingManager.incrementEvents(datasource);
+            datasource = AutoScalingManager.getDataSourcerWithPR(datasource);
         }
 
         return datasource;
