@@ -9,4 +9,6 @@ public class Aggregators {
     public final static String CLIENTS_AGGREGATOR = "clients";
     public final static String WIRELESS_STATIONS_AGGREGATOR = "wireless_stations";
     public final static String SIGNATURES_AGGREGATOR = "signatures";
+    public final static String WIRELESS_CHANNELS_AGGREGATOR = "wireless_channels";
+    public final static String SUM_WIRELESS_TX_POWER_AGGREGATOR = "sum_wireless_tx_power";
 }

@@ -35,6 +35,8 @@ public class IndexingStreamTask implements StreamTask, InitableTask {
             systemStream = new SystemStream(getSystemStreamName(message, "flow"), getDatasource(message, FLOW_DATASOURCE));
         } else if (stream.equals(ENRICHMENT_EVENT_OUTPUT_TOPIC)) {
             systemStream = new SystemStream(getSystemStreamName(message, "event"), getDatasource(message, EVENT_DATASOURCE));
+        } else if (stream.equals(STATE_TOPIC)) {
+            systemStream = new SystemStream(getSystemStreamName(message, "state"), getDatasource(message, STATE_DATASOURCE));
         } else if (stream.equals(MONITOR_TOPIC)) {
             systemStream = monitorSystemStream;
         } else {

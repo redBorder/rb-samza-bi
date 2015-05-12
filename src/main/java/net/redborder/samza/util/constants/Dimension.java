@@ -142,4 +142,12 @@ public class Dimension {
     public final static String LOC_COORDINATE_Y = "y";
     public final static String LOC_COORDINATE_Z = "z";
     public final static String LOC_COORDINATE_UNIT = "unit";
+
+    // State
+    public final static String WIRELESS_CHANNEL = "wireless_channel";
+    public final static String WIRELESS_TX_POWER = "wireless_tx_power";
+    public final static String WIRELESS_ADMIN_STATE = "wireless_admin_state";
+    public final static String WIRELESS_OP_STATE = "wireless_op_state";
+    public final static String WIRELESS_MODE = "wireless_mode";
+    public final static String WIRELESS_SLOT = "wireless_slot";
 }
