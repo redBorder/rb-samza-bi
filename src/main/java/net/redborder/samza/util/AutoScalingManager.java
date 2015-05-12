@@ -23,9 +23,9 @@ public class AutoScalingManager {
 
 
     public static void config(Config config, Integer partitions) {
-        eventsPerTask = config.getLong("redborder.indexing.eventsPerTask");
-        upPercent = config.getDouble("redborder.indexing.upPercent");
-        downPercent = config.getDouble("redborder.indexing.downPercent");
+        eventsPerTask = config.getLong("redborder.indexing.eventsPerTask", 5000);
+        upPercent = config.getDouble("redborder.indexing.upPercent", 0.80);
+        downPercent = config.getDouble("redborder.indexing.downPercent", 0.20);
         currentPartitions = partitions;
         tiersLimit.put("gold", 1000);
         tiersLimit.put("silver", 1000);
