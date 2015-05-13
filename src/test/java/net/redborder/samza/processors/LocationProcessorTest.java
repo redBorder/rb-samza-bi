@@ -139,9 +139,9 @@ public class LocationProcessorTest extends TestCase {
         coordinate.put(LOC_COORDINATE_Y, 1.241);
         coordinate.put(LOC_COORDINATE_Z, 0.0);
         contentLoc.put(LOC_COORDINATE, coordinate);
+        contentLoc.put(DEPLOYMENT_ID, deployment_id);
         contentsLoc.add(contentLoc);
         messageLocUp.put(LOC_NOTIFICATIONS, contentsLoc);
-        messageLocUp.put(DEPLOYMENT_ID, deployment_id);
 
 
         locationProcessor.process(messageLocUp, collector);
@@ -181,9 +181,9 @@ public class LocationProcessorTest extends TestCase {
         contentAssoc.put(LOC_STATUS, 3);
         contentAssoc.put(LOC_USERNAME, "");
         contentAssoc.put(TIMESTAMP, Long.valueOf(1424767310026L));
+        contentAssoc.put(DEPLOYMENT_ID, deployment_id);
         contentsAssoc.add(contentAssoc);
         messageAssoc.put(LOC_NOTIFICATIONS, contentsAssoc);
-        messageAssoc.put(DEPLOYMENT_ID, deployment_id);
 
         locationProcessor.process(messageAssoc, collector);
 
@@ -227,7 +227,11 @@ public class LocationProcessorTest extends TestCase {
 
         result.clear();
 
-        messageLocUp.put(DEPLOYMENT_ID, "other_tenant");
+        contentLoc.put(DEPLOYMENT_ID, "other_tenant");
+        contentsLoc.clear();
+        contentsLoc.add(contentLoc);
+        messageLocUp.put(LOC_NOTIFICATIONS, contentsLoc);
+
         locationProcessor.process(messageAssoc, collector);
         locationProcessor.process(messageLocUp, collector);
 

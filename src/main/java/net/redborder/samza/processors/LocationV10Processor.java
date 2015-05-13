@@ -82,13 +82,14 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
     public void processAssociation(Map<String, Object> message, MessageCollector collector) {
         try {
             List<Map<String, Object>> messages = (ArrayList) message.get("notifications");
-            String deployment_id = message.get(Dimension.DEPLOYMENT_ID) == null ? "" : (String) message.get(Dimension.DEPLOYMENT_ID);
 
             for(Map<String, Object> msg : messages) {
                 log.trace("Processing mse10Association " + msg);
                 Map<String, Object> toCache = new HashMap<>();
                 Map<String, Object> toDruid = new HashMap<>();
+
                 String clientMac = (String) msg.get(LOC_DEVICEID);
+                String deployment_id = msg.get(Dimension.DEPLOYMENT_ID) == null ? "" : (String) msg.get(Dimension.DEPLOYMENT_ID);
 
                 if (msg.get(LOC_SSID) != null)
                     toCache.put(WIRELESS_ID, msg.get(LOC_SSID));
@@ -127,7 +128,6 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
     public void processLocationUpdate(Map<String, Object> message, MessageCollector collector) {
         try {
             List<Map<String, Object>> messages = (ArrayList) message.get("notifications");
-            String deployment_id = message.get(Dimension.DEPLOYMENT_ID) == null ? "" : (String) message.get(Dimension.DEPLOYMENT_ID);
 
             for(Map<String, Object> msg : messages) {
                 log.trace("Processing mse10LocationUpdate " + msg);
@@ -135,6 +135,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                 Map<String, Object> toCache = new HashMap<>();
                 Map<String, Object> toDruid = new HashMap<>();
 
+                String deployment_id = msg.get(Dimension.DEPLOYMENT_ID) == null ? "" : (String) msg.get(Dimension.DEPLOYMENT_ID);
                 String clientMac = (String) msg.get(LOC_DEVICEID);
                 String locationMapHierarchy = (String) msg.get(LOC_MAP_HIERARCHY_V10);
 
