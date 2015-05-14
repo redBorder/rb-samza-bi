@@ -50,7 +50,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
         String type = (String) message.get(TYPE);
         String mac = (String) message.remove(CLIENT_MAC);
         Integer deployment = (Integer) message.get(Dimension.DEPLOYMENT_ID);
-        String deployment_id =  deployment == null ? "" : deployment.toString();
+        String deployment_id = deployment == null ? "" : deployment.toString();
 
         if (type != null && type.equals(NMSP_TYPE_MEASURE)) {
             List<String> apMacs = (List<String>) message.get(NMSP_AP_MAC);
@@ -103,13 +103,16 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                     }
                 }
 
-                if(toDruid != null) {
+                if (toDruid != null) {
                     toDruid.put(BYTES, 0);
                     toDruid.put(PKTS, 0);
                     toDruid.put(TYPE, "nmsp-measure");
                     toDruid.put(CLIENT_MAC, mac);
                     toDruid.putAll(toCache);
                     toDruid.put(NMSP_DOT11STATUS, dot11Status);
+
+                    if (!deployment_id.equals(""))
+                        toDruid.put(DEPLOYMENT_ID, deployment_id);
 
                     storeMeasure.put(mac + deployment_id, toCache);
                     toDruid.put("timestamp", System.currentTimeMillis() / 1000);
@@ -126,7 +129,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
 
             Integer timestamp;
 
-            if(message.get("timestamp") != null){
+            if (message.get("timestamp") != null) {
                 timestamp = Integer.valueOf(String.valueOf(message.get("timestamp")));
             } else {
                 timestamp = Long.valueOf(System.currentTimeMillis() / 1000).intValue();
