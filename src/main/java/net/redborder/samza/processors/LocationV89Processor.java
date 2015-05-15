@@ -3,7 +3,6 @@ package net.redborder.samza.processors;
 import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.constants.Constants;
-import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.metrics.Counter;
 import org.apache.samza.storage.kv.KeyValueStore;
@@ -49,7 +48,7 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
         Double latitude, longitude;
         String[] zone;
 
-        String deployment_id = message.get(Dimension.DEPLOYMENT_ID) == null ? "" : (String) message.get(Dimension.DEPLOYMENT_ID);
+        String namespace_id = message.get(NAMESPACE_ID) == null ? "" : (String) message.get(NAMESPACE_ID);
         mseEventContent = (Map<String, Object>) message.get(LOC_STREAMING_NOTIFICATION);
 
         if (mseEventContent != null) {
@@ -132,8 +131,8 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
             toDruid.put(CLIENT_SNR, "unknown");
             toDruid.put(CLIENT_SNR_NUM, 0);
 
-            if (!deployment_id.equals(""))
-                toDruid.put(DEPLOYMENT_ID, deployment_id);
+            if (!namespace_id.equals(""))
+                toDruid.put(NAMESPACE_ID, namespace_id);
 
             toDruid.put(BYTES, 0);
             toDruid.put(PKTS, 0);
@@ -145,7 +144,7 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
                 toDruid.put("timestamp", System.currentTimeMillis() / 1000);
             }
 
-            if (macAddress != null) store.put(macAddress + deployment_id, toCache);
+            if (macAddress != null) store.put(macAddress + namespace_id, toCache);
             counter.inc();
             collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
         }

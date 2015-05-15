@@ -3,7 +3,6 @@ package net.redborder.samza.processors;
 import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.constants.Constants;
-import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.metrics.Counter;
 import org.apache.samza.storage.kv.KeyValueStore;
@@ -49,7 +48,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
 
         String type = (String) message.get(TYPE);
         String mac = (String) message.remove(CLIENT_MAC);
-        String deployment_id = message.get(Dimension.DEPLOYMENT_ID) == null ? "" : (String) message.get(Dimension.DEPLOYMENT_ID);
+        String namespace_id = message.get(NAMESPACE_ID) == null ? "" : (String) message.get(NAMESPACE_ID);
 
 
         if (type != null && type.equals(NMSP_TYPE_MEASURE)) {
@@ -74,7 +73,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                 else
                     toCache.put(CLIENT_RSSI, "excelent");
 
-                Map<String, Object> infoCache = storeInfo.get(mac + deployment_id);
+                Map<String, Object> infoCache = storeInfo.get(mac + namespace_id);
                 String dot11Status = "PROBING";
 
                 if (infoCache == null) {
@@ -95,7 +94,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                             toDruid = null;
                         }
                     } else {
-                        storeInfo.delete(mac + deployment_id);
+                        storeInfo.delete(mac + namespace_id);
                         toCache.put(CLIENT_RSSI_NUM, rssi);
                         toCache.put(WIRELESS_STATION, apMac);
                         toCache.put(NMSP_DOT11STATUS, "ASSOCIATED");
@@ -111,7 +110,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                     toDruid.putAll(toCache);
                     toDruid.put(NMSP_DOT11STATUS, dot11Status);
 
-                    storeMeasure.put(mac + deployment_id, toCache);
+                    storeMeasure.put(mac + namespace_id, toCache);
                     toDruid.put("timestamp", System.currentTimeMillis() / 1000);
                     collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
                 }
@@ -132,11 +131,11 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
             toDruid.put(PKTS, 0);
             toDruid.put(TYPE, "nmsp-info");
 
-            if (!deployment_id.equals(""))
-                toDruid.put(DEPLOYMENT_ID, deployment_id);
+            if (!namespace_id.equals(""))
+                toDruid.put(NAMESPACE_ID, namespace_id);
 
             toDruid.put(CLIENT_MAC, mac);
-            storeInfo.put(mac + deployment_id, toCache);
+            storeInfo.put(mac + namespace_id, toCache);
             toDruid.put("timestamp", timestamp);
             collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
         }

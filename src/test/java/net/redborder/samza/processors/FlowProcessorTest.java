@@ -92,18 +92,18 @@ public class FlowProcessorTest extends TestCase {
     }
 
     @Test
-    public void enrichmentCorrectlyUsingDeploymentId() {
+    public void enrichmentCorrectlyUsingNamespaceId() {
         MockMessageCollector collector = new MockMessageCollector();
         Map<String, Object> expected = new HashMap<>();
 
-        String deployment_id = "tenant_A";
+        String namespace_id = "tenant_A";
 
         // The message that we will enrich
         Map<String, Object> message = new HashMap<>();
         message.put(CLIENT_MAC, "00:00:00:00:00:00");
         message.put(BYTES, 23L);
         message.put(PKTS, 2L);
-        message.put(DEPLOYMENT_ID, deployment_id);
+        message.put(NAMESPACE_ID, namespace_id);
         message.put(TIMESTAMP, Long.valueOf(1429088471L));
         expected.putAll(message);
         expected.put(DURATION, 0L);
@@ -111,12 +111,12 @@ public class FlowProcessorTest extends TestCase {
         for (String store : stores) {
             Map<String, Object> cache = new HashMap<>();
             // The data that will be in each cache ...
-            cache.put("column_" + store + deployment_id, "value_" + store);
-            cache.put("column2_" + store + deployment_id, "value2" + store);
-            storeManager.getStore(store).put("00:00:00:00:00:00" + deployment_id, cache);
+            cache.put("column_" + store + namespace_id, "value_" + store);
+            cache.put("column2_" + store + namespace_id, "value2" + store);
+            storeManager.getStore(store).put("00:00:00:00:00:00" + namespace_id, cache);
             // ... will end in the expected message too
-            expected.put("column_" + store + deployment_id, "value_" + store);
-            expected.put("column2_" + store + deployment_id, "value2" + store);
+            expected.put("column_" + store + namespace_id, "value_" + store);
+            expected.put("column2_" + store + namespace_id, "value2" + store);
         }
 
         // Send the message

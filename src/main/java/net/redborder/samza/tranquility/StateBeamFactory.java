@@ -45,7 +45,7 @@ public class StateBeamFactory implements BeamFactory
         final List<String> dimensions = ImmutableList.of(
             WIRELESS_STATION, TYPE, WIRELESS_CHANNEL, WIRELESS_TX_POWER,
             WIRELESS_ADMIN_STATE, WIRELESS_OP_STATE, WIRELESS_MODE,
-            WIRELESS_SLOT, SENSOR_NAME, SENSOR_ID, DEPLOYMENT_ID,
+            WIRELESS_SLOT, SENSOR_NAME, SENSOR_ID, DEPLOYMENT, NAMESPACE, NAMESPACE_ID,
             ORGANIZATION, MARKET
         );
 

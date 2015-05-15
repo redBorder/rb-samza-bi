@@ -1,11 +1,12 @@
 package net.redborder.samza.store;
 
-import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.storage.kv.KeyValueStore;
 import org.apache.samza.task.TaskContext;
 
 import java.util.*;
+
+import static net.redborder.samza.util.constants.Dimension.*;
 
 public class StoreManager {
 
@@ -16,7 +17,7 @@ public class StoreManager {
         List<String> storesList = config.getList("redborder.stores", Collections.<String>emptyList());
 
         for (String store : storesList) {
-            storesKeys.put(store, config.get("redborder.store." + store + ".key", Dimension.CLIENT_MAC));
+            storesKeys.put(store, config.get("redborder.store." + store + ".key", CLIENT_MAC));
             stores.put(store, (KeyValueStore<String, Map<String, Object>>) context.getStore(store));
         }
     }
@@ -31,8 +32,8 @@ public class StoreManager {
 
         for (Map.Entry<String, KeyValueStore<String, Map<String, Object>>> store : stores.entrySet()) {
             String key = (String) message.get(storesKeys.get(store.getKey()));
-            String deployment_id = message.get(Dimension.DEPLOYMENT_ID) == null ? "" : String.valueOf(message.get(Dimension.DEPLOYMENT_ID));
-            Map<String, Object> contents = store.getValue().get(key + deployment_id);
+            String namespace_id = message.get(NAMESPACE_ID) == null ? "" : String.valueOf(message.get(NAMESPACE_ID));
+            Map<String, Object> contents = store.getValue().get(key + namespace_id);
             if (contents != null) enrichment.putAll(contents);
         }
 

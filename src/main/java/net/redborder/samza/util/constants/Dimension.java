@@ -62,7 +62,9 @@ public class Dimension {
     public final static String HNBGEOLOCATION = "hnbgeolocation";
     public final static String RAT = "rat";
     public final static String DOT11PROTOCOL = "dot11_protocol";
-    public final static String DEPLOYMENT_ID = "deployment_id";
+    public final static String DEPLOYMENT = "deployment";
+    public final static String NAMESPACE = "namespace";
+    public final static String NAMESPACE_ID = "namespace_id";
     public final static String TIER = "tier";
 
     // Event

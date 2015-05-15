@@ -1,7 +1,6 @@
 package net.redborder.samza.tasks;
 
 import net.redborder.samza.util.AutoScalingManager;
-import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.metrics.Counter;
 import org.apache.samza.system.IncomingMessageEnvelope;
@@ -14,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 import static net.redborder.samza.util.constants.Constants.*;
+import static net.redborder.samza.util.constants.Dimension.NAMESPACE_ID;
+import static net.redborder.samza.util.constants.Dimension.TIER;
 
 public class IndexingStreamTask implements StreamTask, InitableTask, WindowableTask {
     private static final SystemStream monitorSystemStream = new SystemStream("druid_monitor", MONITOR_TOPIC);
@@ -58,13 +59,13 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
     }
 
     private String getDatasource(Map<String, Object> message, String defaultDatasource) {
-        Object deploymentId = message.get(Dimension.DEPLOYMENT_ID);
-        Object tier = message.get(Dimension.TIER);
+        Object namespaceId = message.get(NAMESPACE_ID);
+        Object tier = message.get(TIER);
         String datasource = defaultDatasource + "_bronze_1_1";
 
-        if (deploymentId != null) {
-            String deploymentIdStr = String.valueOf(deploymentId);
-            datasource = defaultDatasource + "_" + deploymentIdStr + "_" + tier;
+        if (namespaceId != null) {
+            String namespaceIdStr = String.valueOf(namespaceId);
+            datasource = defaultDatasource + "_" + namespaceIdStr + "_" + tier;
             AutoScalingManager.incrementEvents(datasource);
             datasource = AutoScalingManager.getDataSourcerWithPR(datasource);
         }

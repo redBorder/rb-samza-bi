@@ -3,7 +3,6 @@ package net.redborder.samza.processors;
 import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.constants.Constants;
-import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.metrics.Counter;
 import org.apache.samza.storage.kv.KeyValueStore;
@@ -82,7 +81,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
     public void processAssociation(Map<String, Object> message, MessageCollector collector) {
         try {
             List<Map<String, Object>> messages = (ArrayList) message.get("notifications");
-            String deployment_id = message.get(Dimension.DEPLOYMENT_ID) == null ? "" : (String) message.get(Dimension.DEPLOYMENT_ID);
+            String namespace_id = message.get(NAMESPACE_ID) == null ? "" : (String) message.get(NAMESPACE_ID);
 
             for(Map<String, Object> msg : messages) {
                 log.trace("Processing mse10Association " + msg);
@@ -115,7 +114,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                 toDruid.put(PKTS, 0);
                 toDruid.put(TYPE, "mse10");
 
-                store.put(clientMac+deployment_id, toCache);
+                store.put(clientMac+namespace_id, toCache);
                 collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
             }
         } catch (Exception ex) {
@@ -127,7 +126,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
     public void processLocationUpdate(Map<String, Object> message, MessageCollector collector) {
         try {
             List<Map<String, Object>> messages = (ArrayList) message.get("notifications");
-            String deployment_id = message.get(Dimension.DEPLOYMENT_ID) == null ? "" : (String) message.get(Dimension.DEPLOYMENT_ID);
+            String namespace_id = message.get(NAMESPACE_ID) == null ? "" : (String) message.get(NAMESPACE_ID);
 
             for(Map<String, Object> msg : messages) {
                 log.trace("Processing mse10LocationUpdate " + msg);
@@ -154,7 +153,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                         toCache.put(CLIENT_ZONE, locations[3]);
                 }
 
-                Map<String, Object> assocCache = store.get(clientMac+deployment_id);
+                Map<String, Object> assocCache = store.get(clientMac+namespace_id);
 
                 if(assocCache!=null){
                     toCache.putAll(assocCache);
@@ -176,10 +175,10 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                 toDruid.put(CLIENT_MAC, clientMac);
                 toDruid.put(TYPE, "mse10");
 
-                if (!deployment_id.equals(""))
-                    toDruid.put(DEPLOYMENT_ID, deployment_id);
+                if (!namespace_id.equals(""))
+                    toDruid.put(NAMESPACE_ID, namespace_id);
 
-                store.put(clientMac+deployment_id, toCache);
+                store.put(clientMac+namespace_id, toCache);
                 collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
             }
         } catch (Exception ex) {

@@ -140,7 +140,7 @@ public class NmspProcessorTest extends TestCase {
         message.put(CLIENT_MAC, "00:00:00:00:00:00");
         message.put(NMSP_AP_MAC, ap_macs);
         message.put(NMSP_RSSI, rssi);
-        message.put(DEPLOYMENT_ID, "tenant_A");
+        message.put(NAMESPACE_ID, "tenant_A");
         message.put(TYPE, NMSP_TYPE_MEASURE);
         nmspProcessor.process(message, collector);
 
@@ -155,7 +155,7 @@ public class NmspProcessorTest extends TestCase {
         message.put(CLIENT_MAC, "00:00:00:00:00:00");
         message.put(NMSP_AP_MAC, ap_macs);
         message.put(NMSP_RSSI, rssi);
-        message.put(DEPLOYMENT_ID, "tenant_B");
+        message.put(NAMESPACE_ID, "tenant_B");
         message.put(TYPE, NMSP_TYPE_MEASURE);
         nmspProcessor.process(message, collector);
 

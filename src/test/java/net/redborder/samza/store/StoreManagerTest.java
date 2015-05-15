@@ -2,7 +2,6 @@ package net.redborder.samza.store;
 
 import junit.framework.TestCase;
 import net.redborder.samza.util.MockKeyValueStore;
-import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.task.TaskContext;
 import org.junit.BeforeClass;
@@ -16,7 +15,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-import static org.mockito.Mockito.*;
+import static net.redborder.samza.util.constants.Dimension.CLIENT_MAC;
+import static net.redborder.samza.util.constants.Dimension.NAMESPACE_ID;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class StoreManagerTest extends TestCase {
@@ -49,7 +51,7 @@ public class StoreManagerTest extends TestCase {
         when(config.getList("redborder.stores", Collections.<String>emptyList())).thenReturn(stores);
         for (String store : stores) {
             String storeKey = properties.getProperty("redborder.store." + store + ".key");
-            when(config.get("redborder.store." + store + ".key", Dimension.CLIENT_MAC)).thenReturn(storeKey);
+            when(config.get("redborder.store." + store + ".key", CLIENT_MAC)).thenReturn(storeKey);
         }
 
         storeManager = new StoreManager(config, context);
@@ -75,32 +77,32 @@ public class StoreManagerTest extends TestCase {
     }
 
     @Test
-    public void enrichmentUsingDeploymentId() {
+    public void enrichmentUsingNamespaceId() {
         Map<String, Object> result = new HashMap<>();
 
-        String deployment_id_a = "tenant_A";
-        String deployment_id_b = "tenant_B";
+        String namespace_id_a = "tenant_A";
+        String namespace_id_b = "tenant_B";
 
         Map<String, Object> message = new HashMap<>();
-        message.put(Dimension.CLIENT_MAC, "testing-mac");
-        message.put(Dimension.DEPLOYMENT_ID, deployment_id_a);
+        message.put(CLIENT_MAC, "testing-mac");
+        message.put(NAMESPACE_ID, namespace_id_a);
 
         result.putAll(message);
 
         for (String store : stores) {
             Map<String, Object> cache = new HashMap<>();
-            cache.put(store + "-enrichment-key" + deployment_id_a, store + "-enrichment-value");
+            cache.put(store + "-enrichment-key" + namespace_id_a, store + "-enrichment-value");
             result.putAll(cache);
-            storeManager.getStore(store).put("testing-mac" + deployment_id_a, cache);
+            storeManager.getStore(store).put("testing-mac" + namespace_id_a, cache);
         }
 
         Map<String, Object> enrichCache = storeManager.enrich(message);
         assertEquals(result, enrichCache);
 
-        message.put(Dimension.DEPLOYMENT_ID, deployment_id_b);
+        message.put(NAMESPACE_ID, namespace_id_b);
 
-        Map<String, Object> enrichCacheWithoutDeployment = storeManager.enrich(message);
-        assertEquals(message, enrichCacheWithoutDeployment);
+        Map<String, Object> enrichCacheWithoutNamespace = storeManager.enrich(message);
+        assertEquals(message, enrichCacheWithoutNamespace);
     }
 }
 
