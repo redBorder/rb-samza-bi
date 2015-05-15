@@ -45,7 +45,7 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
         } else if (stream.equals(ENRICHMENT_EVENT_OUTPUT_TOPIC)) {
             systemStream = new SystemStream("druid_event", getDatasource(message, EVENT_DATASOURCE));
         } else if (stream.equals(STATE_TOPIC)) {
-            systemStream = new SystemStream("druid_state", getDatasource(message, EVENT_DATASOURCE));
+            systemStream = new SystemStream("druid_state", getDatasource(message, STATE_DATASOURCE));
         } else if (stream.equals(MONITOR_TOPIC)) {
             systemStream = monitorSystemStream;
         } else {
@@ -61,7 +61,11 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
     private String getDatasource(Map<String, Object> message, String defaultDatasource) {
         Object namespaceId = message.get(NAMESPACE_ID);
         Object tier = message.get(TIER);
-        String datasource = defaultDatasource + "_bronze_1_1";
+
+        if(tier==null)
+            tier = "bronze";
+
+        String datasource = defaultDatasource + "_" + "none" + "_" + tier + "_1_1";
 
         if (namespaceId != null) {
             String namespaceIdStr = String.valueOf(namespaceId);

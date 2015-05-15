@@ -81,13 +81,14 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
     public void processAssociation(Map<String, Object> message, MessageCollector collector) {
         try {
             List<Map<String, Object>> messages = (ArrayList) message.get("notifications");
-            String namespace_id = message.get(NAMESPACE_ID) == null ? "" : (String) message.get(NAMESPACE_ID);
 
             for(Map<String, Object> msg : messages) {
                 log.trace("Processing mse10Association " + msg);
                 Map<String, Object> toCache = new HashMap<>();
                 Map<String, Object> toDruid = new HashMap<>();
+
                 String clientMac = (String) msg.get(LOC_DEVICEID);
+                String namespace_id = msg.get(NAMESPACE_ID) == null ? "" : (String) msg.get(NAMESPACE_ID);
 
                 if (msg.get(LOC_SSID) != null)
                     toCache.put(WIRELESS_ID, msg.get(LOC_SSID));
@@ -126,7 +127,6 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
     public void processLocationUpdate(Map<String, Object> message, MessageCollector collector) {
         try {
             List<Map<String, Object>> messages = (ArrayList) message.get("notifications");
-            String namespace_id = message.get(NAMESPACE_ID) == null ? "" : (String) message.get(NAMESPACE_ID);
 
             for(Map<String, Object> msg : messages) {
                 log.trace("Processing mse10LocationUpdate " + msg);
@@ -134,6 +134,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                 Map<String, Object> toCache = new HashMap<>();
                 Map<String, Object> toDruid = new HashMap<>();
 
+                String namespace_id = msg.get(NAMESPACE_ID) == null ? "" : (String) msg.get(NAMESPACE_ID);
                 String clientMac = (String) msg.get(LOC_DEVICEID);
                 String locationMapHierarchy = (String) msg.get(LOC_MAP_HIERARCHY_V10);
 

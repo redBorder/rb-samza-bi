@@ -48,8 +48,9 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
 
         String type = (String) message.get(TYPE);
         String mac = (String) message.remove(CLIENT_MAC);
-        String namespace_id = message.get(NAMESPACE_ID) == null ? "" : (String) message.get(NAMESPACE_ID);
 
+        Integer namespace = (Integer) message.get(NAMESPACE_ID);
+        String namespace_id = namespace == null ? "" : namespace.toString();
 
         if (type != null && type.equals(NMSP_TYPE_MEASURE)) {
             List<String> apMacs = (List<String>) message.get(NMSP_AP_MAC);
@@ -82,7 +83,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                     toCache.put(NMSP_DOT11STATUS, "ASSOCIATED");
                     dot11Status = "PROBING";
                 } else {
-                    Long last_seen = (Long) infoCache.get("last_seen");
+                    Integer last_seen = (Integer) infoCache.get("last_seen");
                     if ((last_seen + 3600) > (System.currentTimeMillis() / 1000)) {
                         String apAssociated = (String) infoCache.get(WIRELESS_STATION);
                         if (apMacs.contains(apAssociated)) {
@@ -102,13 +103,16 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                     }
                 }
 
-                if(toDruid != null) {
+                if (toDruid != null) {
                     toDruid.put(BYTES, 0);
                     toDruid.put(PKTS, 0);
                     toDruid.put(TYPE, "nmsp-measure");
                     toDruid.put(CLIENT_MAC, mac);
                     toDruid.putAll(toCache);
                     toDruid.put(NMSP_DOT11STATUS, dot11Status);
+
+                    if (!namespace_id.equals(""))
+                        toDruid.put(NAMESPACE_ID, namespace_id);
 
                     storeMeasure.put(mac + namespace_id, toCache);
                     toDruid.put("timestamp", System.currentTimeMillis() / 1000);
@@ -123,7 +127,14 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                 toCache.put(SRC_VLAN, vlan);
             }
 
-            Long timestamp = message.get("timestamp") != null ? Long.valueOf(String.valueOf(message.get("timestamp"))) : System.currentTimeMillis() / 1000;
+            Integer timestamp;
+
+            if (message.get("timestamp") != null) {
+                timestamp = Integer.valueOf(String.valueOf(message.get("timestamp")));
+            } else {
+                timestamp = Long.valueOf(System.currentTimeMillis() / 1000).intValue();
+            }
+
             toCache.putAll(message);
             toCache.put("last_seen", timestamp);
             toDruid.putAll(toCache);
