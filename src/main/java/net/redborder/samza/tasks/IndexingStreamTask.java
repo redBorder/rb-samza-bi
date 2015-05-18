@@ -19,19 +19,19 @@ import static net.redborder.samza.util.constants.Dimension.TIER;
 public class IndexingStreamTask implements StreamTask, InitableTask, WindowableTask {
     private static final SystemStream monitorSystemStream = new SystemStream("druid_monitor", MONITOR_TOPIC);
     private static final Logger log = LoggerFactory.getLogger(EnrichmentStreamTask.class);
+    private AutoScalingManager autoScalingManager;
     private Counter counter;
 
     @Override
     public void init(Config config, TaskContext context) throws Exception {
         this.counter = context.getMetricsRegistry().newCounter(getClass().getName(), "messages");
-        AutoScalingManager.config(config, context.getSystemStreamPartitions().size());
-
+        autoScalingManager = new AutoScalingManager(config, context.getSystemStreamPartitions().size());
     }
 
     @Override
     public void window(MessageCollector messageCollector, TaskCoordinator taskCoordinator) throws Exception {
-        AutoScalingManager.updateStates();
-        AutoScalingManager.resetStats();
+        autoScalingManager.updateStates();
+        autoScalingManager.resetStats();
     }
 
     @Override
@@ -70,8 +70,8 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
         if (namespaceId != null) {
             String namespaceIdStr = String.valueOf(namespaceId);
             datasource = defaultDatasource + "_" + namespaceIdStr + "_" + tier;
-            AutoScalingManager.incrementEvents(datasource);
-            datasource = AutoScalingManager.getDataSourcerWithPR(datasource);
+            autoScalingManager.incrementEvents(datasource);
+            datasource = autoScalingManager.getDataSourcerWithPR(datasource);
         }
 
         return datasource;

@@ -12,7 +12,7 @@ import io.druid.granularity.QueryGranularity;
 import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
 import io.druid.query.aggregation.LongSumAggregatorFactory;
-import net.redborder.samza.util.AutoScalingManager;
+import net.redborder.samza.util.AutoScalingUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -38,9 +38,9 @@ public class EventBeamFactory implements BeamFactory
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
         final String dataSource = stream.getStream();
 
-        final Integer partitions = AutoScalingManager.getPartitions(dataSource);
-        final Integer replicas = AutoScalingManager.getReplicas(dataSource);
-        final String realDataSource = AutoScalingManager.getDataSource(dataSource);
+        final Integer partitions = AutoScalingUtils.getPartitions(dataSource);
+        final Integer replicas = AutoScalingUtils.getReplicas(dataSource);
+        final String realDataSource = AutoScalingUtils.getDataSource(dataSource);
 
         final List<String> dimensions = ImmutableList.of(
             ACTION, CLASSIFICATION, CONVERSATION, DOMAIN_NAME, ETHLENGTH_RANGE,
