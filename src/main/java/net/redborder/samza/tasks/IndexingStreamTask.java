@@ -1,6 +1,6 @@
 package net.redborder.samza.tasks;
 
-import net.redborder.samza.util.AutoScalingManager;
+import net.redborder.samza.indexing.autoscaling.AutoScalingManager;
 import org.apache.samza.config.Config;
 import org.apache.samza.metrics.Counter;
 import org.apache.samza.system.IncomingMessageEnvelope;

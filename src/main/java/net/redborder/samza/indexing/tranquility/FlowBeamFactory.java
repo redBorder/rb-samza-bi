@@ -1,4 +1,4 @@
-package net.redborder.samza.tranquility;
+package net.redborder.samza.indexing.tranquility;
 
 import com.google.common.collect.ImmutableList;
 import com.metamx.common.Granularity;
@@ -13,7 +13,7 @@ import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
 import io.druid.query.aggregation.LongSumAggregatorFactory;
 import io.druid.query.aggregation.hyperloglog.HyperUniquesAggregatorFactory;
-import net.redborder.samza.util.AutoScalingUtils;
+import net.redborder.samza.indexing.autoscaling.AutoScalingUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;

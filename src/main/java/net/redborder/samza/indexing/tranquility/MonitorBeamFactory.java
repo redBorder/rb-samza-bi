@@ -1,4 +1,4 @@
-package net.redborder.samza.tranquility;
+package net.redborder.samza.indexing.tranquility;
 
 import com.google.common.collect.ImmutableList;
 import com.metamx.common.Granularity;

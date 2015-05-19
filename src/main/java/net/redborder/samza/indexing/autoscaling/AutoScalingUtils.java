@@ -1,4 +1,4 @@
-package net.redborder.samza.util;
+package net.redborder.samza.indexing.autoscaling;
 
 import org.apache.commons.lang.StringUtils;
 

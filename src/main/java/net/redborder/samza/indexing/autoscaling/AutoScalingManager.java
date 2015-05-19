@@ -1,4 +1,4 @@
-package net.redborder.samza.util;
+package net.redborder.samza.indexing.autoscaling;
 
 import org.apache.samza.config.Config;
 import org.slf4j.Logger;
