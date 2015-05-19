@@ -4,7 +4,7 @@ import org.apache.samza.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AutoScalingManager {
@@ -13,20 +13,37 @@ public class AutoScalingManager {
     private Map<String, Long> eventsState = new ConcurrentHashMap<>();
     private Map<String, String> dataSourceState = new ConcurrentHashMap<>();
     private Map<String, Integer> tiersLimit = new ConcurrentHashMap<>();
+    private Map<String, Integer> currentPartitions = new HashMap<>();
 
     private static Double upPercent = 0.80;
     private static Double downPercent = 0.20;
     private static long eventsPerTask = 10000;
-    private Integer currentPartitions;
 
-    public AutoScalingManager(Config config, Integer partitions) {
+    public AutoScalingManager(Config config) {
         eventsPerTask = config.getLong("redborder.indexing.eventsPerTask", 5000);
         upPercent = config.getDouble("redborder.indexing.upPercent", 0.80);
         downPercent = config.getDouble("redborder.indexing.downPercent", 0.20);
-        currentPartitions = partitions;
         tiersLimit.put("gold", 1000);
         tiersLimit.put("silver", 1000);
         tiersLimit.put("bronze", 1000);
+
+        List<String> topicsAutoscaling = config.getList("redborder.indexing.autoscaling.topics",
+                Arrays.asList("rb_flow_post", "rb_event_post"));
+
+        for (String topic : topicsAutoscaling) {
+            String realData = "";
+
+            if (topic.contains("rb_flow"))
+                realData = "rb_flow";
+            else if (topic.contains("rb_monitor"))
+                realData = "rb_monitor";
+            else if (topic.contains("rb_event"))
+                realData = "rb_event";
+            else if (topic.contains("rb_state"))
+                realData = "rb_state";
+
+            currentPartitions.put(realData, config.getInt("redborder.kafka." + topic + ".partitions", 4));
+        }
     }
 
     public void incrementEvents(String dataSource) {
@@ -44,51 +61,62 @@ public class AutoScalingManager {
         log.info("The current state is: " + eventsState);
         for (Map.Entry<String, Long> entry : eventsState.entrySet()) {
             String dataSource = entry.getKey();
-            Long events = (entry.getValue() / 60) * currentPartitions;
 
-            String currentDataSource = dataSourceState.get(dataSource);
-            Integer partitions;
-            Integer replicas;
-            String tier;
-            log.debug("Current dataSource: " + currentDataSource);
+            String realData = null;
 
-            if (currentDataSource == null) {
-                Integer round = Math.round(events / eventsPerTask);
-                partitions = round == 0 ? 1 : round;
-                replicas = 1;
-                tier = "bronze";
-            } else {
-                partitions = AutoScalingUtils.getPartitions(currentDataSource);
-                replicas = AutoScalingUtils.getReplicas(currentDataSource);
-                tier = AutoScalingUtils.getTier(currentDataSource);
-
-                Long actualEvents = partitions * eventsPerTask;
-
-                log.debug("Support events: " + actualEvents + " toDown: " + actualEvents * downPercent + " toUp: " + actualEvents * upPercent);
-                log.debug("Current events: " + events);
-                log.debug("Current partitions: " + partitions);
-
-                if (actualEvents * upPercent <= events) {
-                    Integer limit = tiersLimit.get(tier) != null ? tiersLimit.get(tier) : 1;
-                    if(partitions < limit) {
-                        partitions++;
-                    } else{
-                        log.warn("This dataSource is " + tier + " and it has " + partitions + " partitions! LIMITED.");
-                    }
-                } else if (actualEvents * downPercent >= events) {
-                    if (partitions > 1) {
-                        partitions--;
-                    } else {
-                        partitions = 1;
-                    }
+            for (String topic : currentPartitions.keySet()) {
+                if (dataSource.contains(topic)) {
+                    realData = topic;
+                    break;
                 }
-
-                log.debug("New partitions: " + partitions);
             }
 
-            String updateDataSource = dataSource + "_" + tier + "_" + partitions + "_" + replicas;
-            log.debug("Datasource: " + dataSource + " -> " + updateDataSource);
-            dataSourceState.put(dataSource, updateDataSource);
+            if (realData != null) {
+                Long events = (entry.getValue() / 60) * currentPartitions.get(realData);
+                String currentDataSource = dataSourceState.get(dataSource);
+                Integer partitions;
+                Integer replicas;
+                String tier;
+                log.debug("Current dataSource: " + currentDataSource);
+
+                if (currentDataSource == null) {
+                    Integer round = Math.round(events / eventsPerTask);
+                    partitions = round == 0 ? 1 : round;
+                    replicas = 1;
+                    tier = "bronze";
+                } else {
+                    partitions = AutoScalingUtils.getPartitions(currentDataSource);
+                    replicas = AutoScalingUtils.getReplicas(currentDataSource);
+                    tier = AutoScalingUtils.getTier(currentDataSource);
+
+                    Long actualEvents = partitions * eventsPerTask;
+
+                    log.debug("Support events: " + actualEvents + " toDown: " + actualEvents * downPercent + " toUp: " + actualEvents * upPercent);
+                    log.debug("Current events: " + events);
+                    log.debug("Current partitions: " + partitions);
+
+                    if (actualEvents * upPercent <= events) {
+                        Integer limit = tiersLimit.get(tier) != null ? tiersLimit.get(tier) : 1;
+                        if (partitions < limit) {
+                            partitions++;
+                        } else {
+                            log.warn("This dataSource is " + tier + " and it has " + partitions + " partitions! LIMITED.");
+                        }
+                    } else if (actualEvents * downPercent >= events) {
+                        if (partitions > 1) {
+                            partitions--;
+                        } else {
+                            partitions = 1;
+                        }
+                    }
+
+                    log.debug("New partitions: " + partitions);
+                }
+
+                String updateDataSource = dataSource + "_" + tier + "_" + partitions + "_" + replicas;
+                log.debug("Datasource: " + dataSource + " -> " + updateDataSource);
+                dataSourceState.put(dataSource, updateDataSource);
+            }
         }
         log.info("Ending updateState autoscaling ...");
     }

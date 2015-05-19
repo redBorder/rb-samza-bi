@@ -25,7 +25,7 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
     @Override
     public void init(Config config, TaskContext context) throws Exception {
         this.counter = context.getMetricsRegistry().newCounter(getClass().getName(), "messages");
-        autoScalingManager = new AutoScalingManager(config, context.getSystemStreamPartitions().size());
+        autoScalingManager = new AutoScalingManager(config);
     }
 
     @Override

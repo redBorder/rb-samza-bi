@@ -16,7 +16,7 @@ public class SplitFlowFunction {
     public static int DELAYED_REALTIME_TIME = 15;
     public static long logMark = System.currentTimeMillis();
 
-    public static void warnWithTime(String msg, Object ... objs) {
+    public static void warnWithTime(String msg, Object... objs) {
         if ((logMark + 300000) > System.currentTimeMillis()) {
             log.warn(msg, objs);
             logMark = System.currentTimeMillis() + 300000;
@@ -87,7 +87,7 @@ public class SplitFlowFunction {
 
             try {
                 if (event.containsKey(Dimension.PKTS))
-                    pkts =  Long.parseLong(event.get(Dimension.PKTS).toString());
+                    pkts = Long.parseLong(event.get(Dimension.PKTS).toString());
             } catch (NumberFormatException e) {
                 log.warn("Invalid number of packets in packet {}.", event);
                 return generatedPackets;
