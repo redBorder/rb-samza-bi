@@ -28,10 +28,14 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
     private KeyValueStore<String, Map<String, Object>> storeMeasure;
     private KeyValueStore<String, Map<String, Object>> storeInfo;
     private Counter messagesCounter;
+    private StoreManager storeManager;
+    private EnrichManager enrichManager;
 
     public NmspProcessor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
         super(storeManager, enrichManager, config, context);
         this.messagesCounter = context.getMetricsRegistry().newCounter(getClass().getName(), "messages");
+        this.storeManager = storeManager;
+        this.enrichManager = enrichManager;
         storeMeasure = storeManager.getStore(NMSP_STORE_MEASURE);
         storeInfo = storeManager.getStore(NMSP_STORE_INFO);
     }
@@ -116,7 +120,9 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
 
                     storeMeasure.put(mac + namespace_id, toCache);
                     toDruid.put("timestamp", System.currentTimeMillis() / 1000);
-                    collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
+                    Map<String, Object> enrichmentEvent = enrichManager.enrich(toDruid);
+                    Map<String, Object> storeEnrichment = storeManager.enrich(enrichmentEvent);
+                    collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, storeEnrichment));
                 }
             }
         } else if (type != null && type.equals(NMSP_TYPE_INFO)) {
@@ -148,7 +154,9 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
             toDruid.put(CLIENT_MAC, mac);
             storeInfo.put(mac + namespace_id, toCache);
             toDruid.put("timestamp", timestamp);
-            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
+            Map<String, Object> enrichmentEvent = enrichManager.enrich(toDruid);
+            Map<String, Object> storeEnrichment = storeManager.enrich(enrichmentEvent);
+            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, storeEnrichment));
         }
 
         this.messagesCounter.inc();

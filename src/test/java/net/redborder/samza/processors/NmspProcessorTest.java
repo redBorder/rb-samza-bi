@@ -13,7 +13,9 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,6 +25,7 @@ import java.util.Map;
 import static net.redborder.samza.util.constants.Dimension.*;
 import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_INFO;
 import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_MEASURE;
+import static org.mockito.Matchers.anyMap;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -56,6 +59,13 @@ public class NmspProcessorTest extends TestCase {
         storeManager = mock(StoreManager.class);
         when(storeManager.getStore(NmspProcessor.NMSP_STORE_MEASURE)).thenReturn(storeMeasure);
         when(storeManager.getStore(NmspProcessor.NMSP_STORE_INFO)).thenReturn(storeInfo);
+        when(storeManager.enrich(anyMap())).thenAnswer(new Answer<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                return (Map<String, Object>) args[0];
+            }
+        });
 
         enrichManager = new EnrichManager();
         nmspProcessor = new NmspProcessor(storeManager, enrichManager, config, taskContext);

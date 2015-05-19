@@ -17,6 +17,7 @@ import java.util.*;
 
 import static net.redborder.samza.util.constants.Dimension.CLIENT_MAC;
 import static net.redborder.samza.util.constants.Dimension.NAMESPACE_ID;
+import static net.redborder.samza.util.constants.Dimension.WIRELESS_STATION;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -85,6 +86,7 @@ public class StoreManagerTest extends TestCase {
 
         Map<String, Object> message = new HashMap<>();
         message.put(CLIENT_MAC, "testing-mac");
+        message.put(WIRELESS_STATION, "testing-mac");
         message.put(NAMESPACE_ID, namespace_id_a);
 
         result.putAll(message);

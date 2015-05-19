@@ -66,6 +66,7 @@ public class FlowProcessorTest extends TestCase {
         // The message that we will enrich
         Map<String, Object> message = new HashMap<>();
         message.put(CLIENT_MAC, "00:00:00:00:00:00");
+        message.put(WIRELESS_STATION, "00:00:00:00:00:00");
         message.put(BYTES, 23L);
         message.put(PKTS, 2L);
         message.put(TIMESTAMP, Long.valueOf(1429088471L));
@@ -101,6 +102,7 @@ public class FlowProcessorTest extends TestCase {
         // The message that we will enrich
         Map<String, Object> message = new HashMap<>();
         message.put(CLIENT_MAC, "00:00:00:00:00:00");
+        message.put(WIRELESS_STATION, "00:00:00:00:00:00");
         message.put(BYTES, 23L);
         message.put(PKTS, 2L);
         message.put(NAMESPACE_ID, namespace_id);
@@ -139,6 +141,7 @@ public class FlowProcessorTest extends TestCase {
         // The message that we will enrich
         Map<String, Object> message = new HashMap<>();
         message.put(CLIENT_MAC, "00:00:00:00:00:00");
+        message.put(WIRELESS_STATION, "00:00:00:00:00:00");
         message.put(BYTES, 23L);
         message.put(PKTS, 2L);
         message.put(TIMESTAMP, Long.valueOf(1429088471L));
