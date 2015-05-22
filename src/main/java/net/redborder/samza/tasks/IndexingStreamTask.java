@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 import static net.redborder.samza.util.constants.Constants.*;
+import static net.redborder.samza.util.constants.Dimension.HASHTAGS;
 import static net.redborder.samza.util.constants.Dimension.NAMESPACE_ID;
 import static net.redborder.samza.util.constants.Dimension.TIER;
 
@@ -49,6 +50,8 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
             systemStream = new SystemStream("druid_state", getDatasource(message, STATE_DATASOURCE));
         } else if (stream.equals(SOCIAL_TOPIC)) {
             systemStream = new SystemStream("druid_social", getDatasource(message, SOCIAL_DATASOURCE));
+        }  else if (stream.equals(HASHTAGS_TOPIC)) {
+                systemStream = new SystemStream("druid_hashtag", getDatasource(message, HASHTAGS_DATASOURCE));
         } else if (stream.equals(MONITOR_TOPIC)) {
             systemStream = monitorSystemStream;
         } else {

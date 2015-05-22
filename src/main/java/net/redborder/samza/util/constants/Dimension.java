@@ -53,10 +53,15 @@ public class Dimension {
     public final static String SCATTERPLOT = "scatterplot";
     public final static String INPUT_SNMP = "input_snmp";
     public final static String OUTPUT_SNMP = "output_snmp";
-    public final static String CLIENT_BUILDING = "client_building";
-    public final static String CLIENT_CAMPUS = "client_campus";
-    public final static String CLIENT_FLOOR = "client_floor";
-    public final static String CLIENT_ZONE = "client_zone";
+
+    public final static String CLIENT_BUILDING = "building";
+    public final static String CLIENT_BUILDING_ID = "building_id";
+    public final static String CLIENT_CAMPUS = "campus";
+    public final static String CLIENT_CAMPUS_ID = "campus_id";
+    public final static String CLIENT_FLOOR = "floor";
+    public final static String CLIENT_FLOOR_ID = "floor_id";
+    public final static String CLIENT_ZONE = "zone";
+
     public final static String COORDINATES_MAP = "coordinates_map";
     public final static String HNBLOCATION = "hnblocation";
     public final static String HNBGEOLOCATION = "hnbgeolocation";
@@ -90,7 +95,9 @@ public class Dimension {
     public final static String TTL = "ttl";
     public final static String VLAN = "vlan";
     public final static String MARKET = "market";
+    public final static String MARKET_ID = "market_id";
     public final static String ORGANIZATION = "organization";
+    public final static String ORGANIZATION_ID = "organization_id";
     public final static String CLIENT_LATLONG = "client_latlong";
     public final static String SHA256 = "sha256";
     public final static String FILE_SIZE = "file_size";
@@ -154,6 +161,8 @@ public class Dimension {
     public final static String WIRELESS_MODE = "wireless_mode";
     public final static String WIRELESS_SLOT = "wireless_slot";
 
+    //Hashtag
+    public final static String VALUE = "value";
 
     // Social
     public final static String USER_SCREEN_NAME = "user_screen_name";

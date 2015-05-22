@@ -1,7 +1,7 @@
 package net.redborder.samza.indexing.tranquility;
 
+
 import com.google.common.collect.ImmutableList;
-import com.jcraft.jsch.HASH;
 import com.metamx.common.Granularity;
 import com.metamx.tranquility.beam.Beam;
 import com.metamx.tranquility.beam.ClusteredBeamTuning;
@@ -12,8 +12,6 @@ import io.druid.data.input.impl.TimestampSpec;
 import io.druid.granularity.QueryGranularity;
 import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
-import io.druid.query.aggregation.LongSumAggregatorFactory;
-import io.druid.query.aggregation.hyperloglog.HyperUniquesAggregatorFactory;
 import net.redborder.samza.indexing.autoscaling.AutoScalingUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -23,18 +21,18 @@ import org.apache.samza.system.SystemStream;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static net.redborder.samza.util.constants.Aggregators.*;
+import static net.redborder.samza.util.constants.Aggregators.EVENTS_AGGREGATOR;
 import static net.redborder.samza.util.constants.Dimension.*;
 import static net.redborder.samza.util.constants.Dimension.TIMESTAMP;
 
-public class SocialBeamFactory implements BeamFactory
-{
+public class HashtagBeamFactory implements BeamFactory {
+
     @Override
-    public Beam<Object> makeBeam(SystemStream stream, Config config)
-    {
+    public Beam<Object> makeBeam(SystemStream stream, Config config) {
         final int maxRows = Integer.valueOf(config.get("redborder.beam.state.maxrows", "200000"));
         final String intermediatePersist = config.get("redborder.beam.state.intermediatePersist", "PT20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
@@ -45,24 +43,16 @@ public class SocialBeamFactory implements BeamFactory
         final String realDataSource = AutoScalingUtils.getDataSource(dataSource);
 
         final List<String> dimensions = ImmutableList.of(
-                CLIENT_LATLONG, SRC_COUNTRY_CODE, SENSOR_ID, DEPLOYMENT, DEPLOYMENT_ID, NAMESPACE, NAMESPACE_ID, USER_SCREEN_NAME,
-                USER_NAME, USER_ID, TYPE, HASHTAGS, MENTIONS, MSG, SENTIMENT, MSG_SEND_FROM, USER_FROM,
-                USER_PROFILE_IMG_HTTPS, DEPLOYMENT_ID, INFLUENCE, PICTURE_URL, LANGUAGE, CATEGORY, FOLLOWERS
+                SENSOR_NAME, SENSOR_ID, DEPLOYMENT, DEPLOYMENT_ID, NAMESPACE, NAMESPACE_ID, TYPE, VALUE
         );
 
-        final List<AggregatorFactory> aggregators = ImmutableList.of(
-                new CountAggregatorFactory(EVENTS_AGGREGATOR),
-                new HyperUniquesAggregatorFactory(USERS_AGGREGATOR, USER_SCREEN_NAME),
-                new LongSumAggregatorFactory(SUM_FOLLOWERS_AGGREGATOR, FOLLOWERS)
-        );
+        final List<AggregatorFactory> aggregators = Arrays.asList(new AggregatorFactory[] { new CountAggregatorFactory(EVENTS_AGGREGATOR)});
 
         // The Timestamper should return the timestamp of the class your Samza task produces. Samza envelopes contain
         // Objects, so you'll generally have to cast them here.
-        final Timestamper<Object> timestamper = new Timestamper<Object>()
-        {
+        final Timestamper<Object> timestamper = new Timestamper<Object>() {
             @Override
-            public DateTime timestamp(Object obj)
-            {
+            public DateTime timestamp(Object obj) {
                 final Map<String, Object> theMap = (Map<String, Object>) obj;
                 Long date = Long.parseLong(theMap.get(TIMESTAMP).toString());
                 date = date * 1000;
