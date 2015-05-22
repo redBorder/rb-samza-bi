@@ -76,11 +76,11 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
                     zone = mapHierarchy.split(">");
 
                     if (zone.length >= 1)
-                        toCache.put(CLIENT_CAMPUS, zone[0]);
+                        toCache.put(CAMPUS, zone[0]);
                     if (zone.length >= 2)
-                        toCache.put(CLIENT_BUILDING, zone[1]);
+                        toCache.put(BUILDING, zone[1]);
                     if (zone.length >= 3)
-                        toCache.put(CLIENT_FLOOR, zone[2]);
+                        toCache.put(FLOOR, zone[2]);
                 }
 
                 state = (String) location.get(LOC_DOT11STATUS);

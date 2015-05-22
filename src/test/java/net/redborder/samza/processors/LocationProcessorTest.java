@@ -96,13 +96,13 @@ public class LocationProcessorTest extends TestCase {
         result.put(BYTES, 0);
         result.put(PKTS, 0);
         result.put(TYPE, "mse");
-        result.put(CLIENT_CAMPUS, "Campus Test");
-        result.put(CLIENT_BUILDING, "Building Test");
+        result.put(CAMPUS, "Campus Test");
+        result.put(BUILDING, "Building Test");
         result.put(TIMESTAMP, Long.valueOf(1427795858L));
         result.put(CLIENT_MAC, "00:00:00:00:00:00");
         result.put(WIRELESS_ID, "rb-corp");
         result.put(SENSOR_NAME, "sensor-testing");
-        result.put(CLIENT_FLOOR, "Floor Test");
+        result.put(FLOOR, "Floor Test");
         result.put(CLIENT_RSSI, "unknown");
         result.put(CLIENT_RSSI_NUM, 0);
         result.put(CLIENT_SNR, "unknown");
@@ -146,11 +146,11 @@ public class LocationProcessorTest extends TestCase {
         locationProcessor.process(messageLocUp, collector);
 
         result.put(TIMESTAMP, Long.valueOf(1424767310L));
-        result.put(CLIENT_ZONE, "ZoneD");
-        result.put(CLIENT_FLOOR, "FloorC");
-        result.put(CLIENT_BUILDING, "BuildingB");
-        result.put(CLIENT_CAMPUS, "CampusA");
-        result.put(CLIENT_FLOOR, "FloorC");
+        result.put(ZONE, "ZoneD");
+        result.put(FLOOR, "FloorC");
+        result.put(BUILDING, "BuildingB");
+        result.put(CAMPUS, "CampusA");
+        result.put(FLOOR, "FloorC");
         result.put(CLIENT_MAC, "00:00:00:00:00:00");
         result.put(DOT11STATUS, "PROBING");
         result.put(WIRELESS_STATION, "AA:AA:AA:AA:AA:AA");
@@ -205,19 +205,19 @@ public class LocationProcessorTest extends TestCase {
         locationProcessor.process(messageAssoc, collector);
         locationProcessor.process(messageLocUp, collector);
 
-        result.put(CLIENT_ZONE, "ZoneD");
+        result.put(ZONE, "ZoneD");
         result.put(DOT11STATUS, "ASSOCIATED");
         result.put(BYTES, 0);
         result.put(WIRELESS_STATION, "AA:AA:AA:AA:AA:AA");
         result.put(PKTS, 0);
         result.put(TYPE, "mse10");
-        result.put(CLIENT_CAMPUS, "CampusA");
-        result.put(CLIENT_BUILDING, "BuildingB");
+        result.put(CAMPUS, "CampusA");
+        result.put(BUILDING, "BuildingB");
         result.put(TIMESTAMP, Long.valueOf(1424767310L));
         result.put(CLIENT_MAC, "00:00:00:00:00:00");
         result.put(WIRELESS_ID, "rb-corp");
         result.put(SENSOR_NAME, "rb-loc");
-        result.put(CLIENT_FLOOR, "FloorC");
+        result.put(FLOOR, "FloorC");
         result.put(DOT11PROTOCOL, "IEEE_802_11_B");
         result.put(NAMESPACE_ID, namespace_id);
 
@@ -234,18 +234,18 @@ public class LocationProcessorTest extends TestCase {
         locationProcessor.process(messageAssoc, collector);
         locationProcessor.process(messageLocUp, collector);
 
-        result.put(CLIENT_ZONE, "ZoneD");
+        result.put(ZONE, "ZoneD");
         result.put(DOT11STATUS, "PROBING");
         result.put(BYTES, 0);
         result.put(WIRELESS_STATION, "AA:AA:AA:AA:AA:AA");
         result.put(PKTS, 0);
         result.put(TYPE, "mse10");
-        result.put(CLIENT_CAMPUS, "CampusA");
-        result.put(CLIENT_BUILDING, "BuildingB");
+        result.put(CAMPUS, "CampusA");
+        result.put(BUILDING, "BuildingB");
         result.put(TIMESTAMP, Long.valueOf(1424767310L));
         result.put(CLIENT_MAC, "00:00:00:00:00:00");
         result.put(SENSOR_NAME, "rb-loc");
-        result.put(CLIENT_FLOOR, "FloorC");
+        result.put(FLOOR, "FloorC");
         result.put(NAMESPACE_ID, "other_tenant");
 
         enrichmentMessage = collector.getResult().get(1);

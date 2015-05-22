@@ -116,12 +116,12 @@ public class StoreManagerTest extends TestCase {
         Map<String, Object> message = new HashMap<>();
         message.put(CLIENT_MAC, "testing-mac");
         message.put(WIRELESS_STATION, "testing-mac");
-        message.put(CLIENT_BUILDING, "testing-building");
+        message.put(BUILDING, "testing-building");
 
         result.putAll(message);
 
         Map<String, Object> cache = new HashMap<>();
-        cache.put(CLIENT_BUILDING, "postgresql-testing-building");
+        cache.put(BUILDING, "postgresql-testing-building");
         storeManager.getStore("postgresql").put("testing-mac", cache);
 
         Map<String, Object> enrichCache = storeManager.enrich(message);

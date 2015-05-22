@@ -54,13 +54,13 @@ public class Dimension {
     public final static String INPUT_SNMP = "input_snmp";
     public final static String OUTPUT_SNMP = "output_snmp";
 
-    public final static String CLIENT_BUILDING = "building";
-    public final static String CLIENT_BUILDING_ID = "building_id";
-    public final static String CLIENT_CAMPUS = "campus";
-    public final static String CLIENT_CAMPUS_ID = "campus_id";
-    public final static String CLIENT_FLOOR = "floor";
-    public final static String CLIENT_FLOOR_ID = "floor_id";
-    public final static String CLIENT_ZONE = "zone";
+    public final static String BUILDING = "building";
+    public final static String BUILDING_ID = "building_id";
+    public final static String CAMPUS = "campus";
+    public final static String CAMPUS_ID = "campus_id";
+    public final static String FLOOR = "floor";
+    public final static String FLOOR_ID = "floor_id";
+    public final static String ZONE = "zone";
 
     public final static String COORDINATES_MAP = "coordinates_map";
     public final static String HNBLOCATION = "hnblocation";

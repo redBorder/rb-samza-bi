@@ -145,13 +145,13 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                     String[] locations = locationMapHierarchy.split(">");
 
                     if (locations.length >= 1)
-                        toCache.put(CLIENT_CAMPUS, locations[0]);
+                        toCache.put(CAMPUS, locations[0]);
                     if (locations.length >= 2)
-                        toCache.put(CLIENT_BUILDING, locations[1]);
+                        toCache.put(BUILDING, locations[1]);
                     if (locations.length >= 3)
-                        toCache.put(CLIENT_FLOOR, locations[2]);
+                        toCache.put(FLOOR, locations[2]);
                     if (locations.length >= 4)
-                        toCache.put(CLIENT_ZONE, locations[3]);
+                        toCache.put(ZONE, locations[3]);
                 }
 
                 Map<String, Object> assocCache = store.get(clientMac+namespace_id);
