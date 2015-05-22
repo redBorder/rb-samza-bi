@@ -58,7 +58,7 @@ public class LocationProcessorTest extends TestCase {
         MockMessageCollector collector = new MockMessageCollector();
         Map<String, Object> result = new HashMap<>();
         Map<String, Object> message = new HashMap<>();
-        String namespace_id = "tenant_A";
+        String namespace_id = "11111111-1111-1111-1111-111111111111";
 
         Map<String, Object> content = new HashMap<>();
         content.put(TIMESTAMP, "2015-03-31T02:57:38.570-0700");
@@ -122,7 +122,7 @@ public class LocationProcessorTest extends TestCase {
         List<Map<String, Object>> contentsLoc = new ArrayList<>();
         Map<String, Object> contentLoc = new HashMap<>();
         Map<String, Object> enrichmentMessage;
-        String namespace_id = "tenant_A";
+        String namespace_id = "11111111-1111-1111-1111-111111111111";
 
         Map<String, Object> messageLocUp = new HashMap<>();
         contentLoc.put(LOC_NOTIFICATION_TYPE, "locationupdate");
@@ -226,7 +226,7 @@ public class LocationProcessorTest extends TestCase {
 
         result.clear();
 
-        contentLoc.put(NAMESPACE_ID, "other_tenant");
+        contentLoc.put(NAMESPACE_ID, "11111111-1111-1111-1111-111111111112");
         contentsLoc.clear();
         contentsLoc.add(contentLoc);
         messageLocUp.put(LOC_NOTIFICATIONS, contentsLoc);
@@ -246,7 +246,7 @@ public class LocationProcessorTest extends TestCase {
         result.put(CLIENT_MAC, "00:00:00:00:00:00");
         result.put(SENSOR_NAME, "rb-loc");
         result.put(FLOOR, "FloorC");
-        result.put(NAMESPACE_ID, "other_tenant");
+        result.put(NAMESPACE_ID, "11111111-1111-1111-1111-111111111112");
 
         enrichmentMessage = collector.getResult().get(1);
         assertEquals(result, enrichmentMessage);

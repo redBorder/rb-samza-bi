@@ -53,7 +53,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
         String type = (String) message.get(TYPE);
         String mac = (String) message.remove(CLIENT_MAC);
 
-        Integer namespace = (Integer) message.get(NAMESPACE_ID);
+        String namespace = (String) message.get(NAMESPACE_ID);
         String namespace_id = namespace == null ? "" : namespace.toString();
 
         if (type != null && type.equals(NMSP_TYPE_MEASURE)) {

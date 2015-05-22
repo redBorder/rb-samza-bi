@@ -101,7 +101,7 @@ public class FlowProcessorTest extends TestCase {
         MockMessageCollector collector = new MockMessageCollector();
         Map<String, Object> expected = new HashMap<>();
 
-        String namespace_id = "tenant_A";
+        String namespace_id = "11111111-1111-1111-1111-111111111111";
 
         // The message that we will enrich
         Map<String, Object> message = new HashMap<>();
