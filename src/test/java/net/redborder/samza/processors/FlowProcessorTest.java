@@ -48,9 +48,13 @@ public class FlowProcessorTest extends TestCase {
 
         String storesListAsString = properties.getProperty("redborder.stores");
         for (String store : storesListAsString.split(",")) {
-            stores.add(store);
             String storeKey = properties.getProperty("redborder.store." + store + ".key");
+            String storeOverwriteStr = properties.getProperty("redborder.store." + store + ".overwrite");
+            boolean storeOverwrite = (storeOverwriteStr == null || storeOverwriteStr == "true");
+
             when(config.get("redborder.store." + store + ".key", CLIENT_MAC)).thenReturn(storeKey);
+            when(config.getBoolean("redborder.store." + store + ".overwrite", true)).thenReturn(storeOverwrite);
+            stores.add(store);
         }
 
         storeManager = new StoreManager(config, context);
@@ -136,7 +140,8 @@ public class FlowProcessorTest extends TestCase {
 
         // This is practically the same case than the normal enrichment, but
         // this time every store have the same columns, therefore the final message
-        // will only contain the columns that are saved in the last of the stores
+        // will only contain the columns that are saved in the last of the stores which
+        // have the overwrite property enabled.
 
         // The message that we will enrich
         Map<String, Object> message = new HashMap<>();
@@ -154,9 +159,11 @@ public class FlowProcessorTest extends TestCase {
             cache.put("column", "value_" + store);
             cache.put("column2", "value2_" + store);
             storeManager.getStore(store).put("00:00:00:00:00:00", cache);
-            // ... will end in the expected message too
-            expected.put("column", "value_" + store);
-            expected.put("column2", "value2_" + store);
+            // ... will end in the expected message too if overwrite mode is enabled
+            if (storeManager.hasOverwriteEnabled(store)) {
+                expected.put("column", "value_" + store);
+                expected.put("column2", "value2_" + store);
+            }
         }
 
         // Send the message
