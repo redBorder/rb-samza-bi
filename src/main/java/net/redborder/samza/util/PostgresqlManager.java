@@ -57,8 +57,8 @@ public class PostgresqlManager {
                     "  campuses.uuid AS campus_id, deployments.name AS deployment, deployments.uuid AS" +
                     "  deployment_id, namespaces.name AS namespace, namespaces.uuid AS namespace_id, " +
                     "  markets.name AS market, markets.uuid AS market_id, organizations.name AS organization," +
-                    "  organizations.uuid AS organizations_id, service_providers.name AS service_provider," +
-                    "  service_providers.uuid AS service_provide_id FROM access_points" +
+                    "  organizations.uuid AS organization_id, service_providers.name AS service_provider," +
+                    "  service_providers.uuid AS service_provider_id FROM access_points" +
                     "  JOIN sensors ON access_points.sensor_id = sensors.id" +
                     "  LEFT JOIN access_points_zones AS zones_ids ON access_points.id = zones_ids.access_point_id" +
                     "  LEFT JOIN zones ON zones_ids.zone_id = zones.id" +
@@ -103,7 +103,6 @@ public class PostgresqlManager {
                     enriching.put("market_id", rs.getString("market_id"));
                     enriching.put("organization_id", rs.getString("organization_id"));
                     enriching.put("service_provider_id", rs.getString("service_provider_id"));
-                    enriching.put("zone_id", rs.getString("zone_id"));
 
                     entries++;
 
