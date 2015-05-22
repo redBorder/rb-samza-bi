@@ -15,9 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 
-import static net.redborder.samza.util.constants.Dimension.CLIENT_MAC;
-import static net.redborder.samza.util.constants.Dimension.NAMESPACE_ID;
-import static net.redborder.samza.util.constants.Dimension.WIRELESS_STATION;
+import static net.redborder.samza.util.constants.Dimension.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -52,7 +50,11 @@ public class StoreManagerTest extends TestCase {
         when(config.getList("redborder.stores", Collections.<String>emptyList())).thenReturn(stores);
         for (String store : stores) {
             String storeKey = properties.getProperty("redborder.store." + store + ".key");
+            String storeOverwriteStr = properties.getProperty("redborder.store." + store + ".overwrite");
+            boolean storeOverwrite = (storeOverwriteStr == null || storeOverwriteStr == "true");
+
             when(config.get("redborder.store." + store + ".key", CLIENT_MAC)).thenReturn(storeKey);
+            when(config.getBoolean("redborder.store." + store + ".overwrite", true)).thenReturn(storeOverwrite);
         }
 
         storeManager = new StoreManager(config, context);
@@ -105,6 +107,25 @@ public class StoreManagerTest extends TestCase {
 
         Map<String, Object> enrichCacheWithoutNamespace = storeManager.enrich(message);
         assertEquals(message, enrichCacheWithoutNamespace);
+    }
+
+    @Test
+    public void enrichmentWithoutOverwrite() {
+        Map<String, Object> result = new HashMap<>();
+
+        Map<String, Object> message = new HashMap<>();
+        message.put(CLIENT_MAC, "testing-mac");
+        message.put(WIRELESS_STATION, "testing-mac");
+        message.put(CLIENT_BUILDING, "testing-building");
+
+        result.putAll(message);
+
+        Map<String, Object> cache = new HashMap<>();
+        cache.put(CLIENT_BUILDING, "postgresql-testing-building");
+        storeManager.getStore("postgresql").put("testing-mac", cache);
+
+        Map<String, Object> enrichCache = storeManager.enrich(message);
+        assertEquals(result, enrichCache);
     }
 }
 
