@@ -63,9 +63,11 @@ public class Dimension {
     public final static String RAT = "rat";
     public final static String DOT11PROTOCOL = "dot11_protocol";
     public final static String DEPLOYMENT = "deployment";
+    public final static String DEPLOYMENT_ID = "deployment_id";
     public final static String NAMESPACE = "namespace";
     public final static String NAMESPACE_ID = "namespace_id";
     public final static String TIER = "tier";
+    public final static String MSG = "msg";
 
     // Event
     public final static String ACTION = "action";
@@ -79,7 +81,6 @@ public class Dimension {
     public final static String REV = "rev";
     public final static String SENSOR_ID = "sensor_id";
     public final static String PRIORITY = "priority";
-    public final static String MSG = "msg";
     public final static String SIG_ID = "sig_id";
     public final static String ETHSRC = "ethsrc";
     public final static String ETHSRC_VENDOR = "ethsrc_vendor";
@@ -152,4 +153,21 @@ public class Dimension {
     public final static String WIRELESS_OP_STATE = "wireless_op_state";
     public final static String WIRELESS_MODE = "wireless_mode";
     public final static String WIRELESS_SLOT = "wireless_slot";
+
+
+    // Social
+    public final static String USER_SCREEN_NAME = "user_screen_name";
+    public final static String USER_NAME = "user_name";
+    public final static String USER_ID = "user_id";
+    public final static String HASHTAGS = "hashtags";
+    public final static String MENTIONS = "mentions";
+    public final static String SENTIMENT = "sentiment";
+    public final static String MSG_SEND_FROM = "msg_send_from";
+    public final static String USER_FROM = "user_from";
+    public final static String USER_PROFILE_IMG_HTTPS = "user_profile_img_https";
+    public final static String INFLUENCE = "influence";
+    public final static String PICTURE_URL = "picture_url";
+    public final static String LANGUAGE = "language";
+    public final static String CATEGORY = "category";
+    public final static String FOLLOWERS = "followers";
 }

@@ -18,6 +18,7 @@ import static net.redborder.samza.util.constants.Dimension.TIER;
 
 public class IndexingStreamTask implements StreamTask, InitableTask, WindowableTask {
     private static final SystemStream monitorSystemStream = new SystemStream("druid_monitor", MONITOR_TOPIC);
+
     private static final Logger log = LoggerFactory.getLogger(EnrichmentStreamTask.class);
     private AutoScalingManager autoScalingManager;
     private Counter counter;
@@ -46,6 +47,8 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
             systemStream = new SystemStream("druid_event", getDatasource(message, EVENT_DATASOURCE));
         } else if (stream.equals(STATE_TOPIC)) {
             systemStream = new SystemStream("druid_state", getDatasource(message, STATE_DATASOURCE));
+        } else if (stream.equals(SOCIAL_TOPIC)) {
+            systemStream = new SystemStream("druid_social", getDatasource(message, SOCIAL_DATASOURCE));
         } else if (stream.equals(MONITOR_TOPIC)) {
             systemStream = monitorSystemStream;
         } else {
@@ -62,7 +65,7 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
         Object namespaceId = message.get(NAMESPACE_ID);
         Object tier = message.get(TIER);
 
-        if(tier==null)
+        if (tier == null)
             tier = "bronze";
 
         String datasource = defaultDatasource + "_" + "none" + "_" + tier + "_1_1";
