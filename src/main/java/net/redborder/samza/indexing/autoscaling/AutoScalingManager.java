@@ -41,6 +41,8 @@ public class AutoScalingManager {
                 realData = "rb_event";
             else if (topic.contains("rb_state"))
                 realData = "rb_state";
+            else if (topic.contains("rb_social"))
+                realData = "rb_social";
 
             currentPartitions.put(realData, config.getInt("redborder.kafka." + topic + ".partitions", 4));
         }
