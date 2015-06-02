@@ -54,7 +54,7 @@ public class StoreManager {
             Store storeData = store.getValue();
 
             String key = (String) message.get(storeData.getKey());
-            String namespace_id = message.get(NAMESPACE_ID) == null ? "" : String.valueOf(message.get(NAMESPACE_ID));
+            String namespace_id = message.get(NAMESPACE_UUID) == null ? "" : String.valueOf(message.get(NAMESPACE_UUID));
             KeyValueStore<String, Map<String, Object>> keyValueStore = storeData.getStore();
 
             Map<String, Object> contents = keyValueStore.get(key + namespace_id);

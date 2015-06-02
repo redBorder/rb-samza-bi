@@ -89,7 +89,7 @@ public class StoreManagerTest extends TestCase {
         Map<String, Object> message = new HashMap<>();
         message.put(CLIENT_MAC, "testing-mac");
         message.put(WIRELESS_STATION, "testing-mac");
-        message.put(NAMESPACE_ID, namespace_id_a);
+        message.put(NAMESPACE_UUID, namespace_id_a);
 
         result.putAll(message);
 
@@ -103,7 +103,7 @@ public class StoreManagerTest extends TestCase {
         Map<String, Object> enrichCache = storeManager.enrich(message);
         assertEquals(result, enrichCache);
 
-        message.put(NAMESPACE_ID, namespace_id_b);
+        message.put(NAMESPACE_UUID, namespace_id_b);
 
         Map<String, Object> enrichCacheWithoutNamespace = storeManager.enrich(message);
         assertEquals(message, enrichCacheWithoutNamespace);

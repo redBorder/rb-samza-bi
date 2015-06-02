@@ -55,11 +55,11 @@ public class Dimension {
     public final static String OUTPUT_SNMP = "output_snmp";
 
     public final static String BUILDING = "building";
-    public final static String BUILDING_ID = "building_id";
+    public final static String BUILDING_UUID = "building_uuid";
     public final static String CAMPUS = "campus";
-    public final static String CAMPUS_ID = "campus_id";
+    public final static String CAMPUS_UUID = "campus_uuid";
     public final static String FLOOR = "floor";
-    public final static String FLOOR_ID = "floor_id";
+    public final static String FLOOR_UUID = "floor_uuid";
     public final static String ZONE = "zone";
 
     public final static String COORDINATES_MAP = "coordinates_map";
@@ -68,9 +68,9 @@ public class Dimension {
     public final static String RAT = "rat";
     public final static String DOT11PROTOCOL = "dot11_protocol";
     public final static String DEPLOYMENT = "deployment";
-    public final static String DEPLOYMENT_ID = "deployment_id";
+    public final static String DEPLOYMENT_UUID = "deployment_uuid";
     public final static String NAMESPACE = "namespace";
-    public final static String NAMESPACE_ID = "namespace_id";
+    public final static String NAMESPACE_UUID = "namespace_uuid";
     public final static String TIER = "tier";
     public final static String MSG = "msg";
 
@@ -84,7 +84,7 @@ public class Dimension {
     public final static String ICMPTYPE = "icmptype";
     public final static String IPLEN_RANGE = "iplen_range";
     public final static String REV = "rev";
-    public final static String SENSOR_ID = "sensor_id";
+    public final static String SENSOR_UUID = "sensor_uuid";
     public final static String PRIORITY = "priority";
     public final static String SIG_ID = "sig_id";
     public final static String ETHSRC = "ethsrc";
@@ -95,9 +95,9 @@ public class Dimension {
     public final static String TTL = "ttl";
     public final static String VLAN = "vlan";
     public final static String MARKET = "market";
-    public final static String MARKET_ID = "market_id";
+    public final static String MARKET_UUID = "market_uuid";
     public final static String ORGANIZATION = "organization";
-    public final static String ORGANIZATION_ID = "organization_id";
+    public final static String ORGANIZATION_UUID = "organization_uuid";
     public final static String CLIENT_LATLONG = "client_latlong";
     public final static String SHA256 = "sha256";
     public final static String FILE_SIZE = "file_size";

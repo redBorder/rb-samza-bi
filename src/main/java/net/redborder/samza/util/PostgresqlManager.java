@@ -4,9 +4,13 @@ package net.redborder.samza.util;
 import net.redborder.samza.store.StoreManager;
 import org.apache.samza.config.Config;
 import org.apache.samza.storage.kv.KeyValueStore;
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,15 +55,15 @@ public class PostgresqlManager {
             if(conn != null) {
                 st = conn.createStatement();
                 rs = st.executeQuery("SELECT DISTINCT ON (access_points.mac_address) access_points.ip_address," +
-                    "  access_points.mac_address, zones.name AS zone, access_points.latitude AS latitude," +
-                    "  access_points.longitude AS longitude, floors.name AS floor, floors.uuid AS floor_id," +
-                    "  buildings.name AS building, buildings.uuid AS building_id, campuses.name AS campus," +
-                    "  campuses.uuid AS campus_id, deployments.name AS deployment, deployments.uuid AS" +
-                    "  deployment_id, namespaces.name AS namespace, namespaces.uuid AS namespace_id, " +
-                    "  markets.name AS market, markets.uuid AS market_id, organizations.name AS organization," +
-                    "  organizations.uuid AS organization_id, service_providers.name AS service_provider," +
-                    "  service_providers.uuid AS service_provider_id FROM access_points" +
-                    "  JOIN sensors ON access_points.sensor_id = sensors.id" +
+                    "  access_points.mac_address, access_points.enrichment, zones.name AS zone, access_points.latitude AS latitude," +
+                    "  access_points.longitude AS longitude, floors.name AS floor, floors.uuid AS floor_uuid," +
+                    "  buildings.name AS building, buildings.uuid AS building_uuid, campuses.name AS campus," +
+                    "  campuses.uuid AS campus_uuid, deployments.name AS deployment, deployments.uuid AS" +
+                    "  deployment_uuid, namespaces.name AS namespace, namespaces.uuid AS namespace_uuid, " +
+                    "  markets.name AS market, markets.uuid AS market_uuid, organizations.name AS organization," +
+                    "  organizations.uuid AS organization_uuid, service_providers.name AS service_provider," +
+                    "  service_providers.uuid AS service_provider_uuid FROM access_points" +
+                    "  JOIN sensors ON access_points.sensor_uuid = sensors.id" +
                     "  LEFT JOIN access_points_zones AS zones_ids ON access_points.id = zones_ids.access_point_id" +
                     "  LEFT JOIN zones ON zones_ids.zone_id = zones.id" +
                     "  LEFT JOIN (SELECT * FROM sensors WHERE domain_type=101) AS floors" +
@@ -79,9 +83,26 @@ public class PostgresqlManager {
                     "  LEFT JOIN (SELECT * FROM sensors WHERE domain_type=6) AS service_providers" +
                     "    ON service_providers.lft <= sensors.lft AND service_providers.rgt >= sensors.rgt");
 
+                ObjectMapper mapper = new ObjectMapper();
+
                 while (rs.next()) {
                     Map<String, Object> location = new HashMap<>();
                     Map<String, String> enriching = new HashMap<>();
+
+                    String enrichmentStr = rs.getString("enrichment");
+                    if (enrichmentStr != null) {
+                        try {
+                            Map<String, String> enrichment = mapper.readValue(enrichmentStr, Map.class);
+                            enriching.putAll(enrichment);
+                        } catch (JsonMappingException e) {
+                            e.printStackTrace();
+                        } catch (JsonParseException e) {
+                            e.printStackTrace();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+
                     String longitude = rs.getString("longitude");
                     String latitude = rs.getString("latitude");
 
@@ -95,14 +116,14 @@ public class PostgresqlManager {
                     enriching.put("service_provider", rs.getString("service_provider"));
                     enriching.put("zone", rs.getString("zone"));
 
-                    enriching.put("campus_id", rs.getString("campus_id"));
-                    enriching.put("building_id", rs.getString("building_id"));
-                    enriching.put("floor_id", rs.getString("floor_id"));
-                    enriching.put("deployment_id", rs.getString("deployment_id"));
-                    enriching.put("namespace_id", rs.getString("namespace_id"));
-                    enriching.put("market_id", rs.getString("market_id"));
-                    enriching.put("organization_id", rs.getString("organization_id"));
-                    enriching.put("service_provider_id", rs.getString("service_provider_id"));
+                    enriching.put("campus_uuid", rs.getString("campus_uuid"));
+                    enriching.put("building_uuid", rs.getString("building_uuid"));
+                    enriching.put("floor_uuid", rs.getString("floor_uuid"));
+                    enriching.put("deployment_uuid", rs.getString("deployment_uuid"));
+                    enriching.put("namespace_uuid", rs.getString("namespace_uuid"));
+                    enriching.put("market_uuid", rs.getString("market_uuid"));
+                    enriching.put("organization_uuid", rs.getString("organization_uuid"));
+                    enriching.put("service_provider_uuid", rs.getString("service_provider_uuid"));
 
                     entries++;
 

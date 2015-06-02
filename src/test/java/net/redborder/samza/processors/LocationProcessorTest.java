@@ -58,7 +58,7 @@ public class LocationProcessorTest extends TestCase {
         MockMessageCollector collector = new MockMessageCollector();
         Map<String, Object> result = new HashMap<>();
         Map<String, Object> message = new HashMap<>();
-        String namespace_id = "11111111-1111-1111-1111-111111111111";
+        String namespace_id = "11111111";
 
         Map<String, Object> content = new HashMap<>();
         content.put(TIMESTAMP, "2015-03-31T02:57:38.570-0700");
@@ -88,7 +88,7 @@ public class LocationProcessorTest extends TestCase {
         location.put(LOC_MAPINFOv8, mapInfo);
         content.put(LOC_LOCATION, location);
         message.put(LOC_STREAMING_NOTIFICATION, content);
-        message.put(NAMESPACE_ID, namespace_id);
+        message.put(NAMESPACE_UUID, namespace_id);
 
         locationProcessor.process(message, collector);
 
@@ -109,7 +109,7 @@ public class LocationProcessorTest extends TestCase {
         result.put(CLIENT_SNR_NUM, 0);
         result.put(SRC, "10.50.22.1");
         result.put(WIRELESS_STATION, "68:bc:0c:65:0a:a0");
-        result.put(NAMESPACE_ID, namespace_id);
+        result.put(NAMESPACE_UUID, namespace_id);
 
         Map<String, Object> enrichmentMessage = collector.getResult().get(0);
         assertEquals(result, enrichmentMessage);
@@ -122,7 +122,7 @@ public class LocationProcessorTest extends TestCase {
         List<Map<String, Object>> contentsLoc = new ArrayList<>();
         Map<String, Object> contentLoc = new HashMap<>();
         Map<String, Object> enrichmentMessage;
-        String namespace_id = "11111111-1111-1111-1111-111111111111";
+        String namespace_id = "11111111";
 
         Map<String, Object> messageLocUp = new HashMap<>();
         contentLoc.put(LOC_NOTIFICATION_TYPE, "locationupdate");
@@ -139,7 +139,7 @@ public class LocationProcessorTest extends TestCase {
         coordinate.put(LOC_COORDINATE_Y, 1.241);
         coordinate.put(LOC_COORDINATE_Z, 0.0);
         contentLoc.put(LOC_COORDINATE, coordinate);
-        contentLoc.put(NAMESPACE_ID, namespace_id);
+        contentLoc.put(NAMESPACE_UUID, namespace_id);
         contentsLoc.add(contentLoc);
         messageLocUp.put(LOC_NOTIFICATIONS, contentsLoc);
 
@@ -158,7 +158,7 @@ public class LocationProcessorTest extends TestCase {
         result.put(BYTES, 0);
         result.put(TYPE, "mse10");
         result.put(SENSOR_NAME, "rb-loc");
-        result.put(NAMESPACE_ID, namespace_id);
+        result.put(NAMESPACE_UUID, namespace_id);
 
         enrichmentMessage = collector.getResult().get(0);
         assertEquals(result, enrichmentMessage);
@@ -180,7 +180,7 @@ public class LocationProcessorTest extends TestCase {
         contentAssoc.put(LOC_STATUS, 3);
         contentAssoc.put(LOC_USERNAME, "");
         contentAssoc.put(TIMESTAMP, Long.valueOf(1424767310026L));
-        contentAssoc.put(NAMESPACE_ID, namespace_id);
+        contentAssoc.put(NAMESPACE_UUID, namespace_id);
         contentsAssoc.add(contentAssoc);
         messageAssoc.put(LOC_NOTIFICATIONS, contentsAssoc);
 
@@ -219,14 +219,14 @@ public class LocationProcessorTest extends TestCase {
         result.put(SENSOR_NAME, "rb-loc");
         result.put(FLOOR, "FloorC");
         result.put(DOT11PROTOCOL, "IEEE_802_11_B");
-        result.put(NAMESPACE_ID, namespace_id);
+        result.put(NAMESPACE_UUID, namespace_id);
 
         enrichmentMessage = collector.getResult().get(1);
         assertEquals(result, enrichmentMessage);
 
         result.clear();
 
-        contentLoc.put(NAMESPACE_ID, "11111111-1111-1111-1111-111111111112");
+        contentLoc.put(NAMESPACE_UUID, "111111112");
         contentsLoc.clear();
         contentsLoc.add(contentLoc);
         messageLocUp.put(LOC_NOTIFICATIONS, contentsLoc);
@@ -246,7 +246,7 @@ public class LocationProcessorTest extends TestCase {
         result.put(CLIENT_MAC, "00:00:00:00:00:00");
         result.put(SENSOR_NAME, "rb-loc");
         result.put(FLOOR, "FloorC");
-        result.put(NAMESPACE_ID, "11111111-1111-1111-1111-111111111112");
+        result.put(NAMESPACE_UUID, "111111112");
 
         enrichmentMessage = collector.getResult().get(1);
         assertEquals(result, enrichmentMessage);

@@ -13,9 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 import static net.redborder.samza.util.constants.Constants.*;
-import static net.redborder.samza.util.constants.Dimension.HASHTAGS;
-import static net.redborder.samza.util.constants.Dimension.NAMESPACE_ID;
-import static net.redborder.samza.util.constants.Dimension.TIER;
+import static net.redborder.samza.util.constants.Dimension.*;
 
 public class IndexingStreamTask implements StreamTask, InitableTask, WindowableTask {
     private static final SystemStream monitorSystemStream = new SystemStream("druid_monitor", MONITOR_TOPIC);
@@ -65,7 +63,7 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
     }
 
     private String getDatasource(Map<String, Object> message, String defaultDatasource) {
-        Object namespaceId = message.get(NAMESPACE_ID);
+        Object namespaceId = message.get(NAMESPACE_UUID);
         Object tier = message.get(TIER);
 
         if (tier == null)

@@ -43,7 +43,7 @@ public class HashtagBeamFactory implements BeamFactory {
         final String realDataSource = AutoScalingUtils.getDataSource(dataSource);
 
         final List<String> dimensions = ImmutableList.of(
-                SENSOR_NAME, SENSOR_ID, DEPLOYMENT, DEPLOYMENT_ID, NAMESPACE, NAMESPACE_ID, TYPE, VALUE
+                SENSOR_NAME, SENSOR_UUID, DEPLOYMENT, DEPLOYMENT_UUID, NAMESPACE, NAMESPACE_UUID, TYPE, VALUE
         );
 
         final List<AggregatorFactory> aggregators = Arrays.asList(new AggregatorFactory[] { new CountAggregatorFactory(EVENTS_AGGREGATOR)});

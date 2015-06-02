@@ -53,7 +53,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
         String type = (String) message.get(TYPE);
         String mac = (String) message.remove(CLIENT_MAC);
 
-        String namespace = (String) message.get(NAMESPACE_ID);
+        String namespace = (String) message.get(NAMESPACE_UUID);
         String namespace_id = namespace == null ? "" : namespace.toString();
 
         if (type != null && type.equals(NMSP_TYPE_MEASURE)) {
@@ -116,7 +116,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                     toDruid.put(NMSP_DOT11STATUS, dot11Status);
 
                     if (!namespace_id.equals(""))
-                        toDruid.put(NAMESPACE_ID, namespace_id);
+                        toDruid.put(NAMESPACE_UUID, namespace_id);
 
                     storeMeasure.put(mac + namespace_id, toCache);
                     toDruid.put("timestamp", System.currentTimeMillis() / 1000);
@@ -149,7 +149,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
             toDruid.put(TYPE, "nmsp-info");
 
             if (!namespace_id.equals(""))
-                toDruid.put(NAMESPACE_ID, namespace_id);
+                toDruid.put(NAMESPACE_UUID, namespace_id);
 
             toDruid.put(CLIENT_MAC, mac);
             storeInfo.put(mac + namespace_id, toCache);

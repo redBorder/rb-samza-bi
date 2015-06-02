@@ -1,7 +1,6 @@
 package net.redborder.samza.indexing.tranquility;
 
 import com.google.common.collect.ImmutableList;
-import com.jcraft.jsch.HASH;
 import com.metamx.common.Granularity;
 import com.metamx.tranquility.beam.Beam;
 import com.metamx.tranquility.beam.ClusteredBeamTuning;
@@ -45,9 +44,9 @@ public class SocialBeamFactory implements BeamFactory
         final String realDataSource = AutoScalingUtils.getDataSource(dataSource);
 
         final List<String> dimensions = ImmutableList.of(
-                CLIENT_LATLONG, SRC_COUNTRY_CODE, SENSOR_ID, DEPLOYMENT, DEPLOYMENT_ID, NAMESPACE, NAMESPACE_ID, USER_SCREEN_NAME,
+                CLIENT_LATLONG, SRC_COUNTRY_CODE, SENSOR_UUID, DEPLOYMENT, DEPLOYMENT_UUID, NAMESPACE, NAMESPACE_UUID, USER_SCREEN_NAME,
                 USER_NAME, USER_ID, TYPE, HASHTAGS, MENTIONS, MSG, SENTIMENT, MSG_SEND_FROM, USER_FROM,
-                USER_PROFILE_IMG_HTTPS, DEPLOYMENT_ID, INFLUENCE, PICTURE_URL, LANGUAGE, CATEGORY, FOLLOWERS
+                USER_PROFILE_IMG_HTTPS, DEPLOYMENT_UUID, INFLUENCE, PICTURE_URL, LANGUAGE, CATEGORY, FOLLOWERS
         );
 
         final List<AggregatorFactory> aggregators = ImmutableList.of(

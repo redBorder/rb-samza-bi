@@ -143,7 +143,7 @@ public class NmspProcessorTest extends TestCase {
     public void enrichesWithRssiUsingDeploymendId() {
         MockMessageCollector collector = new MockMessageCollector();
 
-        String namespace = "11111111-1111-1111-1111-111111111111";
+        String namespace = "11111111";
 
         Map<String, Object> message = new HashMap<>();
         List<String> ap_macs = Arrays.asList("11:11:11:11:11:11", "22:22:22:22:22:22", "33:33:33:33:33:33");
@@ -152,7 +152,7 @@ public class NmspProcessorTest extends TestCase {
         message.put(CLIENT_MAC, "00:00:00:00:00:00");
         message.put(NMSP_AP_MAC, ap_macs);
         message.put(NMSP_RSSI, rssi);
-        message.put(NAMESPACE_ID, namespace);
+        message.put(NAMESPACE_UUID, namespace);
         message.put(TYPE, NMSP_TYPE_MEASURE);
         nmspProcessor.process(message, collector);
 
@@ -167,7 +167,7 @@ public class NmspProcessorTest extends TestCase {
         message.put(CLIENT_MAC, "00:00:00:00:00:00");
         message.put(NMSP_AP_MAC, ap_macs);
         message.put(NMSP_RSSI, rssi);
-        message.put(NAMESPACE_ID, "11111111-1111-1111-1111-111111111112");
+        message.put(NAMESPACE_UUID, "111111112");
         message.put(TYPE, NMSP_TYPE_MEASURE);
         nmspProcessor.process(message, collector);
 

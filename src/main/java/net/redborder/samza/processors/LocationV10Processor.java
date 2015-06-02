@@ -88,7 +88,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                 Map<String, Object> toDruid = new HashMap<>();
 
                 String clientMac = (String) msg.get(LOC_DEVICEID);
-                String namespace_id = msg.get(NAMESPACE_ID) == null ? "" : (String) msg.get(NAMESPACE_ID);
+                String namespace_id = msg.get(NAMESPACE_UUID) == null ? "" : (String) msg.get(NAMESPACE_UUID);
 
                 if (msg.get(LOC_SSID) != null)
                     toCache.put(WIRELESS_ID, msg.get(LOC_SSID));
@@ -134,7 +134,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                 Map<String, Object> toCache = new HashMap<>();
                 Map<String, Object> toDruid = new HashMap<>();
 
-                String namespace_id = msg.get(NAMESPACE_ID) == null ? "" : (String) msg.get(NAMESPACE_ID);
+                String namespace_id = msg.get(NAMESPACE_UUID) == null ? "" : (String) msg.get(NAMESPACE_UUID);
                 String clientMac = (String) msg.get(LOC_DEVICEID);
                 String locationMapHierarchy = (String) msg.get(LOC_MAP_HIERARCHY_V10);
 
@@ -177,7 +177,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                 toDruid.put(TYPE, "mse10");
 
                 if (!namespace_id.equals(""))
-                    toDruid.put(NAMESPACE_ID, namespace_id);
+                    toDruid.put(NAMESPACE_UUID, namespace_id);
 
                 store.put(clientMac+namespace_id, toCache);
                 collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));

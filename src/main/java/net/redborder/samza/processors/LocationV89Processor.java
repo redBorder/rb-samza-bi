@@ -48,7 +48,7 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
         Double latitude, longitude;
         String[] zone;
 
-        String namespace_id = message.get(NAMESPACE_ID) == null ? "" : (String) message.get(NAMESPACE_ID);
+        String namespace_id = message.get(NAMESPACE_UUID) == null ? "" : (String) message.get(NAMESPACE_UUID);
         mseEventContent = (Map<String, Object>) message.get(LOC_STREAMING_NOTIFICATION);
 
         if (mseEventContent != null) {
@@ -132,7 +132,7 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
             toDruid.put(CLIENT_SNR_NUM, 0);
 
             if (!namespace_id.equals(""))
-                toDruid.put(NAMESPACE_ID, namespace_id);
+                toDruid.put(NAMESPACE_UUID, namespace_id);
 
             toDruid.put(BYTES, 0);
             toDruid.put(PKTS, 0);

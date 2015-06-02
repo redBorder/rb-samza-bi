@@ -109,7 +109,7 @@ public class FlowProcessorTest extends TestCase {
         message.put(WIRELESS_STATION, "00:00:00:00:00:00");
         message.put(BYTES, 23L);
         message.put(PKTS, 2L);
-        message.put(NAMESPACE_ID, namespace_id);
+        message.put(NAMESPACE_UUID, namespace_id);
         message.put(TIMESTAMP, Long.valueOf(1429088471L));
         expected.putAll(message);
         expected.put(DURATION, 0L);
