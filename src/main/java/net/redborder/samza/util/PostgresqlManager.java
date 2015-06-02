@@ -39,6 +39,8 @@ public class PostgresqlManager {
             try {
                 if (uri != null && user != null) {
                     conn = DriverManager.getConnection(uri, user, pass);
+                } else {
+                    log.warn("You must specify a URI, user and pass on the config file in order to use postgresql.");
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -63,7 +65,7 @@ public class PostgresqlManager {
                     "  markets.name AS market, markets.uuid AS market_uuid, organizations.name AS organization," +
                     "  organizations.uuid AS organization_uuid, service_providers.name AS service_provider," +
                     "  service_providers.uuid AS service_provider_uuid FROM access_points" +
-                    "  JOIN sensors ON access_points.sensor_uuid = sensors.id" +
+                    "  JOIN sensors ON access_points.sensor_id = sensors.id" +
                     "  LEFT JOIN access_points_zones AS zones_ids ON access_points.id = zones_ids.access_point_id" +
                     "  LEFT JOIN zones ON zones_ids.zone_id = zones.id" +
                     "  LEFT JOIN (SELECT * FROM sensors WHERE domain_type=101) AS floors" +
