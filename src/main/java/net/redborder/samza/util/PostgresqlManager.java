@@ -19,6 +19,10 @@ public class PostgresqlManager {
 
     private static final String POSTGRESQL_STORE = "postgresql";
     private static final Logger log = LoggerFactory.getLogger(PostgresqlManager.class);
+    private static final String[] enrichColumns = { "campus", "building", "floor", "deployment",
+            "namespace", "market", "organization", "service_provider", "zone", "campus_uuid",
+            "building_uuid", "floor_uuid", "deployment_uuid", "namespace_uuid", "market_uuid",
+            "organization_uuid", "service_provider_uuid" };
 
     private static Connection conn = null;
     private static KeyValueStore<String, Map<String, Object>> storePostgreSql;
@@ -108,24 +112,10 @@ public class PostgresqlManager {
                     String longitude = rs.getString("longitude");
                     String latitude = rs.getString("latitude");
 
-                    enriching.put("campus", rs.getString("campus"));
-                    enriching.put("building", rs.getString("building"));
-                    enriching.put("floor", rs.getString("floor"));
-                    enriching.put("deployment", rs.getString("deployment"));
-                    enriching.put("namespace", rs.getString("namespace"));
-                    enriching.put("market", rs.getString("market"));
-                    enriching.put("organization", rs.getString("organization"));
-                    enriching.put("service_provider", rs.getString("service_provider"));
-                    enriching.put("zone", rs.getString("zone"));
-
-                    enriching.put("campus_uuid", rs.getString("campus_uuid"));
-                    enriching.put("building_uuid", rs.getString("building_uuid"));
-                    enriching.put("floor_uuid", rs.getString("floor_uuid"));
-                    enriching.put("deployment_uuid", rs.getString("deployment_uuid"));
-                    enriching.put("namespace_uuid", rs.getString("namespace_uuid"));
-                    enriching.put("market_uuid", rs.getString("market_uuid"));
-                    enriching.put("organization_uuid", rs.getString("organization_uuid"));
-                    enriching.put("service_provider_uuid", rs.getString("service_provider_uuid"));
+                    for (String columnName : enrichColumns) {
+                        String columnData = rs.getString(columnName);
+                        if (columnData != null) enriching.put(columnName, columnData);
+                    }
 
                     entries++;
 
@@ -135,17 +125,7 @@ public class PostgresqlManager {
                         location.put("client_latlong", latitudeDbl + "," + longitudeDbl);
                     }
 
-                    for (Map.Entry<String, String> entry : enriching.entrySet()) {
-                        String value = entry.getValue();
-                        String key = entry.getKey();
-
-                        if (value != null) {
-                            location.put(key, value);
-                        } else {
-                            location.put(key, "unknown");
-                        }
-                    }
-
+                    location.putAll(enriching);
                     if (!location.isEmpty()) {
                         storePostgreSql.put(rs.getString("mac_address"), location);
                     }
