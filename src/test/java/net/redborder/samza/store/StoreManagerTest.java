@@ -2,6 +2,7 @@ package net.redborder.samza.store;
 
 import junit.framework.TestCase;
 import net.redborder.samza.util.MockKeyValueStore;
+import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.task.TaskContext;
 import org.junit.BeforeClass;
@@ -57,7 +58,7 @@ public class StoreManagerTest extends TestCase {
             when(config.getBoolean("redborder.store." + store + ".overwrite", true)).thenReturn(storeOverwrite);
         }
 
-        storeManager = new StoreManager(config, context);
+        storeManager = new StoreManager(config, context, Dimension.NAMESPACE_UUID, Dimension.CLIENT_MAC);
     }
 
     @Test

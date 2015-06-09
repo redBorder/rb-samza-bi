@@ -3,6 +3,7 @@ package net.redborder.samza.tasks;
 import net.redborder.samza.processors.Processor;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.PostgresqlManager;
+import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.metrics.Counter;
 import org.apache.samza.system.IncomingMessageEnvelope;
@@ -22,7 +23,7 @@ public class EnrichmentStreamTask implements StreamTask, InitableTask, Windowabl
     public void init(Config config, TaskContext context) throws Exception {
         this.config = config;
         this.context = context;
-        this.storeManager = new StoreManager(config, context);
+        this.storeManager = new StoreManager(config, context, Dimension.NAMESPACE_UUID, Dimension.CLIENT_MAC);
         this.counter = context.getMetricsRegistry().newCounter(getClass().getName(), "messages");
         PostgresqlManager.init(config, storeManager);
     }

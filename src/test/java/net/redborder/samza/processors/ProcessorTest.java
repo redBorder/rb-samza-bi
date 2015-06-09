@@ -4,6 +4,7 @@ import junit.framework.TestCase;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.MockMessageCollector;
 import net.redborder.samza.util.MockTaskContext;
+import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.config.ConfigException;
 import org.apache.samza.task.TaskContext;
@@ -65,7 +66,7 @@ public class ProcessorTest extends TestCase {
         when(config.get("redborder.processors.rb_flow")).thenReturn("net.redborder.samza.processors.FlowProcessor");
 
         TaskContext context = mock(TaskContext.class);
-        StoreManager storeManager = new StoreManager(config, context);
+        StoreManager storeManager = new StoreManager(config, context, Dimension.NAMESPACE_UUID, Dimension.CLIENT_MAC);
         Processor p = Processor.getProcessor("rb_flow", config, taskContext, storeManager);
 
         Map<String, Object> message = new HashMap<>();

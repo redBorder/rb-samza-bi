@@ -5,6 +5,7 @@ import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.MockMessageCollector;
 import net.redborder.samza.util.MockTaskContext;
+import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.task.TaskContext;
 import org.junit.BeforeClass;
@@ -57,7 +58,7 @@ public class FlowProcessorTest extends TestCase {
             stores.add(store);
         }
 
-        storeManager = new StoreManager(config, context);
+        storeManager = new StoreManager(config, context, Dimension.NAMESPACE_UUID, Dimension.CLIENT_MAC);
         enrichManager = new EnrichManager();
         flowProcessor = new FlowProcessor(storeManager, enrichManager, config, context);
     }
