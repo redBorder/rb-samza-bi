@@ -1,7 +1,7 @@
 package net.redborder.samza.store;
 
 import junit.framework.TestCase;
-import net.redborder.samza.util.MockKeyValueStore;
+import net.redborder.samza.util.testing.MockKeyValueStore;
 import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.task.TaskContext;

@@ -44,7 +44,7 @@
         <dependency>
             <groupId>net.redborder</groupId>
             <artifactId>rb-samza-streaming</artifactId>
-            <version>0.0.1</version>
+            <version>0.0.2</version>
         </dependency>
         <dependency>
             <groupId>com.metamx</groupId>
