@@ -33,6 +33,7 @@ public class Dimension {
     public final static String DST_AS_NAME = "dst_as_name";
     public final static String DST_PORT = "dst_port";
     public final static String DST_MAP = "dst_map";
+    public final static String ZONE_UUID = "zone_uuid";
     public final static String APPLICATION_ID_NAME = "application_id_name";
     public final static String BITFLOW_DIRECTION = "biflow_direction";
     public final static String CONVERSATION = "conversation";
@@ -53,6 +54,10 @@ public class Dimension {
     public final static String SCATTERPLOT = "scatterplot";
     public final static String INPUT_SNMP = "input_snmp";
     public final static String OUTPUT_SNMP = "output_snmp";
+    public final static String INPUT_VRF = "input_vrf";
+    public final static String OUTPUT_VRF = "output_vrf";
+    public final static String SERVICE_PROVIDER = "service_provider";
+    public final static String SERVICE_PROVIDER_UUID = "service_provider_uuid";
 
     public final static String BUILDING = "building";
     public final static String BUILDING_UUID = "building_uuid";
