@@ -184,4 +184,16 @@ public class Dimension {
     public final static String LANGUAGE = "language";
     public final static String CATEGORY = "category";
     public final static String FOLLOWERS = "followers";
+
+    //LOCATION
+    public final static String CAMPUS_NEW = CAMPUS + "_new";
+    public final static String CAMPUS_OLD = CAMPUS + "_old";
+    public final static String FLOOR_NEW = FLOOR + "_new";
+    public final static String FLOOR_OLD = FLOOR + "_old";
+    public final static String BUILDING_NEW = BUILDING + "_new";
+    public final static String BUILDING_OLD = BUILDING + "_old";
+    public final static String ZONE_NEW = ZONE + "_new";
+    public final static String ZONE_OLD = ZONE + "_old";
+    public final static String WIRELESS_STATION_NEW = WIRELESS_STATION + "_new";
+    public final static String WIRELESS_STATION_OLD = WIRELESS_STATION + "_old";
 }
