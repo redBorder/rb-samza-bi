@@ -17,9 +17,9 @@ public class SplitFlowFunction {
     public static long logMark = System.currentTimeMillis();
 
     public static void warnWithTime(String msg, Object... objs) {
-        if ((logMark + 300000) > System.currentTimeMillis()) {
+        if ((logMark + 300000) < System.currentTimeMillis()) {
             log.warn(msg, objs);
-            logMark = System.currentTimeMillis() + 300000;
+            logMark = System.currentTimeMillis();
         }
     }
 
@@ -49,7 +49,6 @@ public class SplitFlowFunction {
             if ((packet_end_hour == now_hour - 1 && now.getMinuteOfHour() > DELAYED_REALTIME_TIME) ||
                     (now.getMillis() - packet_end.getMillis() > 1000 * 60 * 60)) {
                 warnWithTime("Dropped packet {} because its realtime processor is already shutdown.", event);
-                return generatedPackets;
             } else if (packet_start.isBefore(limit)) {
                 // If the lower limit date time is overpassed, correct it
                 warnWithTime("Packet {} first switched was corrected because it overpassed the lower limit (event too old).", event);

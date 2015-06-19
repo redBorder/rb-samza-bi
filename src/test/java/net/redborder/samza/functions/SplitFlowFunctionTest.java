@@ -150,7 +150,7 @@ public class SplitFlowFunctionTest extends TestCase {
     }
 
     @Test
-    public void dropOldMessages() {
+    public void notDropOldMessages() {
         Map<String, Object> message = new HashMap<>();
         DateTime firstSwitchDate = formatter.parseDateTime("2014-01-01 21:50:12");
         DateTime timestampDate = formatter.parseDateTime("2014-01-01 21:55:42");
@@ -162,6 +162,37 @@ public class SplitFlowFunctionTest extends TestCase {
         message.put(PKTS, 99);
 
         List<Map<String, Object>> expected = new ArrayList<>();
+        Map<String, Object> msgExpected = new HashMap<>();
+        msgExpected.put(TIMESTAMP, 1388609460L);
+        msgExpected.put(BYTES, 145L);
+        msgExpected.put(PKTS, 14L);
+        Map<String, Object> msgExpected1 = new HashMap<>();
+        msgExpected1.put(TIMESTAMP, 1388609520L);
+        msgExpected1.put(BYTES, 181L);
+        msgExpected1.put(PKTS, 18L);
+        Map<String, Object> msgExpected2 = new HashMap<>();
+        msgExpected2.put(TIMESTAMP, 1388609580L);
+        msgExpected2.put(BYTES, 181L);
+        msgExpected2.put(PKTS, 18L);
+        Map<String, Object> msgExpected3 = new HashMap<>();
+        msgExpected3.put(TIMESTAMP, 1388609640L);
+        msgExpected3.put(BYTES, 181L);
+        msgExpected3.put(PKTS, 18L);
+        Map<String, Object> msgExpected4 = new HashMap<>();
+        msgExpected4.put(TIMESTAMP, 1388609700L);
+        msgExpected4.put(BYTES, 181L);
+        msgExpected4.put(PKTS, 18L);
+        Map<String, Object> msgExpected5 = new HashMap<>();
+        msgExpected5.put(TIMESTAMP, 1388609742L);
+        msgExpected5.put(BYTES, 130L);
+        msgExpected5.put(PKTS, 13L);
+        expected.add(msgExpected);
+        expected.add(msgExpected1);
+        expected.add(msgExpected2);
+        expected.add(msgExpected3);
+        expected.add(msgExpected4);
+        expected.add(msgExpected5);
+
 
         List<Map<String, Object>> result = SplitFlowFunction.split(message, timeNowDate);
         assertEquals(expected, result);
