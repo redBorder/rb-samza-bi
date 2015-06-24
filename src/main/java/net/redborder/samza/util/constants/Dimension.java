@@ -78,6 +78,7 @@ public class Dimension {
     public final static String NAMESPACE_UUID = "namespace_uuid";
     public final static String TIER = "tier";
     public final static String MSG = "msg";
+    public final static String HTTPS_COMMON_NAME = "https_common_name";
 
     // Event
     public final static String ACTION = "action";
