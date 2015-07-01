@@ -8,7 +8,7 @@ import com.metamx.tranquility.druid.*;
 import com.metamx.tranquility.samza.BeamFactory;
 import com.metamx.tranquility.typeclass.Timestamper;
 import io.druid.data.input.impl.TimestampSpec;
-import io.druid.granularity.QueryGranularity;
+import io.druid.granularity.DurationGranularity;
 import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
 import io.druid.query.aggregation.LongSumAggregatorFactory;
@@ -36,6 +36,7 @@ public class StateBeamFactory implements BeamFactory
         final int maxRows = Integer.valueOf(config.get("redborder.beam.state.maxrows", "200000"));
         final String intermediatePersist = config.get("redborder.beam.state.intermediatePersist", "PT20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
+        final long indexGranularity = Long.valueOf(config.get("systems.druid_state.beam.indexGranularity", "60000"));
         final String dataSource = stream.getStream();
 
         final Integer partitions = AutoScalingUtils.getPartitions(dataSource);
@@ -83,7 +84,7 @@ public class StateBeamFactory implements BeamFactory
             .curator(curator)
             .discoveryPath("/druid/discoveryPath")
             .location(DruidLocation.create("overlord", "druid:local:firehose:%s", realDataSource))
-            .rollup(DruidRollup.create(DruidDimensions.specific(dimensions), aggregators, QueryGranularity.MINUTE))
+            .rollup(DruidRollup.create(DruidDimensions.specific(dimensions), aggregators, new DurationGranularity(indexGranularity, 0)))
             .druidTuning(DruidTuning.create(maxRows, new Period(intermediatePersist), 0))
             .tuning(ClusteredBeamTuning.builder()
                 .partitions(partitions)
