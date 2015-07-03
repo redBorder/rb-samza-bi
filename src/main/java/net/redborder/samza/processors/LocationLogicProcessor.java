@@ -41,8 +41,9 @@ public class LocationLogicProcessor extends Processor<Map<String, Object>> {
             String newCampus = (String) message.get(CAMPUS);
             String newZone = (String) message.get(ZONE);
             String wirelessStation = (String) message.get(WIRELESS_STATION);
+            String namespace_id = message.get(NAMESPACE_UUID) == null ? "" : (String) message.get(NAMESPACE_UUID);
 
-            Map<String, Object> locationCache = storeLogic.get(client_mac);
+            Map<String, Object> locationCache = storeLogic.get(client_mac+namespace_id);
 
             if (newFloor == null)
                 newFloor = "unknown";
@@ -117,6 +118,7 @@ public class LocationLogicProcessor extends Processor<Map<String, Object>> {
 
             toDruid.put(CLIENT_MAC, client_mac);
             toDruid.put(TIMESTAMP, message.get(TIMESTAMP));
+            toDruid.put(NAMESPACE_UUID, namespace_id);
 
             if (message.containsKey(SENSOR_NAME))
                 toDruid.put(SENSOR_NAME, message.get(SENSOR_NAME));
@@ -154,7 +156,7 @@ public class LocationLogicProcessor extends Processor<Map<String, Object>> {
             toCache.put(ZONE, newZone);
             toCache.put(WIRELESS_STATION, wirelessStation);
 
-            storeLogic.put(client_mac, toCache);
+            storeLogic.put(client_mac+namespace_id, toCache);
 
             collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
         }

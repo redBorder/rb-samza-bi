@@ -81,7 +81,7 @@ public class LocationLogicProcessorTest extends TestCase {
         message.put(TYPE, "nmsp-measure");
         message.put(WIRELESS_STATION, "33:33:33:33:33:33");
         message.put(TIMESTAMP, 1388609700L);
-
+        message.put(NAMESPACE_UUID, "12345");
 
         locationLogicProcessor.process(message, collector);
         Map<String, Object> expected = new HashMap<>();
@@ -90,6 +90,7 @@ public class LocationLogicProcessorTest extends TestCase {
         expected.put(CLIENT_MAC, "00:00:00:00:00:00");
         expected.put(BUILDING_NEW, "BUILDING-A");
         expected.put(FLOOR_NEW, "FLOOR-A");
+        expected.put(NAMESPACE_UUID, "12345");
         expected.put(ZONE_NEW, "ZONE-A");
         expected.put(WIRELESS_STATION_NEW, "33:33:33:33:33:33");
         expected.put(TYPE, "nmsp-measure");
@@ -105,6 +106,7 @@ public class LocationLogicProcessorTest extends TestCase {
         message1.put(ZONE, "ZONE-B");
         message1.put(FLOOR, "FLOOR-B");
         message1.put(WIRELESS_STATION, "33:33:33:33:33:31");
+        message1.put(NAMESPACE_UUID, "12345");
         locationLogicProcessor.process(message1, collector);
 
         Map<String, Object> expected1 = new HashMap<>();
@@ -121,6 +123,7 @@ public class LocationLogicProcessorTest extends TestCase {
         expected1.put(FLOOR_NEW, "FLOOR-B");
         expected1.put(WIRELESS_STATION_NEW, "33:33:33:33:33:31");
         expected1.put(TYPE, "nmsp-measure");
+        expected1.put(NAMESPACE_UUID, "12345");
 
         assertEquals(expected1, collector.getResult().get(0));
 
@@ -129,5 +132,62 @@ public class LocationLogicProcessorTest extends TestCase {
 
     }
 
+    @Test
+    public void differentNamespaces() {
+        MockMessageCollector collector = new MockMessageCollector();
+        Map<String, Object> message = new HashMap<>();
+        message.put(CLIENT_MAC, "00:00:00:00:00:00");
+        message.put(CAMPUS, "CAMPUS-A");
+        message.put(BUILDING, "BUILDING-A");
+        message.put(FLOOR, "FLOOR-A");
+        message.put(ZONE, "ZONE-A");
+        message.put(TYPE, "nmsp-measure");
+        message.put(WIRELESS_STATION, "33:33:33:33:33:33");
+        message.put(TIMESTAMP, 1388609700L);
+        message.put(NAMESPACE_UUID, "12345");
+
+        locationLogicProcessor.process(message, collector);
+        Map<String, Object> expected = new HashMap<>();
+        expected.put(TIMESTAMP, 1388609700L);
+        expected.put(CAMPUS_NEW, "CAMPUS-A");
+        expected.put(CLIENT_MAC, "00:00:00:00:00:00");
+        expected.put(BUILDING_NEW, "BUILDING-A");
+        expected.put(FLOOR_NEW, "FLOOR-A");
+        expected.put(NAMESPACE_UUID, "12345");
+        expected.put(ZONE_NEW, "ZONE-A");
+        expected.put(WIRELESS_STATION_NEW, "33:33:33:33:33:33");
+        expected.put(TYPE, "nmsp-measure");
+
+        assertEquals(expected, collector.getResult().get(0));
+
+        Map<String, Object> message1 = new HashMap<>();
+        message1.put(CLIENT_MAC, "00:00:00:00:00:00");
+        message1.put(TIMESTAMP, 1388609710L);
+        message1.put(CAMPUS, "CAMPUS-B");
+        message1.put(BUILDING, "BUILDING-B");
+        message1.put(TYPE, "nmsp-measure");
+        message1.put(ZONE, "ZONE-B");
+        message1.put(FLOOR, "FLOOR-B");
+        message1.put(WIRELESS_STATION, "33:33:33:33:33:31");
+        message1.put(NAMESPACE_UUID, "1234");
+        locationLogicProcessor.process(message1, collector);
+
+        Map<String, Object> expected1 = new HashMap<>();
+        expected1.put(TIMESTAMP, 1388609710L);
+        expected1.put(CLIENT_MAC, "00:00:00:00:00:00");
+        expected1.put(CAMPUS_NEW, "CAMPUS-B");
+        expected1.put(BUILDING_NEW, "BUILDING-B");
+        expected1.put(ZONE_NEW, "ZONE-B");
+        expected1.put(FLOOR_NEW, "FLOOR-B");
+        expected1.put(WIRELESS_STATION_NEW, "33:33:33:33:33:31");
+        expected1.put(TYPE, "nmsp-measure");
+        expected1.put(NAMESPACE_UUID, "1234");
+
+        assertEquals(expected1, collector.getResult().get(0));
+
+        locationLogicProcessor.process(message1, collector);
+        assertEquals(message1, collector.getResult().get(0));
+
+    }
 
 }
