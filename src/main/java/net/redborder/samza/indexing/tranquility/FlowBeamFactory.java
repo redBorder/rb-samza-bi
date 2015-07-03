@@ -8,7 +8,7 @@ import com.metamx.tranquility.druid.*;
 import com.metamx.tranquility.samza.BeamFactory;
 import com.metamx.tranquility.typeclass.Timestamper;
 import io.druid.data.input.impl.TimestampSpec;
-import io.druid.granularity.QueryGranularity;
+import io.druid.granularity.DurationGranularity;
 import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
 import io.druid.query.aggregation.LongSumAggregatorFactory;
@@ -30,19 +30,16 @@ import java.util.Map;
 import static net.redborder.samza.util.constants.Aggregators.*;
 import static net.redborder.samza.util.constants.Dimension.*;
 
-/**
- * Date: 11/5/15 10:45.
- */
 public class FlowBeamFactory implements BeamFactory {
     private static final Logger log = LoggerFactory.getLogger(FlowBeamFactory.class);
 
     @Override
-    public Beam<Object> makeBeam(SystemStream stream, Config config)
-    {
+    public Beam<Object> makeBeam(SystemStream stream, Config config) {
         final int maxRows = Integer.valueOf(config.get("redborder.beam.flow.maxrows", "200000"));
         final String dataSource = stream.getStream();
-        final String intermediatePersist = config.get("redborder.beam.flow.intermediatePersist", "PT20m");
+        final String intermediatePersist = config.get("redborder.beam.flow.intermediatePersist", "pt20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
+        final long indexGranularity = Long.valueOf(config.get("systems.druid_flow.beam.indexGranularity", "60000"));
 
         final Integer partitions = AutoScalingUtils.getPartitions(dataSource);
         final Integer replicas = AutoScalingUtils.getReplicas(dataSource);
@@ -76,11 +73,9 @@ public class FlowBeamFactory implements BeamFactory {
 
         // The Timestamper should return the timestamp of the class your Samza task produces. Samza envelopes contain
         // Objects, so you'll generally have to cast them here.
-        final Timestamper<Object> timestamper = new Timestamper<Object>()
-        {
+        final Timestamper<Object> timestamper = new Timestamper<Object>() {
             @Override
-            public DateTime timestamp(Object obj)
-            {
+            public DateTime timestamp(Object obj) {
                 final Map<String, Object> theMap = (Map<String, Object>) obj;
                 Long date = Long.parseLong(theMap.get(TIMESTAMP).toString());
                 date = date * 1000;
@@ -100,7 +95,7 @@ public class FlowBeamFactory implements BeamFactory {
                 .curator(curator)
                 .discoveryPath("/druid/discoveryPath")
                 .location(DruidLocation.create("overlord", "druid:local:firehose:%s", realDataSource))
-                .rollup(DruidRollup.create(DruidDimensions.specific(dimensions), aggregators, QueryGranularity.MINUTE))
+                .rollup(DruidRollup.create(DruidDimensions.specific(dimensions), aggregators, new DurationGranularity(indexGranularity, 0)))
                 .druidTuning(DruidTuning.create(maxRows, new Period(intermediatePersist), 0))
                 .tuning(ClusteredBeamTuning.builder()
                         .partitions(partitions)

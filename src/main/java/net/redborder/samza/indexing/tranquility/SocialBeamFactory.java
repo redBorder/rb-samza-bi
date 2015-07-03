@@ -8,7 +8,7 @@ import com.metamx.tranquility.druid.*;
 import com.metamx.tranquility.samza.BeamFactory;
 import com.metamx.tranquility.typeclass.Timestamper;
 import io.druid.data.input.impl.TimestampSpec;
-import io.druid.granularity.QueryGranularity;
+import io.druid.granularity.DurationGranularity;
 import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
 import io.druid.query.aggregation.LongSumAggregatorFactory;
@@ -27,16 +27,14 @@ import java.util.Map;
 
 import static net.redborder.samza.util.constants.Aggregators.*;
 import static net.redborder.samza.util.constants.Dimension.*;
-import static net.redborder.samza.util.constants.Dimension.TIMESTAMP;
 
-public class SocialBeamFactory implements BeamFactory
-{
+public class SocialBeamFactory implements BeamFactory {
     @Override
-    public Beam<Object> makeBeam(SystemStream stream, Config config)
-    {
+    public Beam<Object> makeBeam(SystemStream stream, Config config) {
         final int maxRows = Integer.valueOf(config.get("redborder.beam.state.maxrows", "200000"));
         final String intermediatePersist = config.get("redborder.beam.state.intermediatePersist", "PT20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
+        final long indexGranularity = Long.valueOf(config.get("systems.druid_social.beam.indexGranularity", "60000"));
         final String dataSource = stream.getStream();
 
         final Integer partitions = AutoScalingUtils.getPartitions(dataSource);
@@ -59,11 +57,9 @@ public class SocialBeamFactory implements BeamFactory
 
         // The Timestamper should return the timestamp of the class your Samza task produces. Samza envelopes contain
         // Objects, so you'll generally have to cast them here.
-        final Timestamper<Object> timestamper = new Timestamper<Object>()
-        {
+        final Timestamper<Object> timestamper = new Timestamper<Object>() {
             @Override
-            public DateTime timestamp(Object obj)
-            {
+            public DateTime timestamp(Object obj) {
                 final Map<String, Object> theMap = (Map<String, Object>) obj;
                 Long date = Long.parseLong(theMap.get(TIMESTAMP).toString());
                 date = date * 1000;
@@ -83,7 +79,7 @@ public class SocialBeamFactory implements BeamFactory
                 .curator(curator)
                 .discoveryPath("/druid/discoveryPath")
                 .location(DruidLocation.create("overlord", "druid:local:firehose:%s", realDataSource))
-                .rollup(DruidRollup.create(DruidDimensions.specific(dimensions), aggregators, QueryGranularity.MINUTE))
+                .rollup(DruidRollup.create(DruidDimensions.specific(dimensions), aggregators, new DurationGranularity(indexGranularity, 0)))
                 .druidTuning(DruidTuning.create(maxRows, new Period(intermediatePersist), 0))
                 .tuning(ClusteredBeamTuning.builder()
                         .partitions(partitions)

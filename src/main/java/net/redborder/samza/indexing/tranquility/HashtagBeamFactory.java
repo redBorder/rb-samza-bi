@@ -9,7 +9,7 @@ import com.metamx.tranquility.druid.*;
 import com.metamx.tranquility.samza.BeamFactory;
 import com.metamx.tranquility.typeclass.Timestamper;
 import io.druid.data.input.impl.TimestampSpec;
-import io.druid.granularity.QueryGranularity;
+import io.druid.granularity.DurationGranularity;
 import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
 import net.redborder.samza.indexing.autoscaling.AutoScalingUtils;
@@ -27,7 +27,6 @@ import java.util.Map;
 
 import static net.redborder.samza.util.constants.Aggregators.EVENTS_AGGREGATOR;
 import static net.redborder.samza.util.constants.Dimension.*;
-import static net.redborder.samza.util.constants.Dimension.TIMESTAMP;
 
 public class HashtagBeamFactory implements BeamFactory {
 
@@ -36,6 +35,7 @@ public class HashtagBeamFactory implements BeamFactory {
         final int maxRows = Integer.valueOf(config.get("redborder.beam.state.maxrows", "200000"));
         final String intermediatePersist = config.get("redborder.beam.state.intermediatePersist", "PT20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
+        final long indexGranularity = Long.valueOf(config.get("systems.druid_hashtag.beam.indexGranularity", "60000"));
         final String dataSource = stream.getStream();
 
         final Integer partitions = AutoScalingUtils.getPartitions(dataSource);
@@ -48,7 +48,7 @@ public class HashtagBeamFactory implements BeamFactory {
                 ORGANIZATION_UUID, SERVICE_PROVIDER, SERVICE_PROVIDER_UUID
         );
 
-        final List<AggregatorFactory> aggregators = Arrays.asList(new AggregatorFactory[] { new CountAggregatorFactory(EVENTS_AGGREGATOR)});
+        final List<AggregatorFactory> aggregators = Arrays.asList(new AggregatorFactory[]{new CountAggregatorFactory(EVENTS_AGGREGATOR)});
 
         // The Timestamper should return the timestamp of the class your Samza task produces. Samza envelopes contain
         // Objects, so you'll generally have to cast them here.
@@ -74,7 +74,7 @@ public class HashtagBeamFactory implements BeamFactory {
                 .curator(curator)
                 .discoveryPath("/druid/discoveryPath")
                 .location(DruidLocation.create("overlord", "druid:local:firehose:%s", realDataSource))
-                .rollup(DruidRollup.create(DruidDimensions.specific(dimensions), aggregators, QueryGranularity.MINUTE))
+                .rollup(DruidRollup.create(DruidDimensions.specific(dimensions), aggregators, new DurationGranularity(indexGranularity, 0)))
                 .druidTuning(DruidTuning.create(maxRows, new Period(intermediatePersist), 0))
                 .tuning(ClusteredBeamTuning.builder()
                         .partitions(partitions)

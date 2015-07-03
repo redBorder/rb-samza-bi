@@ -8,7 +8,7 @@ import com.metamx.tranquility.druid.*;
 import com.metamx.tranquility.samza.BeamFactory;
 import com.metamx.tranquility.typeclass.Timestamper;
 import io.druid.data.input.impl.TimestampSpec;
-import io.druid.granularity.QueryGranularity;
+import io.druid.granularity.DurationGranularity;
 import io.druid.query.aggregation.*;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -23,16 +23,15 @@ import java.util.Map;
 
 import static net.redborder.samza.util.constants.Dimension.TIMESTAMP;
 
-public class MonitorBeamFactory implements BeamFactory
-{
+public class MonitorBeamFactory implements BeamFactory {
     @Override
-    public Beam<Object> makeBeam(SystemStream stream, Config config)
-    {
+    public Beam<Object> makeBeam(SystemStream stream, Config config) {
         final int maxRows = Integer.valueOf(config.get("redborder.beam.monitor.maxrows", "200000"));
         final int partitions = Integer.valueOf(config.get("redborder.beam.monitor.partitions", "2"));
         final int replicas = Integer.valueOf(config.get("redborder.beam.monitor.replicas", "1"));
         final String intermediatePersist = config.get("redborder.beam.monitor.intermediatePersist", "PT20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
+        final long indexGranularity = Long.valueOf(config.get("systems.druid_monitor.beam.indexGranularity", "60000"));
         final String dataSource = stream.getStream();
 
         final List<String> exclusions = ImmutableList.of("unit", "type");
@@ -45,11 +44,9 @@ public class MonitorBeamFactory implements BeamFactory
 
         // The Timestamper should return the timestamp of the class your Samza task produces. Samza envelopes contain
         // Objects, so you'll generally have to cast them here.
-        final Timestamper<Object> timestamper = new Timestamper<Object>()
-        {
+        final Timestamper<Object> timestamper = new Timestamper<Object>() {
             @Override
-            public DateTime timestamp(Object obj)
-            {
+            public DateTime timestamp(Object obj) {
                 final Map<String, Object> theMap = (Map<String, Object>) obj;
                 Long date = Long.parseLong(theMap.get(TIMESTAMP).toString());
                 date = date * 1000;
@@ -69,7 +66,7 @@ public class MonitorBeamFactory implements BeamFactory
                 .curator(curator)
                 .discoveryPath("/druid/discoveryPath")
                 .location(DruidLocation.create("overlord", "druid:local:firehose:%s", dataSource))
-                .rollup(DruidRollup.create(DruidDimensions.schemalessWithExclusions(exclusions), aggregators, QueryGranularity.MINUTE))
+                .rollup(DruidRollup.create(DruidDimensions.schemalessWithExclusions(exclusions), aggregators, new DurationGranularity(indexGranularity, 0)))
                 .druidTuning(DruidTuning.create(maxRows, new Period(intermediatePersist), 0))
                 .tuning(ClusteredBeamTuning.builder()
                         .partitions(partitions)
