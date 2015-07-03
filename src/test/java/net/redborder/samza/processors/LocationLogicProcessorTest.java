@@ -136,7 +136,7 @@ public class LocationLogicProcessorTest extends TestCase {
     public void differentNamespaces() {
         MockMessageCollector collector = new MockMessageCollector();
         Map<String, Object> message = new HashMap<>();
-        message.put(CLIENT_MAC, "00:00:00:00:00:00");
+        message.put(CLIENT_MAC, "00:00:00:00:00:11");
         message.put(CAMPUS, "CAMPUS-A");
         message.put(BUILDING, "BUILDING-A");
         message.put(FLOOR, "FLOOR-A");
@@ -150,7 +150,7 @@ public class LocationLogicProcessorTest extends TestCase {
         Map<String, Object> expected = new HashMap<>();
         expected.put(TIMESTAMP, 1388609700L);
         expected.put(CAMPUS_NEW, "CAMPUS-A");
-        expected.put(CLIENT_MAC, "00:00:00:00:00:00");
+        expected.put(CLIENT_MAC, "00:00:00:00:00:11");
         expected.put(BUILDING_NEW, "BUILDING-A");
         expected.put(FLOOR_NEW, "FLOOR-A");
         expected.put(NAMESPACE_UUID, "12345");
@@ -161,7 +161,7 @@ public class LocationLogicProcessorTest extends TestCase {
         assertEquals(expected, collector.getResult().get(0));
 
         Map<String, Object> message1 = new HashMap<>();
-        message1.put(CLIENT_MAC, "00:00:00:00:00:00");
+        message1.put(CLIENT_MAC, "00:00:00:00:00:11");
         message1.put(TIMESTAMP, 1388609710L);
         message1.put(CAMPUS, "CAMPUS-B");
         message1.put(BUILDING, "BUILDING-B");
@@ -174,7 +174,7 @@ public class LocationLogicProcessorTest extends TestCase {
 
         Map<String, Object> expected1 = new HashMap<>();
         expected1.put(TIMESTAMP, 1388609710L);
-        expected1.put(CLIENT_MAC, "00:00:00:00:00:00");
+        expected1.put(CLIENT_MAC, "00:00:00:00:00:11");
         expected1.put(CAMPUS_NEW, "CAMPUS-B");
         expected1.put(BUILDING_NEW, "BUILDING-B");
         expected1.put(ZONE_NEW, "ZONE-B");
