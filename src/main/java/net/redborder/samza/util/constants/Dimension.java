@@ -109,6 +109,7 @@ public class Dimension {
     public final static String FILE_SIZE = "file_size";
     public final static String FILE_URI = "file_uri";
     public final static String FILE_HOSTNAME = "file_hostname";
+    public final static String GROUP_UUID = "group_uuid";
 
     // Darklist
     public final static String DARKLIST_SCORE = "darklist_score";
