@@ -14,4 +14,7 @@ public class Constants {
     public static final String MONITOR_TOPIC = "rb_monitor";
     public static final String HASHTAGS_TOPIC = "rb_hashtag";
     public static final String HASHTAGS_DATASOURCE = "rb_hashtag";
+    public static final String MALWARE_DATASOURCE = "rb_malware";
+    public static final String MALWARE_TOPIC = "rb_malware_post";
+
 }

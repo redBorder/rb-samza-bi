@@ -23,7 +23,6 @@ public class Dimension {
     public final static String SRC_VLAN = "src_vlan";
     public final static String DST_VLAN = "dst_vlan";
     public final static String DOT11STATUS = "dot11_status";
-    public final static String SRC = "src";
     public final static String CLIENT_MAC_VENDOR = "client_mac_vendor";
     public final static String CLIENT_ID = "client_id";
     public final static String SRC_AS_NAME = "src_as_name";
@@ -58,6 +57,7 @@ public class Dimension {
     public final static String OUTPUT_VRF = "output_vrf";
     public final static String SERVICE_PROVIDER = "service_provider";
     public final static String SERVICE_PROVIDER_UUID = "service_provider_uuid";
+    public final static String SRC = "src";
 
     public final static String BUILDING = "building";
     public final static String BUILDING_UUID = "building_uuid";
@@ -79,6 +79,22 @@ public class Dimension {
     public final static String TIER = "tier";
     public final static String MSG = "msg";
     public final static String HTTPS_COMMON_NAME = "https_common_name";
+
+
+    // Analysis
+    public static final String MALWARE_NAME = "malware_name";
+    public static final String SCORE = "score";
+    public static final String ENGINE = "engine";
+    public static final String CUCKOO_BEFORE = "cuckoo_before";
+
+    // MailGW
+    public static final String URLS = "urls";
+    public static final String FILENAME = "filename";
+    public static final String EMAIL_SENDER = "email_sender";
+    public static final String EMAIL_SENDERS = "email_sender";
+    public static final String EMAIL_DESTINATIONS = "email_destinations";
+    public static final String EMAIL_DESTINATION = "email_destination";
+    public static final String EMAIL_ID = "email_id";
 
     // Event
     public final static String ACTION = "action";
