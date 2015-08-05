@@ -52,6 +52,10 @@ public class PostgresqlManager {
         }
     }
 
+    public synchronized static Map<String, String> getSPSalt(){
+        return new HashMap<>();
+    }
+
     public synchronized static void update() {
         Statement st = null;
         ResultSet rs = null;
