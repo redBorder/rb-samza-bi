@@ -101,7 +101,7 @@ public class FlowBeamFactory implements BeamFactory {
                         .partitions(partitions)
                         .replicants(replicas)
                         .segmentGranularity(Granularity.HOUR)
-                        .warmingPeriod(new Period("PT5M"))
+                        .warmingPeriod(new Period("PT15M"))
                         .windowPeriod(new Period("PT15M"))
                         .build())
                 .timestampSpec(new TimestampSpec(TIMESTAMP, "posix"))
