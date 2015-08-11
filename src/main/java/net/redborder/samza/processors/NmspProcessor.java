@@ -156,6 +156,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
             toDruid.put("timestamp", timestamp);
             Map<String, Object> enrichmentEvent = enrichManager.enrich(toDruid);
             Map<String, Object> storeEnrichment = storeManager.enrich(enrichmentEvent);
+
             collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, storeEnrichment));
         }
 

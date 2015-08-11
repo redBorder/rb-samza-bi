@@ -157,8 +157,8 @@ public class LocationLogicProcessor extends Processor<Map<String, Object>> {
             toCache.put(WIRELESS_STATION, wirelessStation);
 
             storeLogic.put(client_mac+namespace_id, toCache);
-
-            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
+            Map<String, Object> enrichmentEvent = enrichManager.enrich(toDruid);
+            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentEvent));
         }
     }
 

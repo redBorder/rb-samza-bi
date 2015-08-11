@@ -40,5 +40,6 @@ public class EnrichmentStreamTask implements StreamTask, InitableTask, Windowabl
     @Override
     public void window(MessageCollector messageCollector, TaskCoordinator taskCoordinator) throws Exception {
         PostgresqlManager.update();
+        PostgresqlManager.updateSalts();
     }
 }
