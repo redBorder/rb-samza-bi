@@ -7,7 +7,7 @@
     <version>1.4.5-SNAPSHOT</version>
 
     <scm>
-        <developerConnection>scm:git:git@gitlab.redborder.lan:agomez/rb-samza-bi.git</developerConnection>
+        <developerConnection>scm:git:git@gitlab.redborder.lan:bigdata/rb-samza-bi.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
@@ -142,6 +142,12 @@
             <groupId>org.codehaus.jackson</groupId>
             <artifactId>jackson-mapper-asl</artifactId>
             <version>1.9.13</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk15on</artifactId>
+            <version>1.52</version>
         </dependency>
 
         <!-- GeoIP -->
