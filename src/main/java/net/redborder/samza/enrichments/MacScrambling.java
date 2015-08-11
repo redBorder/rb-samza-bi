@@ -28,7 +28,7 @@ public class MacScrambling implements IEnrich {
                 for (int i = 0; i < scrambleMac.length; i++) {
                     sb.append(String.format("%02X%s", scrambleMac[i], (i < scrambleMac.length - 1) ? ":" : ""));
                 }
-                mac = sb.toString();
+                mac = sb.toString().toLowerCase();
 
                 message.put(Dimension.CLIENT_MAC, mac);
             }
