@@ -26,7 +26,7 @@ public class PostgresqlManager {
 
     private static Connection conn = null;
     private static KeyValueStore<String, Map<String, Object>> storePostgreSql;
-    private static Map<String, MacScramble> scrambles;
+    private static Map<String, MacScramble> scrambles  = new HashMap<>();
 
 
     public static void init(Config config, StoreManager storeManager) {
@@ -62,7 +62,7 @@ public class PostgresqlManager {
     public synchronized static void updateSalts() {
         Statement st = null;
         ResultSet rs = null;
-        scrambles = new HashMap<>();
+        scrambles.clear();
 
         try {
             if (conn != null) {

@@ -25,6 +25,8 @@ public class EnrichmentStreamTask implements StreamTask, InitableTask, Windowabl
         this.storeManager = new StoreManager(config, context);
         this.counter = context.getMetricsRegistry().newCounter(getClass().getName(), "messages");
         PostgresqlManager.init(config, storeManager);
+        PostgresqlManager.update();
+        PostgresqlManager.updateSalts();
     }
 
     @Override
