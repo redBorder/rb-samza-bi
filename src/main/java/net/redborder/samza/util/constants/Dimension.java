@@ -175,6 +175,7 @@ public class Dimension {
     public final static String LOC_COORDINATE_Y = "y";
     public final static String LOC_COORDINATE_Z = "z";
     public final static String LOC_COORDINATE_UNIT = "unit";
+    public final static String WIRELESS_OPERATOR = "wireless_operator";
 
     // State
     public final static String WIRELESS_CHANNEL = "wireless_channel";
@@ -189,7 +190,7 @@ public class Dimension {
 
     // Social
     public final static String USER_SCREEN_NAME = "user_screen_name";
-    public final static String USER_NAME = "user_name";
+    public final static String USER_NAME_SOCIAL = "user_name";
     public final static String USER_ID = "user_id";
     public final static String HASHTAGS = "hashtags";
     public final static String MENTIONS = "mentions";
@@ -214,4 +215,13 @@ public class Dimension {
     public final static String ZONE_OLD = ZONE + "_old";
     public final static String WIRELESS_STATION_NEW = WIRELESS_STATION + "_new";
     public final static String WIRELESS_STATION_OLD = WIRELESS_STATION + "_old";
+
+    // Radius
+    public final static String PACKET_SRC_IP_ADDRESS = "Packet-Src-IP-Address";
+    public final static String USER_NAME_RADIUS = "User-Name";
+    public final static String OPERATOR_NAME = "Operator-Name";
+    public final static String AIRESPACE_WLAN_ID = "Airespace-Wlan_Id";
+    public final static String CALLING_STATION_ID = "Calling-Station-Id";
+    public final static String ACCT_STATUS_TYPE = "Acct-Status-Type";
+    public final static String CALLED_STATION_ID = "Called-Station-Id";
 }
