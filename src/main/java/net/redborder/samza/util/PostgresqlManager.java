@@ -75,7 +75,10 @@ public class PostgresqlManager {
 
                     Map<String, Object> properties = mapper.readValue(propertyStr, Map.class);
                     String salt = (String) properties.get("mac_hashing_salt");
-                    scrambles.put(uuid, new MacScramble(salt.getBytes()));
+
+                    if(salt != null) {
+                        scrambles.put(uuid, new MacScramble(salt.getBytes()));
+                    }
                 }
             }
 
