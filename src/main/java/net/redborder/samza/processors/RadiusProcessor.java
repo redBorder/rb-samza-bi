@@ -1,5 +1,6 @@
 package net.redborder.samza.processors;
 
+import com.google.api.client.repackaged.com.google.common.base.Joiner;
 import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.constants.Constants;
@@ -11,10 +12,7 @@ import org.apache.samza.system.SystemStream;
 import org.apache.samza.task.MessageCollector;
 import org.apache.samza.task.TaskContext;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static net.redborder.samza.util.constants.Dimension.*;
 import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_INFO;
@@ -56,14 +54,14 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
         String wirelessId = (String) message.get(AIRESPACE_WLAN_ID);
         String clientMac = (String) message.get(CALLING_STATION_ID);
         String status = (String) message.get(ACCT_STATUS_TYPE);
-        String wirelessStation = (String) message.get(CALLED_STATION_ID);
+        String wirelessStationSSID = (String) message.get(CALLED_STATION_ID);
         Long timestamp = (Long) message.get(TIMESTAMP);
 
-        if(clientMac != null) {
+        if (clientMac != null) {
             clientMac = clientMac.replaceAll("-", ":");
             toDruid.put(CLIENT_MAC, clientMac);
 
-            if(timestamp != null) {
+            if (timestamp != null) {
                 toDruid.put(TIMESTAMP, timestamp);
             } else {
                 toDruid.put(TIMESTAMP, System.currentTimeMillis() / 1000);
@@ -81,8 +79,12 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
             if (wirelessId != null) {
                 toCache.put(WIRELESS_ID, wirelessId);
             }
-            if (wirelessStation != null) {
-                toCache.put(WIRELESS_STATION, wirelessStation);
+            if (wirelessStationSSID != null) {
+                String[] splited = wirelessStationSSID.split(":");
+                if (splited.length == 7) {
+                    toCache.put(WIRELESS_ID, splited[6]);
+                    toCache.put(WIRELESS_STATION, Joiner.on(":").join(Arrays.copyOfRange(splited, 0, splited.length - 1)));
+                }
             }
 
             if (status != null) {
