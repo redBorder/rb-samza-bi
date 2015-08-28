@@ -12,6 +12,8 @@ import io.druid.granularity.DurationGranularity;
 import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
 import io.druid.query.aggregation.LongSumAggregatorFactory;
+import io.druid.query.aggregation.hyperloglog.HyperUniquesAggregator;
+import io.druid.query.aggregation.hyperloglog.HyperUniquesAggregatorFactory;
 import net.redborder.samza.indexing.autoscaling.AutoScalingUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -58,7 +60,7 @@ public class EventBeamFactory implements BeamFactory
 
         final List<AggregatorFactory> aggregators = ImmutableList.of(
             new CountAggregatorFactory(EVENTS_AGGREGATOR),
-            new LongSumAggregatorFactory(SIGNATURES_AGGREGATOR, MSG)
+            new HyperUniquesAggregatorFactory(SIGNATURES_AGGREGATOR, MSG)
             // TODO: if @darklist_enable => {"type":"longSum", "fieldName":"darklist_score", "name":"sum_dl_score"}
         );
 
