@@ -34,7 +34,7 @@ public class Dimension {
     public final static String DST_MAP = "dst_map";
     public final static String ZONE_UUID = "zone_uuid";
     public final static String APPLICATION_ID_NAME = "application_id_name";
-    public final static String BITFLOW_DIRECTION = "biflow_direction";
+    public final static String BIFLOW_DIRECTION = "biflow_direction";
     public final static String CONVERSATION = "conversation";
     public final static String DIRECTION = "direction";
     public final static String ENGINE_ID_NAME = "engine_id_name";
@@ -79,6 +79,9 @@ public class Dimension {
     public final static String TIER = "tier";
     public final static String MSG = "msg";
     public final static String HTTPS_COMMON_NAME = "https_common_name";
+
+    public final static String CLIENT_NAME = "client_name";
+    public final static String TARGET_NAME = "target_name";
 
 
     // Analysis
