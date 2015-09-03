@@ -3,11 +3,14 @@ package net.redborder.samza.enrichments;
 import net.redborder.samza.util.MacScramble;
 import net.redborder.samza.util.PostgresqlManager;
 import net.redborder.samza.util.constants.Dimension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.security.GeneralSecurityException;
 import java.util.Map;
 
 public class MacScramblingEnrich implements IEnrich {
+    private static final Logger log = LoggerFactory.getLogger(MacScramblingEnrich.class);
 
     @Override
     public Map<String, Object> enrich(Map<String, Object> message) {
@@ -21,6 +24,7 @@ public class MacScramblingEnrich implements IEnrich {
 
             MacScramble scramble = scrambles.get(spUUID);
 
+            log.debug("SPuuid: {}  Scramble: {}", spUUID, scramble);
             if(scramble != null) {
                 scrambleMac = scramble.scrambleMac(hexStringToByteArray(mac.replace(":", "")));
 

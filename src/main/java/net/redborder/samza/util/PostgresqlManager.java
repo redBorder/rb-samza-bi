@@ -84,6 +84,7 @@ public class PostgresqlManager {
                 }
             }
 
+            log.info("Updated salts: {}", scrambles.entrySet() );
         } catch (SQLException e) {
             log.error("The postgreSQL query failed! " + e.toString());
             e.printStackTrace();

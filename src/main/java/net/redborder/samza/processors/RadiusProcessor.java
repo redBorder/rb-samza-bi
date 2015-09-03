@@ -55,7 +55,7 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
         String clientMac = (String) message.get(CALLING_STATION_ID);
         String status = (String) message.get(ACCT_STATUS_TYPE);
         String wirelessStationSSID = (String) message.get(CALLED_STATION_ID);
-        Long timestamp = (Long) message.get(TIMESTAMP);
+        Object timestamp = message.get(TIMESTAMP);
 
         if (clientMac != null) {
             clientMac = clientMac.replaceAll("-", ":");
