@@ -7,7 +7,7 @@ import net.redborder.samza.util.constants.Dimension;
 import java.security.GeneralSecurityException;
 import java.util.Map;
 
-public class MacScrambling implements IEnrich {
+public class MacScramblingEnrich implements IEnrich {
 
     @Override
     public Map<String, Object> enrich(Map<String, Object> message) {
@@ -22,7 +22,7 @@ public class MacScrambling implements IEnrich {
             MacScramble scramble = scrambles.get(spUUID);
 
             if(scramble != null) {
-                scrambleMac = scramble.scrambleMac(mac.getBytes());
+                scrambleMac = scramble.scrambleMac(hexStringToByteArray(mac.replace(":", "")));
 
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < scrambleMac.length; i++) {
@@ -38,5 +38,17 @@ public class MacScrambling implements IEnrich {
 
 
         return message;
+    }
+
+    public static byte[] hexStringToByteArray(String s) {
+        int len = s.length();
+        byte[] data = new byte[len / 2];
+
+        for (int i = 0; i < len/2; i += 1) {
+            String element = s.substring(i*2, i*2+2);
+            data[i] = (byte) Integer.parseInt(element, 16);
+        }
+
+        return data;
     }
 }

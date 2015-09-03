@@ -27,6 +27,7 @@ public class PostgresqlManager {
     private static Connection conn = null;
     private static KeyValueStore<String, Map<String, Object>> storePostgreSql;
     private static Map<String, MacScramble> scrambles  = new HashMap<>();
+    private static String macScramblePrefix = null;
 
 
     public static void init(Config config, StoreManager storeManager) {
@@ -40,6 +41,7 @@ public class PostgresqlManager {
             String uri = config.get("redborder.postgresql.uri");
             String user = config.get("redborder.postgresql.user");
             String pass = config.get("redborder.postgresql.pass");
+            macScramblePrefix = config.get("redborder.macscramble.prefix");
             storePostgreSql = storeManager.getStore(POSTGRESQL_STORE);
 
             try {
@@ -77,7 +79,7 @@ public class PostgresqlManager {
                     String salt = (String) properties.get("mac_hashing_salt");
 
                     if(salt != null) {
-                        scrambles.put(uuid, new MacScramble(salt.getBytes()));
+                        scrambles.put(uuid, new MacScramble(salt.getBytes(), macScramblePrefix));
                     }
                 }
             }
