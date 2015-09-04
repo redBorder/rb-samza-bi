@@ -88,7 +88,7 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
             }
 
             if (clientConnection != null) {
-                toDruid.put(CLIENT_CONNECTION, clientConnection.toLowerCase());
+                toDruid.put(CLIENT_ACCOUNTING_TYPE, clientConnection.toLowerCase());
                 if (clientConnection.equals("Stop")) {
                     storeRadius.delete(clientMac + namespace_id);
                 } else {
