@@ -201,6 +201,6 @@ public class RadiusProcessorTest extends TestCase {
         Map<String, Object> message = objectMapper.readValue(radiusEvent, Map.class);
         message.put(ACCT_STATUS_TYPE, "Start");
         radiusProcessor.process(message, collector);
-        assertEquals("start", collector.getResult().get(0).get(CLIENT_CONNECTION));
+        assertEquals("start", collector.getResult().get(0).get(CLIENT_ACCOUNTING_TYPE));
     }
 }
