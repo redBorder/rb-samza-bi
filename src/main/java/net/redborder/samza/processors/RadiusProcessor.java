@@ -55,11 +55,17 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
         String clientMac = (String) message.get(CALLING_STATION_ID);
         String clientConnection = (String) message.get(ACCT_STATUS_TYPE);
         String wirelessStationSSID = (String) message.get(CALLED_STATION_ID);
+        Map<String, Object> enrichment = (Map<String, Object>) message.get("enrichment");
+
         Object timestamp = message.get(TIMESTAMP);
 
         if (clientMac != null) {
             clientMac = clientMac.replaceAll("-", ":");
             toDruid.put(CLIENT_MAC, clientMac);
+
+            if (enrichment != null) {
+                toDruid.putAll(enrichment);
+            }
 
             if (timestamp != null) {
                 toDruid.put(TIMESTAMP, timestamp);
