@@ -53,7 +53,7 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
         String operatorName = (String) message.get(OPERATOR_NAME);
         String wirelessId = (String) message.get(AIRESPACE_WLAN_ID);
         String clientMac = (String) message.get(CALLING_STATION_ID);
-        String status = (String) message.get(ACCT_STATUS_TYPE);
+        String clientConnection = (String) message.get(ACCT_STATUS_TYPE);
         String wirelessStationSSID = (String) message.get(CALLED_STATION_ID);
         Object timestamp = message.get(TIMESTAMP);
 
@@ -87,8 +87,9 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
                 }
             }
 
-            if (status != null) {
-                if (status.equals("Stop")) {
+            if (clientConnection != null) {
+                toDruid.put(CLIENT_CONNECTION, clientConnection.toLowerCase());
+                if (clientConnection.equals("Stop")) {
                     storeRadius.delete(clientMac + namespace_id);
                 } else {
                     storeRadius.put(clientMac + namespace_id, toCache);

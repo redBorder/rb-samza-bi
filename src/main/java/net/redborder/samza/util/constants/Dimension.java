@@ -227,4 +227,5 @@ public class Dimension {
     public final static String CALLING_STATION_ID = "Calling-Station-Id";
     public final static String ACCT_STATUS_TYPE = "Acct-Status-Type";
     public final static String CALLED_STATION_ID = "Called-Station-Id";
+    public final static String CLIENT_CONNECTION = "client_connection";
 }
