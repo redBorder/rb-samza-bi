@@ -4,6 +4,7 @@ package net.redborder.samza.util;
 import net.redborder.samza.store.StoreManager;
 import org.apache.samza.config.Config;
 import org.apache.samza.storage.kv.KeyValueStore;
+import org.bouncycastle.util.encoders.Hex;
 import org.codehaus.jackson.JsonParseException;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -79,7 +80,7 @@ public class PostgresqlManager {
                     String salt = (String) properties.get("mac_hashing_salt");
 
                     if(salt != null) {
-                        scrambles.put(uuid, new MacScramble(salt.getBytes(), macScramblePrefix));
+                        scrambles.put(uuid, new MacScramble(Hex.decode(salt), macScramblePrefix));
                     }
                 }
             }

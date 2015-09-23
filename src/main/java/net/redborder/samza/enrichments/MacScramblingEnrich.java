@@ -3,6 +3,7 @@ package net.redborder.samza.enrichments;
 import net.redborder.samza.util.MacScramble;
 import net.redborder.samza.util.PostgresqlManager;
 import net.redborder.samza.util.constants.Dimension;
+import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +12,7 @@ import java.util.Map;
 
 public class MacScramblingEnrich implements IEnrich {
     private static final Logger log = LoggerFactory.getLogger(MacScramblingEnrich.class);
+    private final static char[] HEX_CHARS = "0123456789abcdef".toCharArray();
 
     @Override
     public Map<String, Object> enrich(Map<String, Object> message) {
@@ -26,15 +28,8 @@ public class MacScramblingEnrich implements IEnrich {
 
             log.debug("SPuuid: {}  Scramble: {}", spUUID, scramble);
             if(scramble != null) {
-                scrambleMac = scramble.scrambleMac(hexStringToByteArray(mac.replace(":", "")));
-
-                StringBuilder sb = new StringBuilder();
-                for (int i = 0; i < scrambleMac.length; i++) {
-                    sb.append(String.format("%02X%s", scrambleMac[i], (i < scrambleMac.length - 1) ? ":" : ""));
-                }
-                mac = sb.toString().toLowerCase();
-
-                message.put(Dimension.CLIENT_MAC, mac);
+                scrambleMac = scramble.scrambleMac(Hex.decode(mac.replace(":", "")));
+                message.put(Dimension.CLIENT_MAC, toMac(scrambleMac, ":"));
             }
         } catch (GeneralSecurityException e) {
             e.printStackTrace();
@@ -44,15 +39,16 @@ public class MacScramblingEnrich implements IEnrich {
         return message;
     }
 
-    public static byte[] hexStringToByteArray(String s) {
-        int len = s.length();
-        byte[] data = new byte[len / 2];
-
-        for (int i = 0; i < len/2; i += 1) {
-            String element = s.substring(i*2, i*2+2);
-            data[i] = (byte) Integer.parseInt(element, 16);
+    public static String toMac(final byte[] val, final String sep) {
+        final StringBuilder sb = new StringBuilder(32);
+        for (int a=0;a<val.length;a++) {
+            if (sb.length() > 0) {
+                sb.append(sep);
+            }
+            sb.append(HEX_CHARS[(val[a] >> 4) & 0x0F]);
+            sb.append(HEX_CHARS[val[a] & 0x0F]);
         }
 
-        return data;
+        return sb.toString();
     }
 }
