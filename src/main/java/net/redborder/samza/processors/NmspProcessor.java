@@ -108,6 +108,11 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                 }
 
                 if (toDruid != null) {
+                    String sensorName = (String) message.get(SENSOR_NAME);
+                    String sensorUUID = (String) message.get(SENSOR_UUID);
+
+                    toDruid.put(SENSOR_NAME, sensorName);
+                    toDruid.put(SENSOR_UUID, sensorUUID);
                     toDruid.put(BYTES, 0);
                     toDruid.put(PKTS, 0);
                     toDruid.put(TYPE, "nmsp-measure");

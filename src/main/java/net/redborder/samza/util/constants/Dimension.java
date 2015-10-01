@@ -187,6 +187,8 @@ public class Dimension {
     public final static String WIRELESS_OP_STATE = "wireless_op_state";
     public final static String WIRELESS_MODE = "wireless_mode";
     public final static String WIRELESS_SLOT = "wireless_slot";
+    public final static String WIRELESS_STATION_IP = "wireless_station_ip";
+    public final static String STATUS = "status";
 
     //Hashtag
     public final static String VALUE = "value";
