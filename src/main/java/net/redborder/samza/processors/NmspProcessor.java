@@ -10,6 +10,8 @@ import org.apache.samza.system.OutgoingMessageEnvelope;
 import org.apache.samza.system.SystemStream;
 import org.apache.samza.task.MessageCollector;
 import org.apache.samza.task.TaskContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -21,6 +23,7 @@ import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_INFO;
 import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_MEASURE;
 
 public class NmspProcessor extends Processor<Map<String, Object>> {
+    private static final Logger log = LoggerFactory.getLogger(NmspProcessor.class);
     private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_FLOW_OUTPUT_TOPIC);
     public final static String NMSP_STORE_MEASURE = "nmsp-measure";
     public final static String NMSP_STORE_INFO = "nmsp-info";
@@ -127,6 +130,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                     toDruid.put("timestamp", System.currentTimeMillis() / 1000);
                     Map<String, Object> enrichmentEvent = enrichManager.enrich(toDruid);
                     Map<String, Object> storeEnrichment = storeManager.enrich(enrichmentEvent);
+                    storeEnrichment.put(TYPE, "nmsp-measure");
                     collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, storeEnrichment));
                 }
             }
@@ -147,11 +151,11 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
             }
 
             toCache.putAll(message);
+            toCache.remove(TYPE);
             toCache.put("last_seen", timestamp);
             toDruid.putAll(toCache);
             toDruid.put(BYTES, 0);
             toDruid.put(PKTS, 0);
-            toDruid.put(TYPE, "nmsp-info");
 
             if (!namespace_id.equals(""))
                 toDruid.put(NAMESPACE_UUID, namespace_id);
@@ -162,6 +166,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
             Map<String, Object> enrichmentEvent = enrichManager.enrich(toDruid);
             Map<String, Object> storeEnrichment = storeManager.enrich(enrichmentEvent);
 
+            storeEnrichment.put(TYPE, "nmsp-info");
             collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, storeEnrichment));
         }
 
