@@ -179,6 +179,7 @@ public class Dimension {
     public final static String LOC_COORDINATE_Z = "z";
     public final static String LOC_COORDINATE_UNIT = "unit";
     public final static String WIRELESS_OPERATOR = "wireless_operator";
+    public final static String CLIENT_OS = "client_os";
 
     // State
     public final static String WIRELESS_CHANNEL = "wireless_channel";
