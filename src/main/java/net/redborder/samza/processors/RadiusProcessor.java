@@ -13,6 +13,8 @@ import org.apache.samza.task.MessageCollector;
 import org.apache.samza.task.TaskContext;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static net.redborder.samza.util.constants.Dimension.*;
 import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_INFO;
@@ -26,6 +28,8 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
     private Counter messagesCounter;
     private StoreManager storeManager;
     private EnrichManager enrichManager;
+    private Pattern pattern = Pattern.compile("^([a-f0-9][a-f0-9][:\\-][a-f0-9][a-f0-9][:\\-][a-f0-9][a-f0-9][:\\-][a-f0-9][a-f0-9][:\\-][a-f0-9][a-f0-9][:\\-][a-f0-9][a-f0-9])[:\\-]((.*))?");
+
 
     public RadiusProcessor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
         super(storeManager, enrichManager, config, context);
@@ -86,10 +90,16 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
                 toCache.put(WIRELESS_ID, wirelessId);
             }
             if (wirelessStationSSID != null) {
-                String[] splited = wirelessStationSSID.split(":");
-                if (splited.length == 7) {
-                    toCache.put(WIRELESS_ID, splited[6]);
-                    toCache.put(WIRELESS_STATION, Joiner.on(":").join(Arrays.copyOfRange(splited, 0, splited.length - 1)));
+                Matcher matcher = pattern.matcher(wirelessStationSSID);
+                if(matcher.find()) {
+                    if (matcher.groupCount() == 3) {
+                        String mac = matcher.group(1).replace("-", ":").toLowerCase();
+                        toCache.put(WIRELESS_STATION, mac);
+                        toCache.put(WIRELESS_ID, matcher.group(2));
+                    } else if (matcher.groupCount() == 2) {
+                        String mac = matcher.group(1).replace("-", ":").toLowerCase();
+                        toCache.put(WIRELESS_STATION, mac);
+                    }
                 }
             }
 
@@ -106,6 +116,7 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
 
             toDruid.put(BYTES, 0);
             toDruid.put(PKTS, 0);
+            toDruid.put(TYPE, "radius");
             toDruid.putAll(toCache);
 
             Map<String, Object> enrichmentMessage = enrichManager.enrich(toDruid);
