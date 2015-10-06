@@ -9,10 +9,13 @@ import org.apache.samza.system.OutgoingMessageEnvelope;
 import org.apache.samza.system.SystemStream;
 import org.apache.samza.task.MessageCollector;
 import org.apache.samza.task.TaskContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
-public class ApStateProcessor extends Processor<Map<String, Object>>{
+public class ApStateProcessor extends Processor<Map<String, Object>> {
+    private static final Logger log = LoggerFactory.getLogger(ApStateProcessor.class);
     private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_APSTATE_OUTPUT_TOPIC);
     private Counter messagesCounter;
 

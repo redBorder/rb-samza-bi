@@ -182,6 +182,7 @@ public class PostgresqlManager {
 
                     location.putAll(enriching);
                     if (!location.isEmpty()) {
+                        log.debug("AP: {} LOCATION: {}", rs.getString("mac_address"), location);
                         storePostgreSql.put(rs.getString("mac_address"), location);
                     }
                 }
