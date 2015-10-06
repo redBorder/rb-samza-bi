@@ -66,7 +66,7 @@ public class RadiusProcessorTest extends TestCase {
             "  \"Acct-Session-Time\": \"500\",\n" +
             "  \"Acct-Delay-Time\": \"0\",\n" +
             "  \"Calling-Station-Id\": \"e0:b5:2d:16:e9:10\",\n" +
-            "  \"Called-Station-Id\": \"f0:29:29:92:47:c0:SPG-HS20\",\n" +
+            "  \"Called-Station-Id\": \"F0:29:29:92:47:C0:SPG-HS20\",\n" +
             "  \"Acct-Unique-Session-Id\": \"7254e42d3edda324\", \n" +
             "  \"enrichment\":{\"sensor_uuid\":23131}}";
     static RadiusProcessor radiusProcessor;

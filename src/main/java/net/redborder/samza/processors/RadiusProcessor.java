@@ -28,7 +28,7 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
     private Counter messagesCounter;
     private StoreManager storeManager;
     private EnrichManager enrichManager;
-    private Pattern pattern = Pattern.compile("^([a-f0-9][a-f0-9][:\\-][a-f0-9][a-f0-9][:\\-][a-f0-9][a-f0-9][:\\-][a-f0-9][a-f0-9][:\\-][a-f0-9][a-f0-9][:\\-][a-f0-9][a-f0-9])[:\\-]((.*))?");
+    private Pattern pattern = Pattern.compile("^([a-fA-F0-9][a-fA-F0-9][:\\-][a-fA-F0-9][a-fA-F0-9][:\\-][a-fA-F0-9][a-fA-F0-9][:\\-][a-fA-F0-9][a-fA-F0-9][:\\-][a-fA-F0-9][a-fA-F0-9][:\\-][a-fA-F0-9][a-fA-F0-9])[:\\-]((.*))?");
 
 
     public RadiusProcessor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
