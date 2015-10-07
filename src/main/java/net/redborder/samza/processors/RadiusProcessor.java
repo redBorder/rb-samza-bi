@@ -1,6 +1,5 @@
 package net.redborder.samza.processors;
 
-import com.google.api.client.repackaged.com.google.common.base.Joiner;
 import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.constants.Constants;
@@ -17,8 +16,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static net.redborder.samza.util.constants.Dimension.*;
-import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_INFO;
-import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_MEASURE;
 
 public class RadiusProcessor extends Processor<Map<String, Object>> {
     private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_FLOW_OUTPUT_TOPIC);
@@ -64,7 +61,7 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
         Object timestamp = message.get(TIMESTAMP);
 
         if (clientMac != null) {
-            clientMac = clientMac.replaceAll("-", ":");
+            clientMac = clientMac.replaceAll("-", ":").toLowerCase();
             toDruid.put(CLIENT_MAC, clientMac);
 
             if (enrichment != null) {
