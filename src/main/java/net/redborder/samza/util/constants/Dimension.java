@@ -190,6 +190,7 @@ public class Dimension {
     public final static String WIRELESS_SLOT = "wireless_slot";
     public final static String WIRELESS_STATION_IP = "wireless_station_ip";
     public final static String STATUS = "status";
+    public final static String WIRELESS_STATION_NAME = "wireless_station_name";
 
     //Hashtag
     public final static String VALUE = "value";

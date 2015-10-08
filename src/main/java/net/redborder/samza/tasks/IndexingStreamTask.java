@@ -37,30 +37,37 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
     @Override
     public void process(IncomingMessageEnvelope envelope, MessageCollector collector, TaskCoordinator coordinator) throws Exception {
         String stream = envelope.getSystemStreamPartition().getSystemStream().getStream();
-        Map<String, Object> message = (Map<String, Object>) envelope.getMessage();
+        Object msg = envelope.getMessage();
         SystemStream systemStream = null;
 
-        if (stream.equals(ENRICHMENT_FLOW_OUTPUT_TOPIC)) {
-            systemStream = new SystemStream("druid_flow", getDatasource(message, FLOW_DATASOURCE));
-        } else if (stream.equals(ENRICHMENT_EVENT_OUTPUT_TOPIC)) {
-            systemStream = new SystemStream("druid_event", getDatasource(message, EVENT_DATASOURCE));
-        } else if (stream.equals(STATE_TOPIC) || stream.equals(ENRICHMENT_APSTATE_OUTPUT_TOPIC)) {
-            systemStream = new SystemStream("druid_state", getDatasource(message, STATE_DATASOURCE));
-        } else if (stream.equals(SOCIAL_TOPIC)) {
-            systemStream = new SystemStream("druid_social", getDatasource(message, SOCIAL_DATASOURCE));
-        } else if (stream.equals(HASHTAGS_TOPIC)) {
-            systemStream = new SystemStream("druid_hashtag", getDatasource(message, HASHTAGS_DATASOURCE));
-        } else if (stream.equals(MALWARE_TOPIC)) {
-            systemStream = new SystemStream("druid_malware", getDatasource(message, MALWARE_DATASOURCE));
-        } else if (stream.equals(MONITOR_TOPIC)) {
-            systemStream = monitorSystemStream;
-        } else {
-            log.warn("Undefined input stream name: " + stream);
-        }
+        if (msg instanceof Map) {
+            Map<String, Object> message = (Map<String, Object>) msg;
 
-        if (systemStream != null) {
-            collector.send(new OutgoingMessageEnvelope(systemStream, null, message));
-            counter.inc();
+            if (stream.equals(ENRICHMENT_FLOW_OUTPUT_TOPIC)) {
+                systemStream = new SystemStream("druid_flow", getDatasource(message, FLOW_DATASOURCE));
+            } else if (stream.equals(ENRICHMENT_EVENT_OUTPUT_TOPIC)) {
+                systemStream = new SystemStream("druid_event", getDatasource(message, EVENT_DATASOURCE));
+            } else if (stream.equals(STATE_TOPIC) || stream.equals(ENRICHMENT_APSTATE_OUTPUT_TOPIC)) {
+                systemStream = new SystemStream("druid_state", getDatasource(message, STATE_DATASOURCE));
+            } else if (stream.equals(SOCIAL_TOPIC)) {
+                systemStream = new SystemStream("druid_social", getDatasource(message, SOCIAL_DATASOURCE));
+            } else if (stream.equals(HASHTAGS_TOPIC)) {
+                systemStream = new SystemStream("druid_hashtag", getDatasource(message, HASHTAGS_DATASOURCE));
+            } else if (stream.equals(MALWARE_TOPIC)) {
+                systemStream = new SystemStream("druid_malware", getDatasource(message, MALWARE_DATASOURCE));
+            } else if (stream.equals(MONITOR_TOPIC)) {
+                systemStream = monitorSystemStream;
+            } else {
+                log.warn("Undefined input stream name: " + stream);
+            }
+
+            if (systemStream != null) {
+                collector.send(new OutgoingMessageEnvelope(systemStream, null, message));
+                counter.inc();
+            }
+
+        } else {
+            log.warn("This message is not a map class: " + msg);
         }
     }
 

@@ -47,7 +47,7 @@ public class StateBeamFactory implements BeamFactory {
                 WIRELESS_SLOT, SENSOR_NAME, SENSOR_UUID, DEPLOYMENT, DEPLOYMENT_UUID, NAMESPACE, NAMESPACE_UUID,
                 ORGANIZATION, ORGANIZATION_UUID, MARKET, MARKET_UUID, FLOOR, FLOOR_UUID, ZONE, ZONE_UUID,
                 BUILDING, BUILDING_UUID, CAMPUS, CAMPUS_UUID, SERVICE_PROVIDER, SERVICE_PROVIDER_UUID, WIRELESS_STATION_IP,
-                STATUS
+                STATUS, WIRELESS_STATION_NAME
         );
 
         final List<AggregatorFactory> aggregators = ImmutableList.of(

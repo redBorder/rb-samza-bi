@@ -10,6 +10,8 @@ import org.apache.samza.task.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
+
 public class EnrichmentStreamTask implements StreamTask, InitableTask, WindowableTask {
     private static final Logger log = LoggerFactory.getLogger(EnrichmentStreamTask.class);
 
@@ -34,9 +36,14 @@ public class EnrichmentStreamTask implements StreamTask, InitableTask, Windowabl
         String stream = envelope.getSystemStreamPartition().getSystemStream().getStream();
         Object message = envelope.getMessage();
 
+
         Processor processor = Processor.getProcessor(stream, this.config, this.context, this.storeManager);
-        processor.process(message, collector);
-        counter.inc();
+        if (message instanceof Map) {
+            processor.process(message, collector);
+            counter.inc();
+        } else {
+            log.warn("This message is not a map class: " + message);
+        }
     }
 
     @Override
