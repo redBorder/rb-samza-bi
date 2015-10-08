@@ -6,6 +6,8 @@ import org.apache.samza.config.Config;
 import org.apache.samza.metrics.Counter;
 import org.apache.samza.task.MessageCollector;
 import org.apache.samza.task.TaskContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -13,6 +15,7 @@ import static net.redborder.samza.util.constants.Dimension.LOC_STREAMING_NOTIFIC
 import static net.redborder.samza.util.constants.Dimension.TYPE;
 
 public class LocationProcessor extends Processor<Map<String, Object>> {
+    private static final Logger log = LoggerFactory.getLogger(LocationProcessor.class);
     private LocationV89Processor locv89;
     private LocationV10Processor locv10;
     private MerakiProcessor meraki;

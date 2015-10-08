@@ -180,8 +180,11 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                     toDruid.put(NAMESPACE_UUID, namespace_id);
 
                 store.put(clientMac+namespace_id, toCache);
+
                 Map<String, Object> enrichmentEvent = enrichManager.enrich(toDruid);
-                collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentEvent));
+                Map<String, Object> storeEnrichment = storeManager.enrich(enrichmentEvent);
+
+                collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, storeEnrichment));
             }
         } catch (Exception ex) {
             log.warn("MSE10 locationUpdate event dropped: " + message, ex);

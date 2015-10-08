@@ -58,8 +58,8 @@ public class StoreManager {
         for (Map.Entry<String, Store> store : stores.entrySet()) {
             Store storeData = store.getValue();
 
-            String key = (String) message.get(storeData.getKey());
-            String namespace_id = message.get(NAMESPACE_UUID) == null ? "" : String.valueOf(message.get(NAMESPACE_UUID));
+            String key = (String) enrichment.get(storeData.getKey());
+            String namespace_id = enrichment.get(NAMESPACE_UUID) == null ? "" : String.valueOf(enrichment.get(NAMESPACE_UUID));
             KeyValueStore<String, Map<String, Object>> keyValueStore = storeData.getStore();
 
             Map<String, Object> contents = keyValueStore.get(key + namespace_id);

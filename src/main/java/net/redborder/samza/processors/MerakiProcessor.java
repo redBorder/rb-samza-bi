@@ -76,7 +76,9 @@ public class MerakiProcessor extends Processor<Map<String, Object>> {
             toDruid.putAll(message);
 
             Map<String, Object> enrichmentEvent = enrichManager.enrich(toDruid);
-            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentEvent));
+            Map<String, Object> storeEnrichment = storeManager.enrich(enrichmentEvent);
+
+            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, storeEnrichment));
         } else {
             log.warn("This event {} doesn't have client mac.", message);
         }

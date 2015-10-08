@@ -12,11 +12,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.stubbing.Answer;
 
 import java.util.*;
 
 import static net.redborder.samza.util.constants.Dimension.*;
+import static org.mockito.Matchers.anyMap;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -48,7 +51,13 @@ public class LocationProcessorTest extends TestCase {
         storeManager = mock(StoreManager.class);
         when(storeManager.getStore(LocationV10Processor.LOCATION_STORE)).thenReturn(storeLocation);
         when(storeManager.getStore(LocationV89Processor.LOCATION_STORE)).thenReturn(storeLocation);
-
+        when(storeManager.enrich(anyMap())).thenAnswer(new Answer<Map<String, Object>>() {
+            @Override
+            public Map<String, Object> answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                return (Map<String, Object>) args[0];
+            }
+        });
         enrichManager = new EnrichManager();
         locationProcessor = new LocationProcessor(storeManager, enrichManager, config, taskContext);
     }
