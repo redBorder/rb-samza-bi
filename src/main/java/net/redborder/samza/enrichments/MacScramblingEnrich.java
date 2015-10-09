@@ -13,21 +13,23 @@ import java.util.Map;
 public class MacScramblingEnrich implements IEnrich {
     private static final Logger log = LoggerFactory.getLogger(MacScramblingEnrich.class);
     private final static char[] HEX_CHARS = "0123456789abcdef".toCharArray();
+    private PostgresqlManager postgresqlManager;
+
 
     @Override
     public Map<String, Object> enrich(Map<String, Object> message) {
-        Map<String, MacScramble> scrambles = PostgresqlManager.getScrambles();
+        Map<String, MacScramble> scrambles = postgresqlManager.getScrambles();
 
         String mac = (String) message.get(Dimension.CLIENT_MAC);
         String spUUID = (String) message.get(Dimension.SERVICE_PROVIDER_UUID);
 
         try {
-            byte scrambleMac [];
+            byte scrambleMac[];
 
             MacScramble scramble = scrambles.get(spUUID);
 
             log.debug("SPuuid: {}  Scramble: {}", spUUID, scramble);
-            if(scramble != null) {
+            if (scramble != null && mac != null) {
                 scrambleMac = scramble.scrambleMac(Hex.decode(mac.replace(":", "")));
                 message.put(Dimension.CLIENT_MAC, toMac(scrambleMac, ":"));
             }
@@ -39,9 +41,15 @@ public class MacScramblingEnrich implements IEnrich {
         return message;
     }
 
+
+    @Override
+    public void setPostgresqlManager(PostgresqlManager postgresqlManager) {
+        this.postgresqlManager = postgresqlManager;
+    }
+
     public static String toMac(final byte[] val, final String sep) {
         final StringBuilder sb = new StringBuilder(32);
-        for (int a=0;a<val.length;a++) {
+        for (int a = 0; a < val.length; a++) {
             if (sb.length() > 0) {
                 sb.append(sep);
             }

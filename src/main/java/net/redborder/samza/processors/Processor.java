@@ -3,6 +3,7 @@ package net.redborder.samza.processors;
 import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.enrichments.IEnrich;
 import net.redborder.samza.store.StoreManager;
+import net.redborder.samza.util.PostgresqlManager;
 import org.apache.samza.config.Config;
 import org.apache.samza.config.ConfigException;
 import org.apache.samza.task.MessageCollector;
@@ -33,7 +34,7 @@ public abstract class Processor<T> {
         this.context = context;
     }
 
-    public static Processor getProcessor(String streamName, Config config, TaskContext context, StoreManager storeManager) {
+    public static Processor getProcessor(String streamName, Config config, TaskContext context, StoreManager storeManager, PostgresqlManager postgresqlManager) {
         if (!processors.containsKey(streamName)) {
             List<String> enrichments;
             EnrichManager enrichManager = new EnrichManager();
@@ -54,6 +55,7 @@ public abstract class Processor<T> {
                     if (className != null) {
                         Class enrichClass = Class.forName(className);
                         IEnrich enrich = (IEnrich) enrichClass.newInstance();
+                        enrich.setPostgresqlManager(postgresqlManager);
                         enrichManager.addEnrichment(enrich);
                     } else {
                         log.warn("Couldn't find property redborder.enrichments.types." + enrichment + " on config properties");

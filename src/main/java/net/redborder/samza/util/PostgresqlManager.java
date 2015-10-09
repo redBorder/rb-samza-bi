@@ -3,6 +3,8 @@ package net.redborder.samza.util;
 
 import net.redborder.samza.store.StoreManager;
 import org.apache.samza.config.Config;
+import org.apache.samza.storage.kv.Entry;
+import org.apache.samza.storage.kv.KeyValueIterator;
 import org.apache.samza.storage.kv.KeyValueStore;
 import org.bouncycastle.util.encoders.Hex;
 import org.codehaus.jackson.JsonParseException;
@@ -18,20 +20,21 @@ import java.util.Map;
 
 public class PostgresqlManager {
 
-    private static final String POSTGRESQL_STORE = "postgresql";
-    private static final Logger log = LoggerFactory.getLogger(PostgresqlManager.class);
-    private static final String[] enrichColumns = {"campus", "building", "floor", "deployment",
+    public static final String POSTGRESQL_STORE = "postgresql";
+    private  final Logger log = LoggerFactory.getLogger(PostgresqlManager.class);
+    private  final String[] enrichColumns = {"campus", "building", "floor", "deployment",
             "namespace", "market", "organization", "service_provider", "zone", "campus_uuid",
             "building_uuid", "floor_uuid", "deployment_uuid", "namespace_uuid", "market_uuid",
             "organization_uuid", "service_provider_uuid"};
 
-    private static Connection conn = null;
-    private static KeyValueStore<String, Map<String, Object>> storePostgreSql;
-    private static Map<String, MacScramble> scrambles  = new HashMap<>();
-    private static String macScramblePrefix = null;
+    private Connection conn = null;
+    private KeyValueStore<String, Map<String, Object>> storePostgreSql;
+    private Map<String, MacScramble> scrambles  = new HashMap<>();
+    private String macScramblePrefix = null;
+    private StoreManager smanager;
 
 
-    public static void init(Config config, StoreManager storeManager) {
+    public PostgresqlManager(Config config, StoreManager storeManager) {
         if (conn == null) {
             try {
                 Class.forName("org.postgresql.Driver");
@@ -39,6 +42,7 @@ public class PostgresqlManager {
                 e.printStackTrace();
             }
 
+            smanager = storeManager;
             String uri = config.get("redborder.postgresql.uri");
             String user = config.get("redborder.postgresql.user");
             String pass = config.get("redborder.postgresql.pass");
@@ -55,14 +59,17 @@ public class PostgresqlManager {
                 e.printStackTrace();
             }
         }
+
+        update();
+        updateSalts();
     }
 
 
-    public static synchronized Map<String, MacScramble> getScrambles(){
+    public Map<String, MacScramble> getScrambles(){
         return scrambles;
     }
 
-    public synchronized static void updateSalts() {
+    public void updateSalts() {
         Statement st = null;
         ResultSet rs = null;
         scrambles.clear();
@@ -107,7 +114,7 @@ public class PostgresqlManager {
         }
     }
 
-    public synchronized static void update() {
+    public void update() {
         Statement st = null;
         ResultSet rs = null;
         long entries = 0L;

@@ -5,6 +5,8 @@ import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.PostgresqlManager;
 import org.apache.samza.config.Config;
 import org.apache.samza.metrics.Counter;
+import org.apache.samza.storage.kv.Entry;
+import org.apache.samza.storage.kv.KeyValueIterator;
 import org.apache.samza.system.IncomingMessageEnvelope;
 import org.apache.samza.task.*;
 import org.slf4j.Logger;
@@ -17,6 +19,7 @@ public class EnrichmentStreamTask implements StreamTask, InitableTask, Windowabl
 
     private Config config;
     private StoreManager storeManager;
+    private PostgresqlManager postgresqlManager;
     private TaskContext context;
     private Counter counter;
 
@@ -25,10 +28,8 @@ public class EnrichmentStreamTask implements StreamTask, InitableTask, Windowabl
         this.config = config;
         this.context = context;
         this.storeManager = new StoreManager(config, context);
+        this.postgresqlManager = new PostgresqlManager(config, storeManager);
         this.counter = context.getMetricsRegistry().newCounter(getClass().getName(), "messages");
-        PostgresqlManager.init(config, storeManager);
-        PostgresqlManager.update();
-        PostgresqlManager.updateSalts();
     }
 
     @Override
@@ -37,7 +38,7 @@ public class EnrichmentStreamTask implements StreamTask, InitableTask, Windowabl
         Object message = envelope.getMessage();
 
 
-        Processor processor = Processor.getProcessor(stream, this.config, this.context, this.storeManager);
+        Processor processor = Processor.getProcessor(stream, this.config, this.context, this.storeManager, this.postgresqlManager);
         if (message instanceof Map) {
             processor.process(message, collector);
             counter.inc();
@@ -48,7 +49,7 @@ public class EnrichmentStreamTask implements StreamTask, InitableTask, Windowabl
 
     @Override
     public void window(MessageCollector messageCollector, TaskCoordinator taskCoordinator) throws Exception {
-        PostgresqlManager.update();
-        PostgresqlManager.updateSalts();
+        postgresqlManager.update();
+        postgresqlManager.updateSalts();
     }
 }

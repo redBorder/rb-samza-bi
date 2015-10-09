@@ -1,5 +1,6 @@
 package net.redborder.samza.enrichments;
 
+import net.redborder.samza.util.PostgresqlManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,5 +64,10 @@ public class MacVendorEnrich implements IEnrich {
         }
 
         return vendorMap;
+    }
+
+    @Override
+    public void setPostgresqlManager(PostgresqlManager postgresqlManager) {
+        //Nothing
     }
 }

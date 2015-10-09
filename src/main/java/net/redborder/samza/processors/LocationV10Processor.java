@@ -5,6 +5,8 @@ import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.constants.Constants;
 import org.apache.samza.config.Config;
 import org.apache.samza.metrics.Counter;
+import org.apache.samza.storage.kv.Entry;
+import org.apache.samza.storage.kv.KeyValueIterator;
 import org.apache.samza.storage.kv.KeyValueStore;
 import org.apache.samza.system.OutgoingMessageEnvelope;
 import org.apache.samza.system.SystemStream;
@@ -31,7 +33,6 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
 
     public LocationV10Processor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
         super(storeManager, enrichManager, config, context);
-
         store = storeManager.getStore(LOCATION_STORE);
 
         cache = new HashMap<>();

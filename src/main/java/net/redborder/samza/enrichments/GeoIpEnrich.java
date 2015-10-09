@@ -2,6 +2,7 @@ package net.redborder.samza.enrichments;
 
 import com.maxmind.geoip.Location;
 import com.maxmind.geoip.LookupService;
+import net.redborder.samza.util.PostgresqlManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -170,5 +171,10 @@ public class GeoIpEnrich implements IEnrich {
         }
 
         return geoIPMap;
+    }
+
+    @Override
+    public void setPostgresqlManager(PostgresqlManager postgresqlManager) {
+        //Nothing
     }
 }
