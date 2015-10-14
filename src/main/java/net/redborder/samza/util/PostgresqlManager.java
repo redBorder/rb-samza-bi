@@ -15,21 +15,23 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class PostgresqlManager {
 
     public static final String POSTGRESQL_STORE = "postgresql";
-    private  final Logger log = LoggerFactory.getLogger(PostgresqlManager.class);
-    private  final String[] enrichColumns = {"campus", "building", "floor", "deployment",
+    private final Logger log = LoggerFactory.getLogger(PostgresqlManager.class);
+    private final String[] enrichColumns = {"campus", "building", "floor", "deployment",
             "namespace", "market", "organization", "service_provider", "zone", "campus_uuid",
             "building_uuid", "floor_uuid", "deployment_uuid", "namespace_uuid", "market_uuid",
             "organization_uuid", "service_provider_uuid"};
 
     private Connection conn = null;
     private KeyValueStore<String, Map<String, Object>> storePostgreSql;
-    private Map<String, MacScramble> scrambles  = new HashMap<>();
+    private Map<String, MacScramble> scrambles = new HashMap<>();
     private String macScramblePrefix = null;
     private StoreManager smanager;
 
@@ -65,7 +67,7 @@ public class PostgresqlManager {
     }
 
 
-    public Map<String, MacScramble> getScrambles(){
+    public Map<String, MacScramble> getScrambles() {
         return scrambles;
     }
 
@@ -86,13 +88,13 @@ public class PostgresqlManager {
                     Map<String, Object> properties = mapper.readValue(propertyStr, Map.class);
                     String salt = (String) properties.get("mac_hashing_salt");
 
-                    if(salt != null) {
+                    if (salt != null) {
                         scrambles.put(uuid, new MacScramble(Hex.decode(salt), macScramblePrefix));
                     }
                 }
             }
 
-            log.info("Updated salts: {}", scrambles.entrySet() );
+            log.info("Updated salts: {}", scrambles.entrySet());
         } catch (SQLException e) {
             log.error("The postgreSQL query failed! " + e.toString());
             e.printStackTrace();
@@ -153,6 +155,8 @@ public class PostgresqlManager {
 
                 ObjectMapper mapper = new ObjectMapper();
 
+                Map<String, Map<String, Object>> tmpCache = new HashMap<>();
+
                 while (rs.next()) {
                     Map<String, Object> location = new HashMap<>();
                     Map<String, String> enriching = new HashMap<>();
@@ -190,8 +194,27 @@ public class PostgresqlManager {
                     location.putAll(enriching);
                     if (!location.isEmpty()) {
                         log.debug("AP: {} LOCATION: {}", rs.getString("mac_address"), location);
+                        tmpCache.put(rs.getString("mac_address"), location);
                         storePostgreSql.put(rs.getString("mac_address"), location);
+
                     }
+                }
+
+                KeyValueIterator<String, Map<String, Object>> iterator = storePostgreSql.all();
+
+                List<String> toRemove = new ArrayList<>();
+                while (iterator.hasNext()) {
+                    Entry<String, Map<String, Object>> entry = iterator.next();
+                    String key = entry.getKey();
+
+                    if (!tmpCache.containsKey(key)) {
+                        toRemove.add(key);
+                    }
+                }
+
+                for (String key : toRemove) {
+                    storePostgreSql.delete(key);
+                    log.info("Removing {} from postgresqlStore", key);
                 }
 
                 log.info("PostgreSql updated! Entries: " + entries);
