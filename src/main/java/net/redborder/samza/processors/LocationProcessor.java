@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
+import static net.redborder.samza.util.constants.Dimension.LOC_NOTIFICATIONS;
 import static net.redborder.samza.util.constants.Dimension.LOC_STREAMING_NOTIFICATION;
 import static net.redborder.samza.util.constants.Dimension.TYPE;
 
@@ -45,8 +46,10 @@ public class LocationProcessor extends Processor<Map<String, Object>> {
             locv89.process(message, collector);
         } else if(type != null && type.toLowerCase().equals("meraki")){
             meraki.process(message, collector);
-        } else {
+        } else if (message.containsKey(LOC_NOTIFICATIONS)){
             locv10.process(message, collector);
+        } else {
+            log.warn("Unknow location message: {}", message);
         }
         counter.inc();
     }

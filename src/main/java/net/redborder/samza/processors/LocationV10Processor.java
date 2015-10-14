@@ -61,20 +61,22 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
     public void process(Map<String, Object> message, MessageCollector collector) {
         List<Map<String, Object>> notifications = (List<Map<String, Object>>) message.get(LOC_NOTIFICATIONS);
 
-        for (Map<String, Object> notification : notifications) {
-            String notificationType = (String) notification.get(LOC_NOTIFICATION_TYPE);
-            if (notificationType == null) notificationType = "null";
+        if (notifications != null) {
+            for (Map<String, Object> notification : notifications) {
+                String notificationType = (String) notification.get(LOC_NOTIFICATION_TYPE);
+                if (notificationType == null) notificationType = "null";
 
-            if (notificationType.equals("association")) {
-                log.trace("Mse10 event this event is a association, emitting " + notification.size());
-                processAssociation(message, collector);
-            } else if (notificationType.equals("locationupdate")) {
-                log.trace("Mse10 event this event is a locationupdate, emitting " + notification.size());
-                processLocationUpdate(message, collector);
-            } else {
-               log.warn("MSE version 10 notificationType is unknown: " + notificationType);
+                if (notificationType.equals("association")) {
+                    log.trace("Mse10 event this event is a association, emitting " + notification.size());
+                    processAssociation(message, collector);
+                } else if (notificationType.equals("locationupdate")) {
+                    log.trace("Mse10 event this event is a locationupdate, emitting " + notification.size());
+                    processLocationUpdate(message, collector);
+                } else {
+                    log.warn("MSE version 10 notificationType is unknown: " + notificationType);
+                }
+                counter.inc();
             }
-            counter.inc();
         }
     }
 
@@ -83,7 +85,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
         try {
             List<Map<String, Object>> messages = (ArrayList) message.get("notifications");
 
-            for(Map<String, Object> msg : messages) {
+            for (Map<String, Object> msg : messages) {
                 log.trace("Processing mse10Association " + msg);
                 Map<String, Object> toCache = new HashMap<>();
                 Map<String, Object> toDruid = new HashMap<>();
@@ -116,7 +118,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                 toDruid.put(PKTS, 0);
                 toDruid.put(TYPE, "mse10");
 
-                store.put(clientMac+namespace_id, toCache);
+                store.put(clientMac + namespace_id, toCache);
                 collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
             }
         } catch (Exception ex) {
@@ -129,7 +131,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
         try {
             List<Map<String, Object>> messages = (ArrayList) message.get("notifications");
 
-            for(Map<String, Object> msg : messages) {
+            for (Map<String, Object> msg : messages) {
                 log.trace("Processing mse10LocationUpdate " + msg);
 
                 Map<String, Object> toCache = new HashMap<>();
@@ -155,11 +157,11 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                         toCache.put(ZONE, locations[3]);
                 }
 
-                Map<String, Object> assocCache = store.get(clientMac+namespace_id);
+                Map<String, Object> assocCache = store.get(clientMac + namespace_id);
 
-                if(assocCache!=null){
+                if (assocCache != null) {
                     toCache.putAll(assocCache);
-                }else{
+                } else {
                     toCache.put(DOT11STATUS, "PROBING");
                 }
 
@@ -180,7 +182,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                 if (!namespace_id.equals(""))
                     toDruid.put(NAMESPACE_UUID, namespace_id);
 
-                store.put(clientMac+namespace_id, toCache);
+                store.put(clientMac + namespace_id, toCache);
 
                 Map<String, Object> enrichmentEvent = enrichManager.enrich(toDruid);
                 Map<String, Object> storeEnrichment = storeManager.enrich(enrichmentEvent);

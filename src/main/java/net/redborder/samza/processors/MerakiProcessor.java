@@ -21,7 +21,7 @@ import static net.redborder.samza.util.constants.Dimension.*;
 public class MerakiProcessor extends Processor<Map<String, Object>> {
     private static final Logger log = LoggerFactory.getLogger(MerakiProcessor.class);
     private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_FLOW_OUTPUT_TOPIC);
-    final public static String MERAKI_STORE = "meraki";
+    final public static String LOCATION_STORE = "location";
 
     private KeyValueStore<String, Map<String, Object>> store;
     private Counter counter;
@@ -33,7 +33,7 @@ public class MerakiProcessor extends Processor<Map<String, Object>> {
 
     public MerakiProcessor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
         super(storeManager, enrichManager, config, context);
-        store = storeManager.getStore(MERAKI_STORE);
+        store = storeManager.getStore(LOCATION_STORE);
         counter = context.getMetricsRegistry().newCounter(getClass().getName(), "messages");
     }
 
