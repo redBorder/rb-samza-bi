@@ -40,7 +40,7 @@ public class PmsProcessor extends Processor<Map<String, Object>> {
         String guestName = (String) message.get(GUEST_NAME);
 
         Map<String, Object> toCache = new HashMap<>();
-        toCache.put(GUEST_NAME, guestName);
+        toCache.put(CLIENT_NAME, guestName);
 
         storePms.put(clientMac, toCache);
     }
