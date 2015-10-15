@@ -81,6 +81,7 @@ public class Dimension {
     public final static String HTTPS_COMMON_NAME = "https_common_name";
     public final static String TARGET_NAME = "target_name";
 
+    public final static String CLIENT_FULLNAME = "client_fullname";
 
     // Analysis
     public static final String MALWARE_NAME = "malware_name";
