@@ -232,4 +232,7 @@ public class Dimension {
     public final static String ACCT_STATUS_TYPE = "Acct-Status-Type";
     public final static String CALLED_STATION_ID = "Called-Station-Id";
     public final static String CLIENT_ACCOUNTING_TYPE = "client_accounting_type";
+
+    // Pms
+    public final static String GUEST_NAME = "guest_name";
 }
