@@ -79,8 +79,6 @@ public class Dimension {
     public final static String TIER = "tier";
     public final static String MSG = "msg";
     public final static String HTTPS_COMMON_NAME = "https_common_name";
-
-    public final static String CLIENT_NAME = "client_name";
     public final static String TARGET_NAME = "target_name";
 
 
