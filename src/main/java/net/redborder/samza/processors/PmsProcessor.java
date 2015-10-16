@@ -36,13 +36,17 @@ public class PmsProcessor extends Processor<Map<String, Object>> {
 
     @Override
     public void process(Map<String, Object> message, MessageCollector collector) {
-        String clientMac = (String) message.get(CLIENT_MAC);
-        String guestName = (String) message.get(GUEST_NAME);
+        Map<String, Object> enrichmentMsg = storeManager.enrich(message);
+
+        String clientMac = (String) enrichmentMsg.get(CLIENT_MAC);
+        String guestName = (String) enrichmentMsg.get(GUEST_NAME);
+        String namespace = (String) enrichmentMsg.get(NAMESPACE_UUID);
+        String namespace_id = namespace == null ? "" : namespace.toString();
 
         Map<String, Object> toCache = new HashMap<>();
         toCache.put(CLIENT_FULLNAME, guestName);
 
-        storePms.put(clientMac, toCache);
+        storePms.put(clientMac + namespace_id, toCache);
     }
 
     @Override
