@@ -10,6 +10,8 @@ import org.apache.samza.system.OutgoingMessageEnvelope;
 import org.apache.samza.system.SystemStream;
 import org.apache.samza.task.MessageCollector;
 import org.apache.samza.task.TaskContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -20,6 +22,7 @@ import static net.redborder.samza.util.constants.Dimension.*;
 public class RadiusProcessor extends Processor<Map<String, Object>> {
     private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_FLOW_OUTPUT_TOPIC);
     public final static String RADIUS_STORE = "radius";
+    private static final Logger log = LoggerFactory.getLogger(RadiusProcessor.class);
 
     private KeyValueStore<String, Map<String, Object>> storeRadius;
     private Counter messagesCounter;
@@ -46,8 +49,6 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
         Map<String, Object> toCache = new HashMap<>();
         Map<String, Object> toDruid = new HashMap<>();
 
-        String namespace = (String) message.get(NAMESPACE_UUID);
-        String namespace_id = namespace == null ? "" : namespace.toString();
 
         String sensorIP = (String) message.get(PACKET_SRC_IP_ADDRESS);
         String clientId = (String) message.get(USER_NAME_RADIUS);
@@ -57,6 +58,14 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
         String clientConnection = (String) message.get(ACCT_STATUS_TYPE);
         String wirelessStationSSID = (String) message.get(CALLED_STATION_ID);
         Map<String, Object> enrichment = (Map<String, Object>) message.get("enrichment");
+
+        String namespace = null;
+
+        if (enrichment != null) {
+            namespace = (String) enrichment.get(NAMESPACE_UUID);
+        }
+
+        String namespace_id = namespace == null ? "" : namespace;
 
         Object timestamp = message.get(TIMESTAMP);
 
@@ -88,7 +97,7 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
             }
             if (wirelessStationSSID != null) {
                 Matcher matcher = pattern.matcher(wirelessStationSSID);
-                if(matcher.find()) {
+                if (matcher.find()) {
                     if (matcher.groupCount() == 3) {
                         String mac = matcher.group(1).replace("-", ":").toLowerCase();
                         toCache.put(WIRELESS_STATION, mac);
@@ -104,11 +113,16 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
                 toDruid.put(CLIENT_ACCOUNTING_TYPE, clientConnection.toLowerCase());
                 if (clientConnection.equals("Stop")) {
                     storeRadius.delete(clientMac + namespace_id);
+                    log.debug("REMOVE  client: {} - namesapce: {} - contents: " + toCache, clientMac, namespace_id);
+
                 } else {
                     storeRadius.put(clientMac + namespace_id, toCache);
+                    log.debug("PUT  client: {} - namesapce: {} - contents: " + toCache, clientMac, namespace_id);
+
                 }
             } else {
                 storeRadius.put(clientMac + namespace_id, toCache);
+                log.debug("PUT  client: {} - namesapce: {} - contents: " + toCache, clientMac, namespace_id);
             }
 
             toDruid.put(BYTES, 0);

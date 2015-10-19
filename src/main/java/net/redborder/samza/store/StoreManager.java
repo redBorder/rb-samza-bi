@@ -60,12 +60,12 @@ public class StoreManager {
         for (Map.Entry<String, Store> store : stores.entrySet()) {
             Store storeData = store.getValue();
 
-
             String key = (String) enrichment.get(storeData.getKey());
             String namespace_id = enrichment.get(NAMESPACE_UUID) == null ? "" : String.valueOf(enrichment.get(NAMESPACE_UUID));
             KeyValueStore<String, Map<String, Object>> keyValueStore = storeData.getStore();
             Map<String, Object> contents = keyValueStore.get(key + namespace_id);
 
+            log.debug( store.getKey() + "  client: {} - namesapce: {} - contents: " + contents, key, namespace_id);
 
             if (contents != null) {
                 if (storeData.mustOverwrite()) {

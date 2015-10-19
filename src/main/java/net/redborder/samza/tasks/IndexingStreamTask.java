@@ -21,11 +21,13 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
     private static final Logger log = LoggerFactory.getLogger(EnrichmentStreamTask.class);
     private AutoScalingManager autoScalingManager;
     private Counter counter;
+    private Boolean useNamespace = true;
 
     @Override
     public void init(Config config, TaskContext context) throws Exception {
         this.counter = context.getMetricsRegistry().newCounter(getClass().getName(), "messages");
-        autoScalingManager = new AutoScalingManager(config);
+        this.autoScalingManager = new AutoScalingManager(config);
+        this.useNamespace = config.getBoolean("net.redborder.indexing.useNamespace", true);
     }
 
     @Override
@@ -80,7 +82,7 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
 
         String datasource = defaultDatasource + "_" + "none" + "_" + tier + "_1_1";
 
-        if (namespaceId != null) {
+        if (useNamespace && namespaceId != null) {
             String namespaceIdStr = String.valueOf(namespaceId);
             datasource = defaultDatasource + "_" + namespaceIdStr + "_" + tier;
             autoScalingManager.incrementEvents(datasource);
