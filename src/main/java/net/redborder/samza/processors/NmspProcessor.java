@@ -122,15 +122,17 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                     toDruid.put(CLIENT_MAC, mac);
                     toDruid.putAll(toCache);
                     toDruid.put(NMSP_DOT11STATUS, dot11Status);
+                    toDruid.put("timestamp", System.currentTimeMillis() / 1000);
 
                     if (!namespace_id.equals(""))
                         toDruid.put(NAMESPACE_UUID, namespace_id);
 
                     storeMeasure.put(mac + namespace_id, toCache);
-                    toDruid.put("timestamp", System.currentTimeMillis() / 1000);
+
                     Map<String, Object> enrichmentEvent = enrichManager.enrich(toDruid);
                     Map<String, Object> storeEnrichment = storeManager.enrich(enrichmentEvent);
-                    storeEnrichment.put(TYPE, "nmsp-measure");
+
+                    storeEnrichment.putAll(toDruid);
                     collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, storeEnrichment));
                 }
             }
@@ -156,17 +158,18 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
             toDruid.putAll(toCache);
             toDruid.put(BYTES, 0);
             toDruid.put(PKTS, 0);
+            toDruid.put("timestamp", timestamp);
+            toDruid.put(TYPE, "nmsp-info");
 
             if (!namespace_id.equals(""))
                 toDruid.put(NAMESPACE_UUID, namespace_id);
 
             toDruid.put(CLIENT_MAC, mac);
             storeInfo.put(mac + namespace_id, toCache);
-            toDruid.put("timestamp", timestamp);
             Map<String, Object> enrichmentEvent = enrichManager.enrich(toDruid);
             Map<String, Object> storeEnrichment = storeManager.enrich(enrichmentEvent);
 
-            storeEnrichment.put(TYPE, "nmsp-info");
+            storeEnrichment.putAll(toDruid);
             collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, storeEnrichment));
         }
 
