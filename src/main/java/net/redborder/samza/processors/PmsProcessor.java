@@ -41,12 +41,21 @@ public class PmsProcessor extends Processor<Map<String, Object>> {
         String clientMac = (String) enrichmentMsg.get(CLIENT_MAC);
         String guestName = (String) enrichmentMsg.get(GUEST_NAME);
         String namespace = (String) enrichmentMsg.get(NAMESPACE_UUID);
+        String clientGender = (String) enrichmentMsg.get(CLIENT_GENDER);
         String namespace_id = namespace == null ? "" : namespace.toString();
 
         Map<String, Object> toCache = new HashMap<>();
-        toCache.put(CLIENT_FULLNAME, guestName);
 
-        storePms.put(clientMac + namespace_id, toCache);
+        if(guestName != null) {
+            toCache.put(CLIENT_FULLNAME, guestName);
+        }
+        if(clientGender != null) {
+            toCache.put(CLIENT_GENDER, clientGender);
+        }
+
+        if(!toCache.isEmpty()) {
+            storePms.put(clientMac + namespace_id, toCache);
+        }
     }
 
     @Override

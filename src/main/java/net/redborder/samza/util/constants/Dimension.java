@@ -236,4 +236,5 @@ public class Dimension {
 
     // Pms
     public final static String GUEST_NAME = "guest_name";
+    public final static String CLIENT_GENDER = "client_gender";
 }
