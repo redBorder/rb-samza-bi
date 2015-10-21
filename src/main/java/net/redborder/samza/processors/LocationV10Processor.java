@@ -119,7 +119,12 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                 toDruid.put(TYPE, "mse10");
 
                 store.put(clientMac + namespace_id, toCache);
-                collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, toDruid));
+
+                Map<String, Object> enrichmentEvent = enrichManager.enrich(toDruid);
+                Map<String, Object> storeEnrichment = storeManager.enrich(enrichmentEvent);
+
+                storeEnrichment.putAll(toDruid);
+                collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, storeEnrichment));
             }
         } catch (Exception ex) {
             log.warn("MSE10 association event dropped: " + message, ex);
@@ -187,6 +192,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                 Map<String, Object> enrichmentEvent = enrichManager.enrich(toDruid);
                 Map<String, Object> storeEnrichment = storeManager.enrich(enrichmentEvent);
 
+                storeEnrichment.putAll(toDruid);
                 collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, storeEnrichment));
             }
         } catch (Exception ex) {
