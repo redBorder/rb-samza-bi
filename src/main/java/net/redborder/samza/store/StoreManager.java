@@ -16,18 +16,21 @@ public class StoreManager {
 
     private static Map<String, Store> stores = new LinkedHashMap<>();
     private static final Logger log = LoggerFactory.getLogger(StoreManager.class);
+    private List<String> storesList;
 
     public StoreManager(Config config, TaskContext context) {
-        List<String> storesList = config.getList("redborder.stores", Collections.<String>emptyList());
+        storesList = config.getList("redborder.stores", Collections.<String>emptyList());
 
         log.info("Making stores: ");
         for (String store : storesList) {
-            Store storeData = new Store();
-            storeData.setKey(config.get("redborder.store." + store + ".key", CLIENT_MAC));
-            storeData.setOverwrite(config.getBoolean("redborder.store." + store + ".overwrite", true));
-            storeData.setStore((KeyValueStore<String, Map<String, Object>>) context.getStore(store));
-            log.info("  * Store: {} {}", store, storeData.toString());
-            stores.put(store, storeData);
+            if (!stores.containsKey(store)) {
+                Store storeData = new Store();
+                storeData.setKey(config.get("redborder.store." + store + ".key", CLIENT_MAC));
+                storeData.setOverwrite(config.getBoolean("redborder.store." + store + ".overwrite", true));
+                storeData.setStore((KeyValueStore<String, Map<String, Object>>) context.getStore(store));
+                log.info("  * Store: {} {}", store, storeData.toString());
+                stores.put(store, storeData);
+            }
         }
     }
 
@@ -57,15 +60,15 @@ public class StoreManager {
         Map<String, Object> enrichment = new HashMap<>();
         enrichment.putAll(message);
 
-        for (Map.Entry<String, Store> store : stores.entrySet()) {
-            Store storeData = store.getValue();
+        for(String store : storesList){
+            Store storeData = stores.get(store);
 
             String key = (String) enrichment.get(storeData.getKey());
             String namespace_id = enrichment.get(NAMESPACE_UUID) == null ? "" : String.valueOf(enrichment.get(NAMESPACE_UUID));
             KeyValueStore<String, Map<String, Object>> keyValueStore = storeData.getStore();
             Map<String, Object> contents = keyValueStore.get(key + namespace_id);
 
-            log.debug( store.getKey() + "  client: {} - namesapce: {} - contents: " + contents, key, namespace_id);
+            log.debug(store + "  client: {} - namesapce: {} - contents: " + contents, key, namespace_id);
 
             if (contents != null) {
                 if (storeData.mustOverwrite()) {
