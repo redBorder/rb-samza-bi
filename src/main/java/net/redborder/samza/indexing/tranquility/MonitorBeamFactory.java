@@ -10,6 +10,7 @@ import com.metamx.tranquility.typeclass.Timestamper;
 import io.druid.data.input.impl.TimestampSpec;
 import io.druid.granularity.DurationGranularity;
 import io.druid.query.aggregation.*;
+import net.redborder.samza.indexing.autoscaling.AutoScalingUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -27,12 +28,14 @@ public class MonitorBeamFactory implements BeamFactory {
     @Override
     public Beam<Object> makeBeam(SystemStream stream, Config config) {
         final int maxRows = Integer.valueOf(config.get("redborder.beam.monitor.maxrows", "200000"));
-        final int partitions = Integer.valueOf(config.get("redborder.beam.monitor.partitions", "2"));
-        final int replicas = Integer.valueOf(config.get("redborder.beam.monitor.replicas", "1"));
         final String intermediatePersist = config.get("redborder.beam.monitor.intermediatePersist", "PT20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
         final long indexGranularity = Long.valueOf(config.get("systems.druid_monitor.beam.indexGranularity", "60000"));
         final String dataSource = stream.getStream();
+
+        final Integer partitions = AutoScalingUtils.getPartitions(dataSource);
+        final Integer replicas = AutoScalingUtils.getReplicas(dataSource);
+        final String realDataSource = AutoScalingUtils.getDataSource(dataSource);
 
         final List<String> exclusions = ImmutableList.of("unit", "type");
 
@@ -65,7 +68,7 @@ public class MonitorBeamFactory implements BeamFactory {
                 .builder(timestamper)
                 .curator(curator)
                 .discoveryPath("/druid/discoveryPath")
-                .location(DruidLocation.create("overlord", "druid:local:firehose:%s", dataSource))
+                .location(DruidLocation.create("overlord", "druid:local:firehose:%s", realDataSource))
                 .rollup(DruidRollup.create(DruidDimensions.schemalessWithExclusions(exclusions), aggregators, new DurationGranularity(indexGranularity, 0)))
                 .druidTuning(DruidTuning.create(maxRows, new Period(intermediatePersist), 0))
                 .tuning(ClusteredBeamTuning.builder()
