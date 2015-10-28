@@ -16,7 +16,6 @@ import static net.redborder.samza.util.constants.Constants.*;
 import static net.redborder.samza.util.constants.Dimension.*;
 
 public class IndexingStreamTask implements StreamTask, InitableTask, WindowableTask {
-    private static final SystemStream monitorSystemStream = new SystemStream("druid_monitor", MONITOR_TOPIC);
 
     private static final Logger log = LoggerFactory.getLogger(EnrichmentStreamTask.class);
     private AutoScalingManager autoScalingManager;
@@ -58,7 +57,7 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
             } else if (stream.equals(MALWARE_TOPIC)) {
                 systemStream = new SystemStream("druid_malware", getDatasource(message, MALWARE_DATASOURCE));
             } else if (stream.equals(MONITOR_TOPIC)) {
-                systemStream = monitorSystemStream;
+                systemStream = new SystemStream("druid_monitor", getDatasource(message, MONITOR_TOPIC));
             } else {
                 log.warn("Undefined input stream name: " + stream);
             }
