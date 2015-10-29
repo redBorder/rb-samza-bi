@@ -131,8 +131,10 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
             toDruid.putAll(toCache);
 
             Map<String, Object> enrichmentMessage = enrichManager.enrich(toDruid);
-            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentMessage));
+            Map<String, Object> storeMessage = enrichManager.enrich(enrichmentMessage);
 
+            storeMessage.putAll(toDruid);
+            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, storeMessage));
         }
         this.messagesCounter.inc();
     }

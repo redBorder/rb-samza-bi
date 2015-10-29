@@ -25,7 +25,7 @@ public class StoreManager {
         for (String store : storesList) {
             if (!stores.containsKey(store)) {
                 Store storeData = new Store();
-                storeData.setKey(config.get("redborder.store." + store + ".key", CLIENT_MAC));
+                storeData.setKeys(config.getList("redborder.store." + store + ".keys", Arrays.asList(CLIENT_MAC, NAMESPACE_UUID)));
                 storeData.setOverwrite(config.getBoolean("redborder.store." + store + ".overwrite", true));
                 storeData.setStore((KeyValueStore<String, Map<String, Object>>) context.getStore(store));
                 log.info("  * Store: {} {}", store, storeData.toString());
@@ -62,13 +62,22 @@ public class StoreManager {
 
         for(String store : storesList){
             Store storeData = stores.get(store);
+            List<String> keys = storeData.getKeys();
+            StringBuilder builder = new StringBuilder();
 
-            String key = (String) enrichment.get(storeData.getKey());
-            String namespace_id = enrichment.get(NAMESPACE_UUID) == null ? "" : String.valueOf(enrichment.get(NAMESPACE_UUID));
+            for(String key : keys){
+                String kv = (String) enrichment.get(key);
+                if(kv != null){
+                    builder.append(kv);
+                }
+            }
+
+
+            String mergeKey = builder.toString();
             KeyValueStore<String, Map<String, Object>> keyValueStore = storeData.getStore();
-            Map<String, Object> contents = keyValueStore.get(key + namespace_id);
+            Map<String, Object> contents = keyValueStore.get(mergeKey);
 
-            log.debug(store + "  client: {} - namesapce: {} - contents: " + contents, key, namespace_id);
+            log.debug(store + " mergeKey: {} - contents: {}", mergeKey, contents);
 
             if (contents != null) {
                 if (storeData.mustOverwrite()) {
@@ -86,7 +95,7 @@ public class StoreManager {
     }
 
     private class Store {
-        private String key;
+        private List<String> keys;
         private boolean overwrite;
         private KeyValueStore<String, Map<String, Object>> store;
 
@@ -94,8 +103,8 @@ public class StoreManager {
             this.store = store;
         }
 
-        public void setKey(String key) {
-            this.key = key;
+        public void setKeys(List<String> keys) {
+            this.keys = keys;
         }
 
         public void setOverwrite(boolean overwrite) {
@@ -106,8 +115,8 @@ public class StoreManager {
             return store;
         }
 
-        public String getKey() {
-            return key;
+        public List<String> getKeys() {
+            return keys;
         }
 
         public boolean mustOverwrite() {
@@ -117,7 +126,7 @@ public class StoreManager {
         @Override
         public String toString() {
             return new StringBuffer()
-                    .append("KEY: ").append(key).append(" ")
+                    .append("KEYS: ").append(keys).append(" ")
                     .append("OVERWRITE: ").append(overwrite).toString();
         }
     }

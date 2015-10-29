@@ -34,10 +34,10 @@ public class FlowProcessorTest extends TestCase {
 
     static TaskContext context;
     static List<String> stores = new ArrayList<>();
+    static Properties properties = new Properties();
 
     @BeforeClass
     public static void initTest() throws IOException {
-        Properties properties = new Properties();
         InputStream inputStream = new FileInputStream("src/main/config/enrichment.properties");
         properties.load(inputStream);
 
@@ -48,11 +48,11 @@ public class FlowProcessorTest extends TestCase {
 
         String storesListAsString = properties.getProperty("redborder.stores");
         for (String store : storesListAsString.split(",")) {
-            String storeKey = properties.getProperty("redborder.store." + store + ".key");
+            List<String> keys = Arrays.asList(properties.getProperty("redborder.store." + store + ".keys").split(","));
             String storeOverwriteStr = properties.getProperty("redborder.store." + store + ".overwrite");
             boolean storeOverwrite = (storeOverwriteStr == null || storeOverwriteStr == "true");
 
-            when(config.get("redborder.store." + store + ".key", CLIENT_MAC)).thenReturn(storeKey);
+            when(config.getList("redborder.store." + store + ".keys", Arrays.asList(CLIENT_MAC, NAMESPACE_UUID))).thenReturn(keys);
             when(config.getBoolean("redborder.store." + store + ".overwrite", true)).thenReturn(storeOverwrite);
             stores.add(store);
         }
@@ -114,12 +114,24 @@ public class FlowProcessorTest extends TestCase {
         expected.putAll(message);
         expected.put(DURATION, 0L);
 
+
         for (String store : stores) {
+            List<String> keys = Arrays.asList(properties.getProperty("redborder.store." + store + ".keys").split(","));
+
+            StringBuilder builder = new StringBuilder();
+            for(String key : keys){
+                String kv = (String) message.get(key);
+                if(kv != null){
+                    builder.append(kv);
+                }
+            }
+            String mergeKey = builder.toString();
+
             Map<String, Object> cache = new HashMap<>();
             // The data that will be in each cache ...
             cache.put("column_" + store + namespace_id, "value_" + store);
             cache.put("column2_" + store + namespace_id, "value2" + store);
-            storeManager.getStore(store).put("00:00:00:00:00:00" + namespace_id, cache);
+            storeManager.getStore(store).put(mergeKey, cache);
             // ... will end in the expected message too
             expected.put("column_" + store + namespace_id, "value_" + store);
             expected.put("column2_" + store + namespace_id, "value2" + store);
