@@ -31,10 +31,10 @@ public class StoreManagerTest extends TestCase {
     static StoreManager storeManager;
 
     static List<String> stores = new ArrayList<>();
+    static Properties properties = new Properties();
 
     @BeforeClass
     public static void initTest() throws IOException {
-        Properties properties = new Properties();
         InputStream inputStream = new FileInputStream("src/main/config/enrichment.properties");
         properties.load(inputStream);
 
@@ -49,11 +49,11 @@ public class StoreManagerTest extends TestCase {
         config = mock(Config.class);
         when(config.getList("redborder.stores", Collections.<String>emptyList())).thenReturn(stores);
         for (String store : stores) {
-            String storeKey = properties.getProperty("redborder.store." + store + ".key");
+            List<String> keys = Arrays.asList(properties.getProperty("redborder.store." + store + ".keys").split(","));
             String storeOverwriteStr = properties.getProperty("redborder.store." + store + ".overwrite");
             boolean storeOverwrite = (storeOverwriteStr == null || storeOverwriteStr == "true");
 
-            when(config.get("redborder.store." + store + ".key", CLIENT_MAC)).thenReturn(storeKey);
+            when(config.getList("redborder.store." + store + ".keys", Arrays.asList(CLIENT_MAC, NAMESPACE_UUID))).thenReturn(keys);
             when(config.getBoolean("redborder.store." + store + ".overwrite", true)).thenReturn(storeOverwrite);
         }
 
@@ -82,7 +82,6 @@ public class StoreManagerTest extends TestCase {
     @Test
     public void enrichmentUsingNamespaceId() {
         Map<String, Object> result = new HashMap<>();
-
         String namespace_id_a = "tenant_A";
         String namespace_id_b = "tenant_B";
 
@@ -97,7 +96,19 @@ public class StoreManagerTest extends TestCase {
             Map<String, Object> cache = new HashMap<>();
             cache.put(store + "-enrichment-key" + namespace_id_a, store + "-enrichment-value");
             result.putAll(cache);
-            storeManager.getStore(store).put("testing-mac" + namespace_id_a, cache);
+
+            List<String> keys = Arrays.asList(properties.getProperty("redborder.store." + store + ".keys").split(","));
+
+            StringBuilder builder = new StringBuilder();
+            for(String key : keys){
+                String kv = (String) message.get(key);
+                if(kv != null){
+                    builder.append(kv);
+                }
+            }
+
+            String mergeKey = builder.toString();
+            storeManager.getStore(store).put(mergeKey, cache);
         }
 
         Map<String, Object> enrichCache = storeManager.enrich(message);
@@ -106,7 +117,10 @@ public class StoreManagerTest extends TestCase {
         message.put(NAMESPACE_UUID, namespace_id_b);
 
         Map<String, Object> enrichCacheWithoutNamespace = storeManager.enrich(message);
-        assertEquals(message, enrichCacheWithoutNamespace);
+        Map<String, Object> result1 = new HashMap<>();
+        result1.putAll(message);
+        result1.put("postgresql-enrichment-key" + namespace_id_a, "postgresql-enrichment-value");
+        assertEquals(result1, enrichCacheWithoutNamespace);
     }
 
     @Test
