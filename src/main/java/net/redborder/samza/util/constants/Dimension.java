@@ -240,4 +240,8 @@ public class Dimension {
     public final static String CLIENT_AUTH_TYPE = "client_auth_type";
     public final static String AUTH_TYPE = "auth_type";
 
+    //Dwell
+    public final static String WINDOW = "window";
+
+
 }
