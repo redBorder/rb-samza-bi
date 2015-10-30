@@ -54,7 +54,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
         Map<String, Object> toDruid = new HashMap<>();
 
         String type = (String) message.get(TYPE);
-        String mac = (String) message.remove(CLIENT_MAC);
+        String mac = (String) message.get(CLIENT_MAC);
 
         String namespace = (String) message.get(NAMESPACE_UUID);
         String namespace_id = namespace == null ? "" : namespace.toString();

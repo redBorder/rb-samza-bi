@@ -13,14 +13,11 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class Processor<T> {
     private static final Logger log = LoggerFactory.getLogger(Processor.class);
-    private static Map<String, Processor> processors = new HashMap<>();
+    private static Map<String, List<Processor>> processors = new HashMap<>();
 
     protected StoreManager storeManager;
     protected EnrichManager enrichManager;
@@ -34,7 +31,7 @@ public abstract class Processor<T> {
         this.context = context;
     }
 
-    public static Processor getProcessor(String streamName, Config config, TaskContext context, StoreManager storeManager, PostgresqlManager postgresqlManager) {
+    public static List<Processor> getProcessors(String streamName, Config config, TaskContext context, StoreManager storeManager, PostgresqlManager postgresqlManager) {
         if (!processors.containsKey(streamName)) {
             List<String> enrichments;
             EnrichManager enrichManager = new EnrichManager();
@@ -68,17 +65,23 @@ public abstract class Processor<T> {
             }
 
             try {
-                String className = config.get("redborder.processors." + streamName);
-                Class foundClass = Class.forName(className);
-                Constructor constructor = foundClass.getConstructor(StoreManager.class, EnrichManager.class, Config.class, TaskContext.class);
-                Processor processor = (Processor) constructor.newInstance(new Object [] { storeManager, enrichManager, config, context});
-                processors.put(streamName, processor);
+                List<String> classNames = config.getList("redborder.processors." + streamName);
+                List<Processor> processorsList = new ArrayList<>();
+
+                for(String className : classNames) {
+                    Class foundClass = Class.forName(className);
+                    Constructor constructor = foundClass.getConstructor(StoreManager.class, EnrichManager.class, Config.class, TaskContext.class);
+                    Processor processor = (Processor) constructor.newInstance(new Object[]{storeManager, enrichManager, config, context});
+                    processorsList.add(processor);
+                }
+
+                processors.put(streamName, processorsList);
             } catch (ClassNotFoundException e) {
                 log.error("Couldn't find the class associated with the stream " + streamName);
-                processors.put(streamName, new DummyProcessor());
+                processors.put(streamName, Arrays.asList((Processor) new DummyProcessor()));
             } catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
                 log.error("Couldn't create the instance associated with the stream " + streamName, e);
-                processors.put(streamName, new DummyProcessor());
+                processors.put(streamName, Arrays.asList((Processor) new DummyProcessor()));
             }
         }
 

@@ -12,6 +12,7 @@ import org.apache.samza.task.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
 
 public class EnrichmentStreamTask implements StreamTask, InitableTask, WindowableTask {
@@ -38,9 +39,11 @@ public class EnrichmentStreamTask implements StreamTask, InitableTask, Windowabl
         Object message = envelope.getMessage();
 
 
-        Processor processor = Processor.getProcessor(stream, this.config, this.context, this.storeManager, this.postgresqlManager);
+        List<Processor> processors = Processor.getProcessors(stream, this.config, this.context, this.storeManager, this.postgresqlManager);
         if (message instanceof Map) {
-            processor.process(message, collector);
+            for(Processor processor : processors) {
+                processor.process(message, collector);
+            }
             counter.inc();
         } else {
             log.warn("This message is not a map class: " + message);

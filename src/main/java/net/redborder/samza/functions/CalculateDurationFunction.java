@@ -25,7 +25,13 @@ public class CalculateDurationFunction {
             packet_start = packet_end;
         }
 
-        event.put(Dimension.DURATION, (packet_end - packet_start));
+        Long duration =  packet_end - packet_start;
+
+        if(duration < 0){
+            duration = 1L;
+        }
+
+        event.put(Dimension.DURATION, duration);
 
         return event;
     }
