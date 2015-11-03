@@ -66,7 +66,7 @@ public class StoreManager {
             StringBuilder builder = new StringBuilder();
 
             for(String key : keys){
-                String kv = (String) enrichment.get(key);
+                Object kv = enrichment.get(key);
                 if(kv != null){
                     builder.append(kv);
                 }
