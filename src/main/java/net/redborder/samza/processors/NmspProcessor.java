@@ -111,11 +111,46 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                 }
 
                 if (toDruid != null) {
-                    String sensorName = (String) message.get(SENSOR_NAME);
-                    String sensorUUID = (String) message.get(SENSOR_UUID);
+                    String market = (String) message.get(MARKET);
+                    if(market != null){
+                        toDruid.put(MARKET, market);
+                    }
 
-                    toDruid.put(SENSOR_NAME, sensorName);
-                    toDruid.put(SENSOR_UUID, sensorUUID);
+                    String marketUuid = (String) message.get(MARKET_UUID);
+                    if(marketUuid != null){
+                        toDruid.put(MARKET_UUID, marketUuid);
+                    }
+
+                    String organization = (String) message.get(ORGANIZATION);
+                    if(organization != null){
+                        toDruid.put(ORGANIZATION, organization);
+                    }
+
+                    String organizationUuid = (String) message.get(ORGANIZATION_UUID);
+                    if(organizationUuid != null){
+                        toDruid.put(ORGANIZATION_UUID, organizationUuid);
+                    }
+
+                    String deployment = (String) message.get(DEPLOYMENT);
+                    if(deployment != null){
+                        toDruid.put(DEPLOYMENT, deployment);
+                    }
+
+                    String deploymentUuid = (String) message.get(DEPLOYMENT_UUID);
+                    if(deploymentUuid != null){
+                        toDruid.put(DEPLOYMENT_UUID, deploymentUuid);
+                    }
+
+                    String sensorName = (String) message.get(SENSOR_NAME);
+                    if(sensorName != null){
+                        toDruid.put(SENSOR_NAME, sensorName);
+                    }
+
+                    String sensorUuid = (String) message.get(SENSOR_UUID);
+                    if(sensorUuid != null){
+                        toDruid.put(SENSOR_UUID, sensorUuid);
+                    }
+
                     toDruid.put(BYTES, 0);
                     toDruid.put(PKTS, 0);
                     toDruid.put(TYPE, "nmsp-measure");

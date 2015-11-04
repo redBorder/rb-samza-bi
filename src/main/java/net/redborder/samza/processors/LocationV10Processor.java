@@ -116,7 +116,48 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                 toDruid.put(TIMESTAMP, ((Long) msg.get(TIMESTAMP)) / 1000L);
                 toDruid.put(BYTES, 0);
                 toDruid.put(PKTS, 0);
-                toDruid.put(TYPE, "mse10");
+                toDruid.put(TYPE, "mse10-association");
+                toDruid.put(LOC_SUBSCRIPTION_NAME, msg.get(LOC_SUBSCRIPTION_NAME));
+
+                String market = (String) msg.get(MARKET);
+                if(market != null){
+                    toDruid.put(MARKET, market);
+                }
+
+                String marketUuid = (String) msg.get(MARKET_UUID);
+                if(marketUuid != null){
+                    toDruid.put(MARKET_UUID, marketUuid);
+                }
+
+                String organization = (String) msg.get(ORGANIZATION);
+                if(organization != null){
+                    toDruid.put(ORGANIZATION, organization);
+                }
+
+                String organizationUuid = (String) msg.get(ORGANIZATION_UUID);
+                if(organizationUuid != null){
+                    toDruid.put(ORGANIZATION_UUID, organizationUuid);
+                }
+
+                String deployment = (String) msg.get(DEPLOYMENT);
+                if(deployment != null){
+                    toDruid.put(DEPLOYMENT, deployment);
+                }
+
+                String deploymentUuid = (String) msg.get(DEPLOYMENT_UUID);
+                if(deploymentUuid != null){
+                    toDruid.put(DEPLOYMENT_UUID, deploymentUuid);
+                }
+
+                String sensorName = (String) msg.get(SENSOR_NAME);
+                if(sensorName != null){
+                    toDruid.put(SENSOR_NAME, sensorName);
+                }
+
+                String sensorUuid = (String) msg.get(SENSOR_UUID);
+                if(sensorUuid != null){
+                    toDruid.put(SENSOR_UUID, sensorUuid);
+                }
 
                 store.put(clientMac + namespace_id, toCache);
 
@@ -172,6 +213,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
 
                 toDruid.putAll(toCache);
                 toDruid.put(SENSOR_NAME, msg.get(LOC_SUBSCRIPTION_NAME));
+                toDruid.put(LOC_SUBSCRIPTION_NAME, msg.get(LOC_SUBSCRIPTION_NAME));
 
                 if (msg.containsKey(TIMESTAMP)) {
                     toDruid.put(TIMESTAMP, ((Long) msg.get(TIMESTAMP)) / 1000L);
@@ -182,10 +224,51 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                 toDruid.put(BYTES, 0);
                 toDruid.put(PKTS, 0);
                 toDruid.put(CLIENT_MAC, clientMac);
-                toDruid.put(TYPE, "mse10");
+                toDruid.put(TYPE, "mse10-location");
 
                 if (!namespace_id.equals(""))
                     toDruid.put(NAMESPACE_UUID, namespace_id);
+
+
+                String market = (String) msg.get(MARKET);
+                if(market != null){
+                    toDruid.put(MARKET, market);
+                }
+
+                String marketUuid = (String) msg.get(MARKET_UUID);
+                if(marketUuid != null){
+                    toDruid.put(MARKET_UUID, marketUuid);
+                }
+
+                String organization = (String) msg.get(ORGANIZATION);
+                if(organization != null){
+                    toDruid.put(ORGANIZATION, organization);
+                }
+
+                String organizationUuid = (String) msg.get(ORGANIZATION_UUID);
+                if(organizationUuid != null){
+                    toDruid.put(ORGANIZATION_UUID, organizationUuid);
+                }
+
+                String deployment = (String) msg.get(DEPLOYMENT);
+                if(deployment != null){
+                    toDruid.put(DEPLOYMENT, deployment);
+                }
+
+                String deploymentUuid = (String) msg.get(DEPLOYMENT_UUID);
+                if(deploymentUuid != null){
+                    toDruid.put(DEPLOYMENT_UUID, deploymentUuid);
+                }
+
+                String sensorName = (String) msg.get(SENSOR_NAME);
+                if(sensorName != null){
+                    toDruid.put(SENSOR_NAME, sensorName);
+                }
+
+                String sensorUuid = (String) msg.get(SENSOR_UUID);
+                if(sensorUuid != null){
+                    toDruid.put(SENSOR_UUID, sensorUuid);
+                }
 
                 store.put(clientMac + namespace_id, toCache);
 

@@ -125,6 +125,46 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
                 toDruid.put(SENSOR_NAME, sensorName);
             }
 
+            String market = (String) message.get(MARKET);
+            if(market != null){
+                toDruid.put(MARKET, market);
+            }
+
+            String marketUuid = (String) message.get(MARKET_UUID);
+            if(marketUuid != null){
+                toDruid.put(MARKET_UUID, marketUuid);
+            }
+
+            String organization = (String) message.get(ORGANIZATION);
+            if(organization != null){
+                toDruid.put(ORGANIZATION, organization);
+            }
+
+            String organizationUuid = (String) message.get(ORGANIZATION_UUID);
+            if(organizationUuid != null){
+                toDruid.put(ORGANIZATION_UUID, organizationUuid);
+            }
+
+            String deployment = (String) message.get(DEPLOYMENT);
+            if(deployment != null){
+                toDruid.put(DEPLOYMENT, deployment);
+            }
+
+            String deploymentUuid = (String) message.get(DEPLOYMENT_UUID);
+            if(deploymentUuid != null){
+                toDruid.put(DEPLOYMENT_UUID, deploymentUuid);
+            }
+
+            String sensorNameX = (String) message.get(SENSOR_NAME);
+            if(sensorNameX != null){
+                toDruid.put(SENSOR_NAME, sensorNameX);
+            }
+
+            String sensorUuid = (String) message.get(SENSOR_UUID);
+            if(sensorUuid != null){
+                toDruid.put(SENSOR_UUID, sensorUuid);
+            }
+
             toDruid.putAll(toCache);
             toDruid.put(CLIENT_RSSI, "unknown");
             toDruid.put(CLIENT_RSSI_NUM, 0);

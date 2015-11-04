@@ -165,9 +165,10 @@ public class LocationProcessorTest extends TestCase {
         result.put(WIRELESS_STATION, "AA:AA:AA:AA:AA:AA");
         result.put(PKTS, 0);
         result.put(BYTES, 0);
-        result.put(TYPE, "mse10");
+        result.put(TYPE, "mse10-location");
         result.put(SENSOR_NAME, "rb-loc");
         result.put(NAMESPACE_UUID, namespace_id);
+        result.put(LOC_SUBSCRIPTION_NAME, "rb-loc");
 
         enrichmentMessage = collector.getResult().get(0);
         assertEquals(result, enrichmentMessage);
@@ -204,7 +205,8 @@ public class LocationProcessorTest extends TestCase {
         result.put(SENSOR_NAME, "rb-assoc");
         result.put(WIRELESS_STATION, "AA:AA:AA:AA:AA:AA");
         result.put(DOT11PROTOCOL, "IEEE_802_11_B");
-        result.put(TYPE, "mse10");
+        result.put(TYPE, "mse10-association");
+        result.put(LOC_SUBSCRIPTION_NAME, "rb-assoc");
 
         enrichmentMessage = collector.getResult().get(0);
         assertEquals(result, enrichmentMessage);
@@ -219,7 +221,7 @@ public class LocationProcessorTest extends TestCase {
         result.put(BYTES, 0);
         result.put(WIRELESS_STATION, "AA:AA:AA:AA:AA:AA");
         result.put(PKTS, 0);
-        result.put(TYPE, "mse10");
+        result.put(TYPE, "mse10-location");
         result.put(CAMPUS, "CampusA");
         result.put(BUILDING, "BuildingB");
         result.put(TIMESTAMP, Long.valueOf(1424767310L));
@@ -229,6 +231,7 @@ public class LocationProcessorTest extends TestCase {
         result.put(FLOOR, "FloorC");
         result.put(DOT11PROTOCOL, "IEEE_802_11_B");
         result.put(NAMESPACE_UUID, namespace_id);
+        result.put(LOC_SUBSCRIPTION_NAME, "rb-loc");
 
         enrichmentMessage = collector.getResult().get(1);
         assertEquals(result, enrichmentMessage);
@@ -248,7 +251,7 @@ public class LocationProcessorTest extends TestCase {
         result.put(BYTES, 0);
         result.put(WIRELESS_STATION, "AA:AA:AA:AA:AA:AA");
         result.put(PKTS, 0);
-        result.put(TYPE, "mse10");
+        result.put(TYPE, "mse10-location");
         result.put(CAMPUS, "CampusA");
         result.put(BUILDING, "BuildingB");
         result.put(TIMESTAMP, Long.valueOf(1424767310L));
@@ -256,6 +259,7 @@ public class LocationProcessorTest extends TestCase {
         result.put(SENSOR_NAME, "rb-loc");
         result.put(FLOOR, "FloorC");
         result.put(NAMESPACE_UUID, "111111112");
+        result.put(LOC_SUBSCRIPTION_NAME, "rb-loc");
 
         enrichmentMessage = collector.getResult().get(1);
         assertEquals(result, enrichmentMessage);
