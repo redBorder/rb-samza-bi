@@ -14,7 +14,9 @@ import org.slf4j.LoggerFactory;
 import static net.redborder.samza.util.constants.Dimension.*;
 
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class DwellProcessor extends Processor<Map<String, Object>> {
@@ -35,31 +37,51 @@ public class DwellProcessor extends Processor<Map<String, Object>> {
     public void process(Map<String, Object> message, MessageCollector collector) {
         Object realTimestamp = message.get(TIMESTAMP);
         Long timestamp = System.currentTimeMillis() / 1000;
-        String client = (String) message.get(CLIENT_MAC);
+        String client;
+        String namespace;
 
-        if (realTimestamp == null) {
-            Map<String, Object> mseEventContent = (Map<String, Object>) message.get(LOC_STREAMING_NOTIFICATION);
-            if (message.containsKey(LOC_STREAMING_NOTIFICATION)) {
-                String dateString = (String) mseEventContent.get(TIMESTAMP);
-                Map<String, Object> location = (Map<String, Object>) mseEventContent.get(LOC_LOCATION);
-                client = (String) location.get(LOC_MACADDR);
-                if (dateString != null) {
-                    timestamp = new DateTime(dateString).withZone(DateTimeZone.UTC).getMillis() / 1000;
-                }
+        if (message.containsKey(LOC_NOTIFICATIONS)) {
+            List<Map<String, Object>> messages = (ArrayList) message.get(LOC_NOTIFICATIONS);
+
+            for (Map<String, Object> msg : messages) {
+                timestamp = (Long) msg.get(TIMESTAMP) / 1000L;
+                namespace = (String) msg.get(NAMESPACE_UUID);
+                client = (String) msg.get(LOC_DEVICEID);
+                logic(timestamp, namespace, client);
             }
-        } else {
-            if(realTimestamp instanceof String) {
+
+        } else if (message.containsKey(LOC_STREAMING_NOTIFICATION)) {
+            Map<String, Object> mseEventContent = (Map<String, Object>) message.get(LOC_STREAMING_NOTIFICATION);
+            String dateString = (String) mseEventContent.get(TIMESTAMP);
+            Map<String, Object> location = (Map<String, Object>) mseEventContent.get(LOC_LOCATION);
+            client = (String) location.get(LOC_MACADDR);
+            namespace = (String) message.get(NAMESPACE_UUID);
+
+            if (dateString != null) {
+                timestamp = new DateTime(dateString).withZone(DateTimeZone.UTC).getMillis() / 1000;
+            }
+
+            logic(timestamp, namespace, client);
+        } else if (message.containsKey(CLIENT_MAC)) {
+            if (realTimestamp instanceof String) {
                 timestamp = Long.parseLong((String) realTimestamp);
-            } else if(realTimestamp instanceof Integer){
+            } else if (realTimestamp instanceof Integer) {
                 Integer t = (Integer) realTimestamp;
                 timestamp = t.longValue();
-            } else if(realTimestamp instanceof  Long){
+            } else if (realTimestamp instanceof Long) {
                 timestamp = (Long) realTimestamp;
             }
-        }
 
-        if(client != null) {
-            String namespace = (String) message.get(NAMESPACE_UUID);
+            client = (String) message.get(CLIENT_MAC);
+            namespace = (String) message.get(NAMESPACE_UUID);
+            logic(timestamp, namespace, client);
+        } else {
+            log.warn("Dwell message doesn't process: [{}]", message);
+        }
+    }
+
+    private void logic(Long timestamp, String namespace, String client) {
+        if (client != null) {
             String namespace_id = namespace == null ? "" : namespace.toString();
             String key = client + namespace_id;
 
@@ -102,7 +124,6 @@ public class DwellProcessor extends Processor<Map<String, Object>> {
 
             }
 
-            log.debug("KEY: {} LASTVALUE: {} " + message, key, lastValue);
             storeDwell.put(key, lastValue);
         }
     }
