@@ -187,10 +187,11 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
             if (macAddress != null) store.put(macAddress + namespace_id, toCache);
 
             counter.inc();
-            Map<String, Object> enrichmentEvent = enrichManager.enrich(toDruid);
-            Map<String, Object> storeEnrichment = storeManager.enrich(enrichmentEvent);
+            Map<String, Object> storeEnrichment = storeManager.enrich(toDruid);
+            storeEnrichment.putAll(toDruid);
+            Map<String, Object> enrichmentEvent = enrichManager.enrich(storeEnrichment);
 
-            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, storeEnrichment));
+            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentEvent));
         }
     }
 }

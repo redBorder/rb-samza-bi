@@ -272,11 +272,11 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
 
                 store.put(clientMac + namespace_id, toCache);
 
-                Map<String, Object> enrichmentEvent = enrichManager.enrich(toDruid);
-                Map<String, Object> storeEnrichment = storeManager.enrich(enrichmentEvent);
-
+                Map<String, Object> storeEnrichment = storeManager.enrich(toDruid);
                 storeEnrichment.putAll(toDruid);
-                collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, storeEnrichment));
+                Map<String, Object> enrichmentEvent = enrichManager.enrich(storeEnrichment);
+
+                collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentEvent));
             }
         } catch (Exception ex) {
             log.warn("MSE10 locationUpdate event dropped: " + message, ex);
