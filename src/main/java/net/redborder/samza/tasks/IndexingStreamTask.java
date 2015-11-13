@@ -63,8 +63,12 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
             }
 
             if (systemStream != null) {
-                collector.send(new OutgoingMessageEnvelope(systemStream, null, message));
-                counter.inc();
+                try {
+                    collector.send(new OutgoingMessageEnvelope(systemStream, null, message));
+                    counter.inc();
+                }catch (Exception ex){
+                    log.error("Error sending to tranquility!! ", ex);
+                }
             }
 
         } else {
