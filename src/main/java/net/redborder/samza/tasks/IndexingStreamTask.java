@@ -58,6 +58,8 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
                 systemStream = new SystemStream("druid_malware", getDatasource(message, MALWARE_DATASOURCE));
             } else if (stream.equals(MONITOR_TOPIC)) {
                 systemStream = new SystemStream("druid_monitor", getDatasource(message, MONITOR_TOPIC));
+            } else if (stream.equals(ENRICHMENT_LOC_OUTPUT_TOPIC)) {
+                systemStream = new SystemStream("druid_location", getDatasource(message, ENRICHMENT_LOC_OUTPUT_TOPIC));
             } else {
                 log.warn("Undefined input stream name: " + stream);
             }
