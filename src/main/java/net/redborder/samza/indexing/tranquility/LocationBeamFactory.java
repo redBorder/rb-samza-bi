@@ -41,7 +41,11 @@ public class LocationBeamFactory implements BeamFactory {
 
         final Integer partitions = AutoScalingUtils.getPartitions(dataSource);
         final Integer replicas = AutoScalingUtils.getReplicas(dataSource);
-        final String realDataSource = AutoScalingUtils.getDataSource(dataSource);
+        String realDataSource = AutoScalingUtils.getDataSource(dataSource);
+
+        if (realDataSource.endsWith("_")) {
+            realDataSource = "rb_loc_post";
+        }
 
         final List<String> dimensions = ImmutableList.of(
                 "client_mac", "sensor_name", "sensor_uuid", "deployment", "deployment_uuid",
