@@ -54,9 +54,7 @@ public class LocationBeamFactory implements BeamFactory {
 
         final List<AggregatorFactory> aggregators = ImmutableList.of(
                 new CountAggregatorFactory(EVENTS_AGGREGATOR),
-                new HyperUniquesAggregatorFactory(WIRELESS_STATIONS_AGGREGATOR, WIRELESS_STATION),
-                new HyperUniquesAggregatorFactory(WIRELESS_CHANNELS_AGGREGATOR, WIRELESS_CHANNEL),
-                new LongSumAggregatorFactory(SUM_WIRELESS_TX_POWER_AGGREGATOR, WIRELESS_TX_POWER)
+                new HyperUniquesAggregatorFactory(CLIENTS_AGGREGATOR, CLIENT_MAC)
         );
 
         // The Timestamper should return the timestamp of the class your Samza task produces. Samza envelopes contain
