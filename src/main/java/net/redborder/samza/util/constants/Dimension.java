@@ -147,6 +147,7 @@ public class Dimension {
 
     // Location
     public final static String LOC_TIMESTAMP_MILLIS = "timestampMillis";
+    public final static String SSID = "ssid";
     public final static String LOC_MSEUDI = "mseUdi";
     public final static String LOC_NOTIFICATIONS = "notifications";
     public final static String LOC_NOTIFICATION_TYPE = "notificationType";

@@ -190,6 +190,9 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                 if (msg.get(LOC_AP_MACADDR) != null)
                     toCache.put(WIRELESS_STATION, msg.get(LOC_AP_MACADDR));
 
+                if (msg.get(SSID) != null)
+                    toCache.put(WIRELESS_ID, msg.get(SSID));
+
                 if (locationMapHierarchy != null) {
                     String[] locations = locationMapHierarchy.split(">");
 
