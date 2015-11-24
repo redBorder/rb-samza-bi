@@ -83,18 +83,24 @@ public class Dimension {
 
     public final static String CLIENT_FULLNAME = "client_fullname";
 
-    // Analysis
-    public static final String MALWARE_NAME = "malware_name";
+    // Malware
     public static final String SCORE = "score";
-    public static final String ENGINE = "engine";
-    public static final String CUCKOO_BEFORE = "cuckoo_before";
+    public static final String G_RT_SCORE = "g_rt_score";
+    public static final String G_FB_SCORE = "g_fb_score";
+    public static final String G_SB_SCORE = "g_sb_score";
+    public static final String RT_VIRUSTOTAL = "rt_virustotal";
+    public static final String RT_METASCAN = "rt_metascan";
+    public static final String RT_BRIGHCLOUD = "rt_brighcloud";
+    public static final String FB_VIRUSTOTAL = "fb_virustotal";
+    public static final String FB_METASCAN = "fb_metascan";
+    public static final String FB_CLAMSCAN = "fb_clamscan";
+    public static final String FB_KASPERSKY = "fb_kaspersky";
+    public static final String SB_FUZZY = "sb_fuzzy";
+    public static final String SB_CUCKOO = "sb_cuckoo";
 
-    // MailGW
-    public static final String URLS = "urls";
+    public static final String URL = "url";
     public static final String FILENAME = "filename";
     public static final String EMAIL_SENDER = "email_sender";
-    public static final String EMAIL_SENDERS = "email_sender";
-    public static final String EMAIL_DESTINATIONS = "email_destinations";
     public static final String EMAIL_DESTINATION = "email_destination";
     public static final String EMAIL_ID = "email_id";
 
