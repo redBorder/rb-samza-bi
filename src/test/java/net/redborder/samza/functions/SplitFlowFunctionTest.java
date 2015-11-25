@@ -2,6 +2,7 @@ package net.redborder.samza.functions;
 
 import junit.framework.TestCase;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.junit.Test;
@@ -49,9 +50,9 @@ public class SplitFlowFunctionTest extends TestCase {
     @Test
     public void lessThanAMinute() {
         Map<String, Object> message = new HashMap<>();
-        DateTime firstSwitchDate = formatter.parseDateTime("2014-01-01 22:10:12");
-        DateTime timestampDate = formatter.parseDateTime("2014-01-01 22:10:42");
-        DateTime timeNowDate = formatter.parseDateTime("2014-01-01 22:15:16");
+        DateTime firstSwitchDate = formatter.withZoneUTC().parseDateTime("2014-01-01 22:10:12");
+        DateTime timestampDate = formatter.withZoneUTC().parseDateTime("2014-01-01 22:10:42");
+        DateTime timeNowDate = formatter.withZoneUTC().parseDateTime("2014-01-01 22:15:16");
 
         message.put(TIMESTAMP, secs(timestampDate));
         message.put(FIRST_SWITCHED, secs(firstSwitchDate));
@@ -70,9 +71,9 @@ public class SplitFlowFunctionTest extends TestCase {
     @Test
     public void higherThanAMinute() {
         Map<String, Object> message = new HashMap<>();
-        DateTime firstSwitchDate = formatter.parseDateTime("2014-01-01 22:10:12");
-        DateTime timestampDate = formatter.parseDateTime("2014-01-01 22:13:42");
-        DateTime timeNowDate = formatter.parseDateTime("2014-01-01 22:15:16");
+        DateTime firstSwitchDate = formatter.withZoneUTC().parseDateTime("2014-01-01 22:10:12");
+        DateTime timestampDate = formatter.withZoneUTC().parseDateTime("2014-01-01 22:13:42");
+        DateTime timeNowDate = formatter.withZoneUTC().parseDateTime("2014-01-01 22:15:16");
 
         message.put(TIMESTAMP, secs(timestampDate));
         message.put(FIRST_SWITCHED, secs(firstSwitchDate));
@@ -84,28 +85,28 @@ public class SplitFlowFunctionTest extends TestCase {
         DateTime pktTime;
 
         expected = new HashMap<>();
-        pktTime = formatter.parseDateTime("2014-01-01 22:11:00");
+        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 22:11:00");
         expected.put(TIMESTAMP, secs(pktTime));
         expected.put(BYTES, 228L);
         expected.put(PKTS, 22L);
         expectedPackets.add(expected);
 
         expected = new HashMap<>();
-        pktTime = formatter.parseDateTime("2014-01-01 22:12:00");
+        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 22:12:00");
         expected.put(TIMESTAMP, secs(pktTime));
         expected.put(BYTES, 285L);
         expected.put(PKTS, 28L);
         expectedPackets.add(expected);
 
         expected = new HashMap<>();
-        pktTime = formatter.parseDateTime("2014-01-01 22:13:00");
+        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 22:13:00");
         expected.put(TIMESTAMP, secs(pktTime));
         expected.put(BYTES, 285L);
         expected.put(PKTS, 28L);
         expectedPackets.add(expected);
 
         expected = new HashMap<>();
-        pktTime = formatter.parseDateTime("2014-01-01 22:13:42");
+        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 22:13:42");
         expected.put(TIMESTAMP, secs(pktTime));
         expected.put(BYTES, 201L);
         expected.put(PKTS, 21L);
@@ -118,9 +119,9 @@ public class SplitFlowFunctionTest extends TestCase {
     @Test
     public void correctsFirstSwitchedMessages() {
         Map<String, Object> message = new HashMap<>();
-        DateTime firstSwitchDate = formatter.parseDateTime("2014-01-01 21:58:12");
-        DateTime timestampDate = formatter.parseDateTime("2014-01-01 22:01:42");
-        DateTime timeNowDate = formatter.parseDateTime("2014-01-01 22:22:16");
+        DateTime firstSwitchDate = formatter.withZoneUTC().parseDateTime("2014-01-01 21:58:12");
+        DateTime timestampDate = formatter.withZoneUTC().parseDateTime("2014-01-01 22:01:42");
+        DateTime timeNowDate = formatter.withZoneUTC().parseDateTime("2014-01-01 22:22:16");
 
         message.put(TIMESTAMP, secs(timestampDate));
         message.put(FIRST_SWITCHED, secs(firstSwitchDate));
@@ -132,14 +133,14 @@ public class SplitFlowFunctionTest extends TestCase {
         DateTime pktTime;
 
         expected = new HashMap<>();
-        pktTime = formatter.parseDateTime("2014-01-01 22:01:00");
+        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 22:01:00");
         expected.put(TIMESTAMP, secs(pktTime));
         expected.put(BYTES, 511L);
         expected.put(PKTS, 50L);
         expectedPackets.add(expected);
 
         expected = new HashMap<>();
-        pktTime = formatter.parseDateTime("2014-01-01 22:01:42");
+        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 22:01:42");
         expected.put(TIMESTAMP, secs(pktTime));
         expected.put(BYTES, 488L);
         expected.put(PKTS, 49L);
@@ -152,9 +153,9 @@ public class SplitFlowFunctionTest extends TestCase {
     @Test
     public void notDropOldMessages() {
         Map<String, Object> message = new HashMap<>();
-        DateTime firstSwitchDate = formatter.parseDateTime("2014-01-01 21:50:12");
-        DateTime timestampDate = formatter.parseDateTime("2014-01-01 21:55:42");
-        DateTime timeNowDate = formatter.parseDateTime("2014-01-01 22:22:16");
+        DateTime firstSwitchDate = formatter.withZoneUTC().parseDateTime("2014-01-01 21:50:12");
+        DateTime timestampDate = formatter.withZoneUTC().parseDateTime("2014-01-01 21:55:42");
+        DateTime timeNowDate = formatter.withZoneUTC().parseDateTime("2014-01-01 22:22:16");
 
         message.put(TIMESTAMP, secs(timestampDate));
         message.put(FIRST_SWITCHED, secs(firstSwitchDate));
@@ -163,27 +164,27 @@ public class SplitFlowFunctionTest extends TestCase {
 
         List<Map<String, Object>> expected = new ArrayList<>();
         Map<String, Object> msgExpected = new HashMap<>();
-        msgExpected.put(TIMESTAMP, 1388609460L);
+        msgExpected.put(TIMESTAMP, secs(formatter.withZoneUTC().parseDateTime("2014-01-01 21:51:00")));
         msgExpected.put(BYTES, 145L);
         msgExpected.put(PKTS, 14L);
         Map<String, Object> msgExpected1 = new HashMap<>();
-        msgExpected1.put(TIMESTAMP, 1388609520L);
+        msgExpected1.put(TIMESTAMP, secs(formatter.withZoneUTC().parseDateTime("2014-01-01 21:52:00")));
         msgExpected1.put(BYTES, 181L);
         msgExpected1.put(PKTS, 18L);
         Map<String, Object> msgExpected2 = new HashMap<>();
-        msgExpected2.put(TIMESTAMP, 1388609580L);
+        msgExpected2.put(TIMESTAMP, secs(formatter.withZoneUTC().parseDateTime("2014-01-01 21:53:00")));
         msgExpected2.put(BYTES, 181L);
         msgExpected2.put(PKTS, 18L);
         Map<String, Object> msgExpected3 = new HashMap<>();
-        msgExpected3.put(TIMESTAMP, 1388609640L);
+        msgExpected3.put(TIMESTAMP, secs(formatter.withZoneUTC().parseDateTime("2014-01-01 21:54:00")));
         msgExpected3.put(BYTES, 181L);
         msgExpected3.put(PKTS, 18L);
         Map<String, Object> msgExpected4 = new HashMap<>();
-        msgExpected4.put(TIMESTAMP, 1388609700L);
+        msgExpected4.put(TIMESTAMP, secs(formatter.withZoneUTC().parseDateTime("2014-01-01 21:55:00")));
         msgExpected4.put(BYTES, 181L);
         msgExpected4.put(PKTS, 18L);
         Map<String, Object> msgExpected5 = new HashMap<>();
-        msgExpected5.put(TIMESTAMP, 1388609742L);
+        msgExpected5.put(TIMESTAMP, secs(formatter.withZoneUTC().parseDateTime("2014-01-01 21:55:42")));
         msgExpected5.put(BYTES, 130L);
         msgExpected5.put(PKTS, 13L);
         expected.add(msgExpected);
@@ -201,9 +202,9 @@ public class SplitFlowFunctionTest extends TestCase {
     @Test
     public void acceptsOldMessagesInTheRealtimeWindow() {
         Map<String, Object> message = new HashMap<>();
-        DateTime firstSwitchDate = formatter.parseDateTime("2014-01-01 21:50:12");
-        DateTime timestampDate = formatter.parseDateTime("2014-01-01 21:50:42");
-        DateTime timeNowDate = formatter.parseDateTime("2014-01-01 22:12:16");
+        DateTime firstSwitchDate = formatter.withZoneUTC().parseDateTime("2014-01-01 21:50:12");
+        DateTime timestampDate = formatter.withZoneUTC().parseDateTime("2014-01-01 21:50:42");
+        DateTime timeNowDate = formatter.withZoneUTC().parseDateTime("2014-01-01 22:12:16");
 
         message.put(TIMESTAMP, secs(timestampDate));
         message.put(FIRST_SWITCHED, secs(firstSwitchDate));
@@ -224,9 +225,9 @@ public class SplitFlowFunctionTest extends TestCase {
     @Test
     public void correctsMessagesInTheFuture() {
         Map<String, Object> message = new HashMap<>();
-        DateTime firstSwitchDate = formatter.parseDateTime("2014-01-01 21:55:12");
-        DateTime timestampDate = formatter.parseDateTime("2014-01-01 22:01:42");
-        DateTime timeNowDate = formatter.parseDateTime("2014-01-01 21:36:16");
+        DateTime firstSwitchDate = formatter.withZoneUTC().parseDateTime("2014-01-01 21:55:12");
+        DateTime timestampDate = formatter.withZoneUTC().parseDateTime("2014-01-01 22:01:42");
+        DateTime timeNowDate = formatter.withZoneUTC().parseDateTime("2014-01-01 21:36:16");
 
         message.put(TIMESTAMP, secs(timestampDate));
         message.put(FIRST_SWITCHED, secs(firstSwitchDate));
@@ -238,7 +239,7 @@ public class SplitFlowFunctionTest extends TestCase {
         DateTime pktTime;
 
         expected = new HashMap<>();
-        pktTime = formatter.parseDateTime("2014-01-01 21:36:16");
+        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 21:36:16");
         expected.put(TIMESTAMP, secs(pktTime));
         expected.put(BYTES, 999L);
         expected.put(PKTS, 99L);
@@ -251,9 +252,9 @@ public class SplitFlowFunctionTest extends TestCase {
     @Test
     public void correctsMessagesInTheFutureAndSplits() {
         Map<String, Object> message = new HashMap<>();
-        DateTime firstSwitchDate = formatter.parseDateTime("2014-01-01 21:45:12");
-        DateTime timestampDate = formatter.parseDateTime("2014-01-01 22:01:42");
-        DateTime timeNowDate = formatter.parseDateTime("2014-01-01 21:47:16");
+        DateTime firstSwitchDate = formatter.withZoneUTC().parseDateTime("2014-01-01 21:45:12");
+        DateTime timestampDate = formatter.withZoneUTC().parseDateTime("2014-01-01 22:01:42");
+        DateTime timeNowDate = formatter.withZoneUTC().parseDateTime("2014-01-01 21:47:16");
 
         message.put(TIMESTAMP, secs(timestampDate));
         message.put(FIRST_SWITCHED, secs(firstSwitchDate));
@@ -265,21 +266,21 @@ public class SplitFlowFunctionTest extends TestCase {
         DateTime pktTime;
 
         expected = new HashMap<>();
-        pktTime = formatter.parseDateTime("2014-01-01 21:46:00");
+        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 21:46:00");
         expected.put(TIMESTAMP, secs(pktTime));
         expected.put(BYTES, 386L);
         expected.put(PKTS, 38L);
         expectedPackets.add(expected);
 
         expected = new HashMap<>();
-        pktTime = formatter.parseDateTime("2014-01-01 21:47:00");
+        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 21:47:00");
         expected.put(TIMESTAMP, secs(pktTime));
         expected.put(BYTES, 483L);
         expected.put(PKTS, 47L);
         expectedPackets.add(expected);
 
         expected = new HashMap<>();
-        pktTime = formatter.parseDateTime("2014-01-01 21:47:16");
+        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 21:47:16");
         expected.put(TIMESTAMP, secs(pktTime));
         expected.put(BYTES, 130L);
         expected.put(PKTS, 14L);
@@ -292,9 +293,9 @@ public class SplitFlowFunctionTest extends TestCase {
     @Test
     public void removesExtraDurationPackets() {
         Map<String, Object> message = new HashMap<>();
-        DateTime firstSwitchDate = formatter.parseDateTime("2014-01-01 22:10:12");
-        DateTime timestampDate = formatter.parseDateTime("2014-01-01 22:13:42");
-        DateTime timeNowDate = formatter.parseDateTime("2014-01-01 22:15:16");
+        DateTime firstSwitchDate = formatter.withZoneUTC().parseDateTime("2014-01-01 22:10:12");
+        DateTime timestampDate = formatter.withZoneUTC().parseDateTime("2014-01-01 22:13:42");
+        DateTime timeNowDate = formatter.withZoneUTC().parseDateTime("2014-01-01 22:15:16");
 
         message.put(TIMESTAMP, secs(timestampDate));
         message.put(FIRST_SWITCHED, secs(firstSwitchDate));

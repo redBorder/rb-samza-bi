@@ -2,6 +2,7 @@ package net.redborder.samza.functions;
 
 import net.redborder.samza.util.constants.Dimension;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.joda.time.Seconds;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +25,7 @@ public class SplitFlowFunction {
     }
 
     public static List<Map<String, Object>> split(Map<String, Object> event) {
-        return split(event, new DateTime());
+        return split(event, new DateTime(DateTimeZone.UTC));
     }
 
     public static List<Map<String, Object>> split(Map<String, Object> event, DateTime now) {
@@ -32,8 +33,8 @@ public class SplitFlowFunction {
 
         // last_switched is timestamp now
         if (event.containsKey(Dimension.FIRST_SWITCHED) && event.containsKey(Dimension.TIMESTAMP)) {
-            DateTime packet_start = new DateTime(Long.parseLong(event.get(Dimension.FIRST_SWITCHED).toString()) * 1000);
-            DateTime packet_end = new DateTime(Long.parseLong(event.get(Dimension.TIMESTAMP).toString()) * 1000);
+            DateTime packet_start = new DateTime(Long.parseLong(event.get(Dimension.FIRST_SWITCHED).toString()) * 1000, DateTimeZone.UTC);
+            DateTime packet_end = new DateTime(Long.parseLong(event.get(Dimension.TIMESTAMP).toString()) * 1000, DateTimeZone.UTC);
             int now_hour = now.getHourOfDay();
             int packet_end_hour = packet_end.getHourOfDay();
 
