@@ -151,7 +151,7 @@ public class RadiusProcessorTest extends TestCase {
         assertNull(fromCache);
     }
 
-    @Test
+   /* @Test
     public void checkRadiusStoreAddandRemove() throws IOException {
         MockMessageCollector collector = new MockMessageCollector();
 
@@ -164,7 +164,7 @@ public class RadiusProcessorTest extends TestCase {
         radiusProcessor.process(message, collector);
         fromCache = storeRadius.get("e0:b5:2d:16:e9:10");
         assertNull(fromCache);
-    }
+    }*/
 
     @Test
     public void checkWirelessStationAndWirelessId() throws IOException {
