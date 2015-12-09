@@ -84,22 +84,12 @@ public class Dimension {
     public final static String CLIENT_FULLNAME = "client_fullname";
 
     // Malware
-    public static final String SCORE = "score";
-    public static final String G_RT_SCORE = "g_rt_score";
-    public static final String G_FB_SCORE = "g_fb_score";
-    public static final String G_SB_SCORE = "g_sb_score";
-    public static final String RT_VIRUSTOTAL = "rt_virustotal";
-    public static final String RT_METASCAN = "rt_metascan";
-    public static final String RT_BRIGHCLOUD = "rt_brighcloud";
-    public static final String FB_VIRUSTOTAL = "fb_virustotal";
-    public static final String FB_METASCAN = "fb_metascan";
-    public static final String FB_CLAMSCAN = "fb_clamscan";
-    public static final String FB_KASPERSKY = "fb_kaspersky";
-    public static final String SB_FUZZY = "sb_fuzzy";
-    public static final String SB_CUCKOO = "sb_cuckoo";
+    public static final String HASH_SCORE = "hash_score";
+    public static final String IP_SCORE = "ip_score";
+    public static final String URL_SCORE = "url_score";
 
     public static final String URL = "url";
-    public static final String FILENAME = "filename";
+    public static final String FILE_NAME = "file_name";
     public static final String EMAIL_SENDER = "email_sender";
     public static final String EMAIL_DESTINATION = "email_destination";
     public static final String EMAIL_ID = "email_id";
@@ -129,7 +119,7 @@ public class Dimension {
     public final static String ORGANIZATION = "organization";
     public final static String ORGANIZATION_UUID = "organization_uuid";
     public final static String CLIENT_LATLONG = "client_latlong";
-    public final static String SHA256 = "sha256";
+    public final static String HASH = "hash";
     public final static String FILE_SIZE = "file_size";
     public final static String FILE_URI = "file_uri";
     public final static String FILE_HOSTNAME = "file_hostname";
