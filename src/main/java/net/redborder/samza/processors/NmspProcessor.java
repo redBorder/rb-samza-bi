@@ -115,7 +115,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                     for (String dimension : toDruidMeasure) {
                         Object value = message.get(dimension);
 
-                        if (dimension != null) {
+                        if (value != null) {
                             toDruid.put(dimension, value);
                         }
                     }
