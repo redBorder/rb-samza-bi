@@ -74,10 +74,10 @@ public class LocationLogicProcessorTest extends TestCase {
         MockMessageCollector collector = new MockMessageCollector();
         Map<String, Object> message = new HashMap<>();
         message.put(CLIENT_MAC, "00:00:00:00:00:00");
-        message.put(CAMPUS, "CAMPUS-A");
-        message.put(BUILDING, "BUILDING-A");
-        message.put(FLOOR, "FLOOR-A");
-        message.put(ZONE, "ZONE-A");
+        message.put(CAMPUS_UUID, "CAMPUS-A");
+        message.put(BUILDING_UUID, "BUILDING-A");
+        message.put(FLOOR_UUID, "FLOOR-A");
+        message.put(ZONE_UUID, "ZONE-A");
         message.put(TYPE, "nmsp-measure");
         message.put(WIRELESS_STATION, "33:33:33:33:33:33");
         message.put(TIMESTAMP, 1388609700L);
@@ -100,11 +100,11 @@ public class LocationLogicProcessorTest extends TestCase {
         Map<String, Object> message1 = new HashMap<>();
         message1.put(CLIENT_MAC, "00:00:00:00:00:00");
         message1.put(TIMESTAMP, 1388609710L);
-        message1.put(CAMPUS, "CAMPUS-B");
-        message1.put(BUILDING, "BUILDING-B");
+        message1.put(CAMPUS_UUID, "CAMPUS-B");
+        message1.put(BUILDING_UUID, "BUILDING-B");
         message1.put(TYPE, "nmsp-measure");
-        message1.put(ZONE, "ZONE-B");
-        message1.put(FLOOR, "FLOOR-B");
+        message1.put(ZONE_UUID, "ZONE-B");
+        message1.put(FLOOR_UUID, "FLOOR-B");
         message1.put(WIRELESS_STATION, "33:33:33:33:33:31");
         message1.put(NAMESPACE_UUID, "12345");
         locationLogicProcessor.process(message1, collector);
@@ -128,7 +128,18 @@ public class LocationLogicProcessorTest extends TestCase {
         assertEquals(expected1, collector.getResult().get(0));
 
         locationLogicProcessor.process(message1, collector);
-        assertEquals(message1, collector.getResult().get(0));
+
+        Map<String, Object> expected2 = new HashMap<>();
+        expected2.put(CLIENT_MAC, "00:00:00:00:00:00");
+        expected2.put(TIMESTAMP, 1388609710L);
+        expected2.put(CAMPUS, "CAMPUS-B");
+        expected2.put(BUILDING, "BUILDING-B");
+        expected2.put(TYPE, "nmsp-measure");
+        expected2.put(ZONE, "ZONE-B");
+        expected2.put(FLOOR, "FLOOR-B");
+        expected2.put(WIRELESS_STATION, "33:33:33:33:33:31");
+        expected2.put(NAMESPACE_UUID, "12345");
+        assertEquals(expected2, collector.getResult().get(0));
 
     }
 
@@ -137,10 +148,10 @@ public class LocationLogicProcessorTest extends TestCase {
         MockMessageCollector collector = new MockMessageCollector();
         Map<String, Object> message = new HashMap<>();
         message.put(CLIENT_MAC, "00:00:00:00:00:11");
-        message.put(CAMPUS, "CAMPUS-A");
-        message.put(BUILDING, "BUILDING-A");
-        message.put(FLOOR, "FLOOR-A");
-        message.put(ZONE, "ZONE-A");
+        message.put(CAMPUS_UUID, "CAMPUS-A");
+        message.put(BUILDING_UUID, "BUILDING-A");
+        message.put(FLOOR_UUID, "FLOOR-A");
+        message.put(ZONE_UUID, "ZONE-A");
         message.put(TYPE, "nmsp-measure");
         message.put(WIRELESS_STATION, "33:33:33:33:33:33");
         message.put(TIMESTAMP, 1388609700L);
@@ -163,11 +174,11 @@ public class LocationLogicProcessorTest extends TestCase {
         Map<String, Object> message1 = new HashMap<>();
         message1.put(CLIENT_MAC, "00:00:00:00:00:11");
         message1.put(TIMESTAMP, 1388609710L);
-        message1.put(CAMPUS, "CAMPUS-B");
-        message1.put(BUILDING, "BUILDING-B");
+        message1.put(CAMPUS_UUID, "CAMPUS-B");
+        message1.put(BUILDING_UUID, "BUILDING-B");
         message1.put(TYPE, "nmsp-measure");
-        message1.put(ZONE, "ZONE-B");
-        message1.put(FLOOR, "FLOOR-B");
+        message1.put(ZONE_UUID, "ZONE-B");
+        message1.put(FLOOR_UUID, "FLOOR-B");
         message1.put(WIRELESS_STATION, "33:33:33:33:33:31");
         message1.put(NAMESPACE_UUID, "1234");
         locationLogicProcessor.process(message1, collector);
@@ -185,8 +196,19 @@ public class LocationLogicProcessorTest extends TestCase {
 
         assertEquals(expected1, collector.getResult().get(0));
 
+        Map<String, Object> expected2 = new HashMap<>();
+        expected2.put(CLIENT_MAC, "00:00:00:00:00:11");
+        expected2.put(TIMESTAMP, 1388609710L);
+        expected2.put(CAMPUS, "CAMPUS-B");
+        expected2.put(BUILDING, "BUILDING-B");
+        expected2.put(TYPE, "nmsp-measure");
+        expected2.put(ZONE, "ZONE-B");
+        expected2.put(FLOOR, "FLOOR-B");
+        expected2.put(WIRELESS_STATION, "33:33:33:33:33:31");
+        expected2.put(NAMESPACE_UUID, "1234");
+
         locationLogicProcessor.process(message1, collector);
-        assertEquals(message1, collector.getResult().get(0));
+        assertEquals(expected2, collector.getResult().get(0));
 
     }
 

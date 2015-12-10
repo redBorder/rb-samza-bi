@@ -13,13 +13,18 @@ import org.apache.samza.system.SystemStream;
 import org.apache.samza.task.MessageCollector;
 import org.apache.samza.task.TaskContext;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class LocationLogicProcessor extends Processor<Map<String, Object>> {
     private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_LOC_OUTPUT_TOPIC);
     private KeyValueStore<String, Map<String, Object>> storeLogic;
     public final static String LOCATION_STORE_LOGIC = "location-logic";
+
+    private final List<String> dimToDruid = Arrays.asList(MARKET, MARKET_UUID, ORGANIZATION, ORGANIZATION_UUID,
+            DEPLOYMENT, DEPLOYMENT_UUID, SENSOR_NAME, SENSOR_UUID, NAMESPACE, TYPE, TIMESTAMP);
 
     public LocationLogicProcessor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
         super(storeManager, enrichManager, config, context);
@@ -36,10 +41,10 @@ public class LocationLogicProcessor extends Processor<Map<String, Object>> {
             Map<String, Object> toCache = new HashMap<>();
 
             String client_mac = (String) message.get(CLIENT_MAC);
-            String newFloor = (String) message.get(FLOOR);
-            String newBuilding = (String) message.get(BUILDING);
-            String newCampus = (String) message.get(CAMPUS);
-            String newZone = (String) message.get(ZONE);
+            String newFloor = (String) message.get(FLOOR_UUID);
+            String newBuilding = (String) message.get(BUILDING_UUID);
+            String newCampus = (String) message.get(CAMPUS_UUID);
+            String newZone = (String) message.get(ZONE_UUID);
             String wirelessStation = (String) message.get(WIRELESS_STATION);
             String namespace_id = message.get(NAMESPACE_UUID) == null ? "" : (String) message.get(NAMESPACE_UUID);
 
@@ -61,11 +66,11 @@ public class LocationLogicProcessor extends Processor<Map<String, Object>> {
                 wirelessStation = "unknown";
 
             if (locationCache != null) {
-                String oldFloor = (String) locationCache.get(FLOOR);
-                String oldBuilding = (String) locationCache.get(BUILDING);
-                String oldCampus = (String) locationCache.get(CAMPUS);
+                String oldFloor = (String) locationCache.get(FLOOR_UUID);
+                String oldBuilding = (String) locationCache.get(BUILDING_UUID);
+                String oldCampus = (String) locationCache.get(CAMPUS_UUID);
                 String oldwirelessStation = (String) locationCache.get(WIRELESS_STATION);
-                String oldZone = (String) locationCache.get(ZONE);
+                String oldZone = (String) locationCache.get(ZONE_UUID);
 
                 if (oldFloor != null)
                     if (!oldFloor.equals(newFloor)) {
@@ -117,44 +122,23 @@ public class LocationLogicProcessor extends Processor<Map<String, Object>> {
 
 
             toDruid.put(CLIENT_MAC, client_mac);
-            toDruid.put(TIMESTAMP, message.get(TIMESTAMP));
-            toDruid.put(NAMESPACE_UUID, namespace_id);
 
-            if (message.containsKey(SENSOR_NAME))
-                toDruid.put(SENSOR_NAME, message.get(SENSOR_NAME));
+            if (!namespace_id.equals("")) {
+                toDruid.put(NAMESPACE_UUID, namespace_id);
+            }
 
-            if (message.containsKey(TYPE))
-                toDruid.put(TYPE, message.get(TYPE));
 
-            if (message.containsKey(NAMESPACE))
-                toDruid.put(NAMESPACE, message.get(NAMESPACE));
+            for (String dimension : dimToDruid) {
+                Object value = message.get(dimension);
+                if (value != null) {
+                    toDruid.put(dimension, value);
+                }
+            }
 
-            if (message.containsKey(NAMESPACE_UUID))
-                if (!(message.get(NAMESPACE_UUID)).equals(""))
-                    toDruid.put(NAMESPACE_UUID, message.get(NAMESPACE_UUID));
-
-            if (message.containsKey(DEPLOYMENT))
-                toDruid.put(DEPLOYMENT, message.get(DEPLOYMENT));
-
-            if (message.containsKey(DEPLOYMENT_UUID))
-                toDruid.put(DEPLOYMENT_UUID, message.get(DEPLOYMENT_UUID));
-
-            if (message.containsKey(MARKET))
-                toDruid.put(MARKET, message.get(MARKET));
-
-            if (message.containsKey(MARKET_UUID))
-                toDruid.put(MARKET_UUID, message.get(MARKET_UUID));
-
-            if (message.containsKey(ORGANIZATION))
-                toDruid.put(ORGANIZATION, message.get(ORGANIZATION));
-
-            if (message.containsKey(ORGANIZATION_UUID))
-                toDruid.put(ORGANIZATION_UUID, message.get(ORGANIZATION_UUID));
-
-            toCache.put(FLOOR, newFloor);
-            toCache.put(CAMPUS, newCampus);
-            toCache.put(BUILDING, newBuilding);
-            toCache.put(ZONE, newZone);
+            toCache.put(FLOOR_UUID, newFloor);
+            toCache.put(CAMPUS_UUID, newCampus);
+            toCache.put(BUILDING_UUID, newBuilding);
+            toCache.put(ZONE_UUID, newZone);
             toCache.put(WIRELESS_STATION, wirelessStation);
 
             storeLogic.put(client_mac + namespace_id, toCache);
