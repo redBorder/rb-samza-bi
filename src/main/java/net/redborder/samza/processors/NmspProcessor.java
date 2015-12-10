@@ -13,10 +13,7 @@ import org.apache.samza.task.TaskContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static net.redborder.samza.util.constants.Dimension.*;
 import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_INFO;
@@ -27,6 +24,10 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
     private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_FLOW_OUTPUT_TOPIC);
     public final static String NMSP_STORE_MEASURE = "nmsp-measure";
     public final static String NMSP_STORE_INFO = "nmsp-info";
+
+    private final List<String> toCacheInfo = Arrays.asList(WIRELESS_STATION, WIRELESS_CHANNEL, WIRELESS_ID);
+    private final List<String> toDruidMeasure = Arrays.asList(MARKET, MARKET_UUID, ORGANIZATION, ORGANIZATION_UUID,
+            DEPLOYMENT, DEPLOYMENT_UUID, SENSOR_NAME, SENSOR_UUID, NAMESPACE);
 
     private KeyValueStore<String, Map<String, Object>> storeMeasure;
     private KeyValueStore<String, Map<String, Object>> storeInfo;
@@ -111,44 +112,12 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                 }
 
                 if (toDruid != null) {
-                    String market = (String) message.get(MARKET);
-                    if(market != null){
-                        toDruid.put(MARKET, market);
-                    }
+                    for (String dimension : toDruidMeasure) {
+                        Object value = message.get(dimension);
 
-                    String marketUuid = (String) message.get(MARKET_UUID);
-                    if(marketUuid != null){
-                        toDruid.put(MARKET_UUID, marketUuid);
-                    }
-
-                    String organization = (String) message.get(ORGANIZATION);
-                    if(organization != null){
-                        toDruid.put(ORGANIZATION, organization);
-                    }
-
-                    String organizationUuid = (String) message.get(ORGANIZATION_UUID);
-                    if(organizationUuid != null){
-                        toDruid.put(ORGANIZATION_UUID, organizationUuid);
-                    }
-
-                    String deployment = (String) message.get(DEPLOYMENT);
-                    if(deployment != null){
-                        toDruid.put(DEPLOYMENT, deployment);
-                    }
-
-                    String deploymentUuid = (String) message.get(DEPLOYMENT_UUID);
-                    if(deploymentUuid != null){
-                        toDruid.put(DEPLOYMENT_UUID, deploymentUuid);
-                    }
-
-                    String sensorName = (String) message.get(SENSOR_NAME);
-                    if(sensorName != null){
-                        toDruid.put(SENSOR_NAME, sensorName);
-                    }
-
-                    String sensorUuid = (String) message.get(SENSOR_UUID);
-                    if(sensorUuid != null){
-                        toDruid.put(SENSOR_UUID, sensorUuid);
+                        if (dimension != null) {
+                            toDruid.put(dimension, value);
+                        }
                     }
 
                     toDruid.put(BYTES, 0);
@@ -187,9 +156,17 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                 timestamp = Long.valueOf(System.currentTimeMillis() / 1000).intValue();
             }
 
-            toCache.putAll(message);
-            toCache.remove(TYPE);
+
+            for (String dimension : toCacheInfo) {
+                Object value = message.get(dimension);
+                if (value != null) {
+                    toCache.put(dimension, value);
+                }
+            }
+
             toCache.put("last_seen", timestamp);
+            toCache.put(NMSP_DOT11STATUS, "ASSOCIATED");
+
             toDruid.putAll(toCache);
             toDruid.put(BYTES, 0);
             toDruid.put(PKTS, 0);

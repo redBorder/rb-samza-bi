@@ -121,6 +121,7 @@ public class Dimension {
     public final static String CLIENT_LATLONG = "client_latlong";
     public final static String HASH = "hash";
     public final static String FILE_SIZE = "file_size";
+    public final static String SHA256 = "sha256";
     public final static String FILE_URI = "file_uri";
     public final static String FILE_HOSTNAME = "file_hostname";
     public final static String GROUP_UUID = "group_uuid";

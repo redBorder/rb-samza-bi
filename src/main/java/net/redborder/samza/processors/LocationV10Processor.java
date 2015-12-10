@@ -15,10 +15,7 @@ import org.apache.samza.task.TaskContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static net.redborder.samza.util.constants.Dimension.*;
 
@@ -26,6 +23,9 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
     private static final Logger log = LoggerFactory.getLogger(LocationV10Processor.class);
     private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_FLOW_OUTPUT_TOPIC);
     final public static String LOCATION_STORE = "location";
+
+    private final List<String> dimToDruid = Arrays.asList(MARKET, MARKET_UUID, ORGANIZATION, ORGANIZATION_UUID,
+            DEPLOYMENT, DEPLOYMENT_UUID, SENSOR_NAME, SENSOR_UUID, NAMESPACE);
 
     private KeyValueStore<String, Map<String, Object>> store;
     private Map<Integer, String> cache;
@@ -120,42 +120,42 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                 toDruid.put(LOC_SUBSCRIPTION_NAME, msg.get(LOC_SUBSCRIPTION_NAME));
 
                 String market = (String) msg.get(MARKET);
-                if(market != null){
+                if (market != null) {
                     toDruid.put(MARKET, market);
                 }
 
                 String marketUuid = (String) msg.get(MARKET_UUID);
-                if(marketUuid != null){
+                if (marketUuid != null) {
                     toDruid.put(MARKET_UUID, marketUuid);
                 }
 
                 String organization = (String) msg.get(ORGANIZATION);
-                if(organization != null){
+                if (organization != null) {
                     toDruid.put(ORGANIZATION, organization);
                 }
 
                 String organizationUuid = (String) msg.get(ORGANIZATION_UUID);
-                if(organizationUuid != null){
+                if (organizationUuid != null) {
                     toDruid.put(ORGANIZATION_UUID, organizationUuid);
                 }
 
                 String deployment = (String) msg.get(DEPLOYMENT);
-                if(deployment != null){
+                if (deployment != null) {
                     toDruid.put(DEPLOYMENT, deployment);
                 }
 
                 String deploymentUuid = (String) msg.get(DEPLOYMENT_UUID);
-                if(deploymentUuid != null){
+                if (deploymentUuid != null) {
                     toDruid.put(DEPLOYMENT_UUID, deploymentUuid);
                 }
 
                 String sensorName = (String) msg.get(SENSOR_NAME);
-                if(sensorName != null){
+                if (sensorName != null) {
                     toDruid.put(SENSOR_NAME, sensorName);
                 }
 
                 String sensorUuid = (String) msg.get(SENSOR_UUID);
-                if(sensorUuid != null){
+                if (sensorUuid != null) {
                     toDruid.put(SENSOR_UUID, sensorUuid);
                 }
 
@@ -232,45 +232,11 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                 if (!namespace_id.equals(""))
                     toDruid.put(NAMESPACE_UUID, namespace_id);
 
-
-                String market = (String) msg.get(MARKET);
-                if(market != null){
-                    toDruid.put(MARKET, market);
-                }
-
-                String marketUuid = (String) msg.get(MARKET_UUID);
-                if(marketUuid != null){
-                    toDruid.put(MARKET_UUID, marketUuid);
-                }
-
-                String organization = (String) msg.get(ORGANIZATION);
-                if(organization != null){
-                    toDruid.put(ORGANIZATION, organization);
-                }
-
-                String organizationUuid = (String) msg.get(ORGANIZATION_UUID);
-                if(organizationUuid != null){
-                    toDruid.put(ORGANIZATION_UUID, organizationUuid);
-                }
-
-                String deployment = (String) msg.get(DEPLOYMENT);
-                if(deployment != null){
-                    toDruid.put(DEPLOYMENT, deployment);
-                }
-
-                String deploymentUuid = (String) msg.get(DEPLOYMENT_UUID);
-                if(deploymentUuid != null){
-                    toDruid.put(DEPLOYMENT_UUID, deploymentUuid);
-                }
-
-                String sensorName = (String) msg.get(SENSOR_NAME);
-                if(sensorName != null){
-                    toDruid.put(SENSOR_NAME, sensorName);
-                }
-
-                String sensorUuid = (String) msg.get(SENSOR_UUID);
-                if(sensorUuid != null){
-                    toDruid.put(SENSOR_UUID, sensorUuid);
+                for (String dimension : dimToDruid) {
+                    Object value = msg.get(dimension);
+                    if (value != null) {
+                        toDruid.put(dimension, value);
+                    }
                 }
 
                 store.put(clientMac + namespace_id, toCache);

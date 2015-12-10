@@ -13,7 +13,9 @@ import org.apache.samza.task.TaskContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static net.redborder.samza.util.constants.Dimension.*;
@@ -22,6 +24,9 @@ public class MerakiProcessor extends Processor<Map<String, Object>> {
     private static final Logger log = LoggerFactory.getLogger(MerakiProcessor.class);
     private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_FLOW_OUTPUT_TOPIC);
     final public static String LOCATION_STORE = "location";
+
+    private final List<String> dimToCache = Arrays.asList(CLIENT_LATLNG, WIRELESS_STATION, CLIENT_MAC_VENDOR,
+            CLIENT_RSSI_NUM, CLIENT_OS);
 
     private KeyValueStore<String, Map<String, Object>> store;
     private Counter counter;
@@ -40,37 +45,18 @@ public class MerakiProcessor extends Processor<Map<String, Object>> {
     @Override
     public void process(Map<String, Object> message, MessageCollector collector) {
         String clientMac = (String) message.get(CLIENT_MAC);
-        String clientLatLong = (String) message.get(CLIENT_LATLNG);
-        String clientMacVendor = (String) message.get(CLIENT_MAC_VENDOR);
-        Integer clientRSSI = (Integer) message.get(CLIENT_RSSI_NUM);
-        String wirelessStation = (String) message.get(WIRELESS_STATION);
-        String clientOS = (String) message.get(CLIENT_OS);
 
-        if(clientMac != null) {
+        if (clientMac != null) {
             Map<String, Object> toCache = new HashMap<>();
 
-            if (clientLatLong != null) {
-                toCache.put(CLIENT_LATLNG, clientLatLong);
-            }
-
-            if (wirelessStation != null) {
-                toCache.put(WIRELESS_STATION, wirelessStation);
-            }
-
-            if (clientMacVendor != null) {
-                toCache.put(CLIENT_MAC_VENDOR, clientMacVendor);
-            }
-
-            if (clientRSSI != null) {
-                toCache.put(CLIENT_RSSI_NUM, clientRSSI);
-            }
-
-            if (clientOS != null) {
-                toCache.put(CLIENT_OS, clientOS);
+            for (String dimension : dimToCache) {
+                Object value = message.get(dimension);
+                if (value != null) {
+                    toCache.put(dimension, value);
+                }
             }
 
             store.put(clientMac, toCache);
-
 
             Map<String, Object> toDruid = new HashMap<>();
             toDruid.putAll(message);

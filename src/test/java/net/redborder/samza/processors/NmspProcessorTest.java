@@ -35,6 +35,8 @@ public class NmspProcessorTest extends TestCase {
     static MockKeyValueStore storeInfo;
 
     static NmspProcessor nmspProcessor;
+    static FlowProcessor flowProcessor;
+
     static EnrichManager enrichManager;
 
     @Mock
@@ -63,12 +65,24 @@ public class NmspProcessorTest extends TestCase {
             @Override
             public Map<String, Object> answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
-                return (Map<String, Object>) args[0];
+                Map<String, Object> measure = storeMeasure.get("00:00:00:00:00:00");
+                Map<String, Object> info = storeInfo.get("00:00:00:00:00:00");
+                Map<String, Object> result = (Map<String, Object>) args[0];
+
+                if (measure != null) {
+                    result.putAll(measure);
+                }
+                if (info != null) {
+                    result.putAll(info);
+                }
+
+                return result;
             }
         });
 
         enrichManager = new EnrichManager();
         nmspProcessor = new NmspProcessor(storeManager, enrichManager, config, taskContext);
+        flowProcessor = new FlowProcessor(storeManager, enrichManager, config, taskContext);
     }
 
     @Before
@@ -156,7 +170,7 @@ public class NmspProcessorTest extends TestCase {
         message.put(TYPE, NMSP_TYPE_MEASURE);
         nmspProcessor.process(message, collector);
 
-        Map<String, Object> fromCacheA = storeMeasure.get("00:00:00:00:00:00"+namespace);
+        Map<String, Object> fromCacheA = storeMeasure.get("00:00:00:00:00:00" + namespace);
 
         int client_rssi_numA = (int) fromCacheA.get(CLIENT_RSSI_NUM);
         String client_rssiA = (String) fromCacheA.get(CLIENT_RSSI);
@@ -365,7 +379,7 @@ public class NmspProcessorTest extends TestCase {
     }
 
     @Test
-    public void checkVlanId(){
+    public void checkVlanId() {
         MockMessageCollector collector = new MockMessageCollector();
 
         Map<String, Object> messageInfo = new HashMap<>();
@@ -378,6 +392,65 @@ public class NmspProcessorTest extends TestCase {
         nmspProcessor.process(messageInfo, collector);
         Map<String, Object> toDruid = collector.getResult().get(0);
         assertEquals(toDruid.get(SRC_VLAN), 40);
+    }
+
+    @Test
+    public void overwriteError() {
+        MockMessageCollector nmspCollector = new MockMessageCollector();
+        MockMessageCollector flowCollector = new MockMessageCollector();
+
+        //Message 1
+        Map<String, Object> messageInfo = new HashMap<>();
+        messageInfo.put(CLIENT_MAC, "00:00:00:00:00:00");
+        messageInfo.put(TYPE, NMSP_TYPE_INFO);
+        messageInfo.put(NMSP_WIRELESS_ID, "rb_Corp");
+        messageInfo.put(NMSP_DOT11STATUS, "ASSOCIATED");
+        messageInfo.put(WIRELESS_STATION, "33:33:33:33:33:33");
+        messageInfo.put(SENSOR_NAME, "WLC");
+        messageInfo.put(SENSOR_UUID, "WLC-UUID");
+
+        List<String> ap_macs = Arrays.asList("11:11:11:11:11:11", "22:22:22:22:22:22", "33:33:33:33:33:33");
+        List<Integer> rssi = Arrays.asList(-80, -54, -32);
+        //Message 2
+        Map<String, Object> messageMeasure1 = new HashMap<>();
+        messageMeasure1.put(CLIENT_MAC, "00:00:00:00:00:00");
+        messageMeasure1.put(NMSP_AP_MAC, ap_macs);
+        messageMeasure1.put(NMSP_RSSI, rssi);
+        messageMeasure1.put(TYPE, NMSP_TYPE_MEASURE);
+        messageMeasure1.put(SENSOR_NAME, "WLC");
+        messageMeasure1.put(SENSOR_UUID, "WLC-UUID");
+
+        //Message 3
+        Map<String, Object> messageMeasure2 = new HashMap<>();
+        messageMeasure2.put(CLIENT_MAC, "00:00:00:00:00:00");
+        messageMeasure2.put(NMSP_AP_MAC, ap_macs);
+        messageMeasure2.put(NMSP_RSSI, rssi);
+        messageMeasure2.put(TYPE, NMSP_TYPE_MEASURE);
+        messageMeasure2.put(SENSOR_NAME, "WLC");
+        messageMeasure2.put(SENSOR_UUID, "WLC-UUID");
+
+        nmspProcessor.process(messageMeasure1, nmspCollector);
+        nmspProcessor.process(messageInfo, nmspCollector);
+        nmspProcessor.process(messageMeasure2, nmspCollector);
+
+        Map<String, Object> flowMessage = new HashMap<>();
+        flowMessage.put(TIMESTAMP, System.currentTimeMillis() / 1000);
+        flowMessage.put(CLIENT_MAC, "00:00:00:00:00:00");
+        flowMessage.put(TYPE, "NetflowV10");
+        flowMessage.put(SENSOR_NAME, "ASR");
+        flowMessage.put(SENSOR_UUID, "ASR-UUID");
+        flowMessage.put(DEPLOYMENT, "ASR-DEPLOYMENT");
+
+        flowMessage.put(BYTES, 10L);
+        flowMessage.put(PKTS, 4L);
+
+        flowProcessor.process(flowMessage, flowCollector);
+
+        Map<String, Object> result = flowCollector.getResult().get(0);
+
+        assertEquals("ASR", result.get(SENSOR_NAME));
+        assertEquals("ASR-UUID", result.get(SENSOR_UUID));
+
     }
 
     @Test

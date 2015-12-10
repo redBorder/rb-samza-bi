@@ -13,6 +13,7 @@ import org.apache.samza.task.TaskContext;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,6 +27,9 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
 
     private KeyValueStore<String, Map<String, Object>> store;
     private Counter counter;
+
+    private final List<String> dimToDruid = Arrays.asList(MARKET, MARKET_UUID, ORGANIZATION, ORGANIZATION_UUID,
+            DEPLOYMENT, DEPLOYMENT_UUID, SENSOR_NAME, SENSOR_UUID, NAMESPACE);
 
     public LocationV89Processor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
         super(storeManager, enrichManager, config, context);
@@ -125,44 +129,11 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
                 toDruid.put(SENSOR_NAME, sensorName);
             }
 
-            String market = (String) message.get(MARKET);
-            if(market != null){
-                toDruid.put(MARKET, market);
-            }
-
-            String marketUuid = (String) message.get(MARKET_UUID);
-            if(marketUuid != null){
-                toDruid.put(MARKET_UUID, marketUuid);
-            }
-
-            String organization = (String) message.get(ORGANIZATION);
-            if(organization != null){
-                toDruid.put(ORGANIZATION, organization);
-            }
-
-            String organizationUuid = (String) message.get(ORGANIZATION_UUID);
-            if(organizationUuid != null){
-                toDruid.put(ORGANIZATION_UUID, organizationUuid);
-            }
-
-            String deployment = (String) message.get(DEPLOYMENT);
-            if(deployment != null){
-                toDruid.put(DEPLOYMENT, deployment);
-            }
-
-            String deploymentUuid = (String) message.get(DEPLOYMENT_UUID);
-            if(deploymentUuid != null){
-                toDruid.put(DEPLOYMENT_UUID, deploymentUuid);
-            }
-
-            String sensorNameX = (String) message.get(SENSOR_NAME);
-            if(sensorNameX != null){
-                toDruid.put(SENSOR_NAME, sensorNameX);
-            }
-
-            String sensorUuid = (String) message.get(SENSOR_UUID);
-            if(sensorUuid != null){
-                toDruid.put(SENSOR_UUID, sensorUuid);
+            for (String dimension : dimToDruid) {
+                Object value = message.get(dimension);
+                if (value != null) {
+                    toDruid.put(dimension, value);
+                }
             }
 
             toDruid.putAll(toCache);
