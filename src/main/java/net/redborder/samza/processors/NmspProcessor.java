@@ -26,7 +26,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
     public final static String NMSP_STORE_INFO = "nmsp-info";
 
     private final List<String> toCacheInfo = Arrays.asList(WIRELESS_STATION, WIRELESS_CHANNEL, WIRELESS_ID);
-    private final List<String> toDruidMeasure = Arrays.asList(MARKET, MARKET_UUID, ORGANIZATION, ORGANIZATION_UUID,
+    private final List<String> toDruid = Arrays.asList(MARKET, MARKET_UUID, ORGANIZATION, ORGANIZATION_UUID,
             DEPLOYMENT, DEPLOYMENT_UUID, SENSOR_NAME, SENSOR_UUID, NAMESPACE);
 
     private KeyValueStore<String, Map<String, Object>> storeMeasure;
@@ -112,7 +112,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                 }
 
                 if (toDruid != null) {
-                    for (String dimension : toDruidMeasure) {
+                    for (String dimension : this.toDruid) {
                         Object value = message.get(dimension);
 
                         if (value != null) {
@@ -168,6 +168,14 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
             toCache.put(NMSP_DOT11STATUS, "ASSOCIATED");
 
             toDruid.putAll(toCache);
+
+            for (String dimension : this.toDruid) {
+                Object value = message.get(dimension);
+
+                if (value != null) {
+                    toDruid.put(dimension, value);
+                }
+            }
             toDruid.put(BYTES, 0);
             toDruid.put(PKTS, 0);
             toDruid.put("timestamp", timestamp);
