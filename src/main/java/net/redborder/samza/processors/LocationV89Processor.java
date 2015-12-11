@@ -159,7 +159,6 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
 
             counter.inc();
             Map<String, Object> storeEnrichment = storeManager.enrich(toDruid);
-            storeEnrichment.putAll(toDruid);
             Map<String, Object> enrichmentEvent = enrichManager.enrich(storeEnrichment);
 
             collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentEvent));

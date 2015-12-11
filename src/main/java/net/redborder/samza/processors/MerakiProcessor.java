@@ -61,10 +61,11 @@ public class MerakiProcessor extends Processor<Map<String, Object>> {
             Map<String, Object> toDruid = new HashMap<>();
             toDruid.putAll(message);
 
-            Map<String, Object> enrichmentEvent = enrichManager.enrich(toDruid);
-            Map<String, Object> storeEnrichment = storeManager.enrich(enrichmentEvent);
+            Map<String, Object> storeEnrichment = storeManager.enrich(toDruid);
+            storeEnrichment.putAll(toDruid);
+            Map<String, Object> enrichmentEvent = enrichManager.enrich(storeEnrichment);
 
-            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, storeEnrichment));
+            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentEvent));
         } else {
             log.warn("This event {} doesn't have client mac.", message);
         }

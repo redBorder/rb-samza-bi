@@ -67,7 +67,7 @@ public class NmspProcessorTest extends TestCase {
                 Object[] args = invocation.getArguments();
                 Map<String, Object> measure = storeMeasure.get("00:00:00:00:00:00");
                 Map<String, Object> info = storeInfo.get("00:00:00:00:00:00");
-                Map<String, Object> result = (Map<String, Object>) args[0];
+                Map<String, Object> result = new HashMap<>((Map<String, Object>) args[0]);
 
                 if (measure != null) {
                     result.putAll(measure);
@@ -209,8 +209,8 @@ public class NmspProcessorTest extends TestCase {
 
         Map<String, Object> fromCache = storeMeasure.get("00:00:00:00:00:00");
 
-        assertEquals(toDruid.get(0).get(DOT11STATUS), "PROBING");
-        assertEquals(fromCache.get(DOT11STATUS), "ASSOCIATED");
+        assertEquals("PROBING", toDruid.get(0).get(DOT11STATUS));
+        assertEquals("ASSOCIATED", fromCache.get(DOT11STATUS));
     }
 
     @Test

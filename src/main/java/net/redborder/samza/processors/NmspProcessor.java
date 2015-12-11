@@ -133,11 +133,10 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
 
                     storeMeasure.put(mac + namespace_id, toCache);
 
-                    Map<String, Object> enrichmentEvent = enrichManager.enrich(toDruid);
-                    Map<String, Object> storeEnrichment = storeManager.enrich(enrichmentEvent);
-
+                    Map<String, Object> storeEnrichment = storeManager.enrich(toDruid);
                     storeEnrichment.putAll(toDruid);
-                    collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, storeEnrichment));
+                    Map<String, Object> enrichmentEvent = enrichManager.enrich(storeEnrichment);
+                    collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentEvent));
                 }
             }
         } else if (type != null && type.equals(NMSP_TYPE_INFO)) {
@@ -186,11 +185,11 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
 
             toDruid.put(CLIENT_MAC, mac);
             storeInfo.put(mac + namespace_id, toCache);
-            Map<String, Object> enrichmentEvent = enrichManager.enrich(toDruid);
-            Map<String, Object> storeEnrichment = storeManager.enrich(enrichmentEvent);
 
+            Map<String, Object> storeEnrichment = storeManager.enrich(toDruid);
             storeEnrichment.putAll(toDruid);
-            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, storeEnrichment));
+            Map<String, Object> enrichmentEvent = enrichManager.enrich(storeEnrichment);
+            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentEvent));
         }
 
         this.messagesCounter.inc();

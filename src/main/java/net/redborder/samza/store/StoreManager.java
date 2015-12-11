@@ -1,5 +1,6 @@
 package net.redborder.samza.store;
 
+import net.redborder.samza.processors.LocationLogicProcessor;
 import org.apache.samza.config.Config;
 import org.apache.samza.storage.kv.Entry;
 import org.apache.samza.storage.kv.KeyValueIterator;
@@ -57,36 +58,37 @@ public class StoreManager {
     }
 
     public Map<String, Object> enrich(Map<String, Object> message) {
-        Map<String, Object> enrichment = new HashMap<>();
-        enrichment.putAll(message);
+        Map<String, Object> enrichment = new HashMap<>(message);
 
         for(String store : storesList){
-            Store storeData = stores.get(store);
-            List<String> keys = storeData.getKeys();
-            StringBuilder builder = new StringBuilder();
+            if(!store.equals(LocationLogicProcessor.LOCATION_STORE_LOGIC)) {
+                Store storeData = stores.get(store);
+                List<String> keys = storeData.getKeys();
+                StringBuilder builder = new StringBuilder();
 
-            for(String key : keys){
-                Object kv = enrichment.get(key);
-                if(kv != null){
-                    builder.append(kv);
+                for (String key : keys) {
+                    Object kv = enrichment.get(key);
+                    if (kv != null) {
+                        builder.append(kv);
+                    }
                 }
-            }
 
 
-            String mergeKey = builder.toString();
-            KeyValueStore<String, Map<String, Object>> keyValueStore = storeData.getStore();
-            Map<String, Object> contents = keyValueStore.get(mergeKey);
+                String mergeKey = builder.toString();
+                KeyValueStore<String, Map<String, Object>> keyValueStore = storeData.getStore();
+                Map<String, Object> contents = keyValueStore.get(mergeKey);
 
-            log.debug(store + " mergeKey: {} - contents: {}", mergeKey, contents);
+                log.debug("msgType: " + message.get(TYPE) + " store: "+ store + " mergeKey: {} - contents: {}", mergeKey, contents);
 
-            if (contents != null) {
-                if (storeData.mustOverwrite()) {
-                    enrichment.putAll(contents);
-                } else {
-                    Map<String, Object> newData = new HashMap<>();
-                    newData.putAll(contents);
-                    newData.putAll(enrichment);
-                    enrichment = newData;
+                if (contents != null) {
+                    if (storeData.mustOverwrite()) {
+                        enrichment.putAll(contents);
+                    } else {
+                        Map<String, Object> newData = new HashMap<>();
+                        newData.putAll(contents);
+                        newData.putAll(enrichment);
+                        enrichment = newData;
+                    }
                 }
             }
         }
