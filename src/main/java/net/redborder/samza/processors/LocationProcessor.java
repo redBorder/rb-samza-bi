@@ -41,11 +41,8 @@ public class LocationProcessor extends Processor<Map<String, Object>> {
     @Override
     @SuppressWarnings("unchecked cast")
     public void process(Map<String, Object> message, MessageCollector collector) {
-        String type = (String) message.get(TYPE);
         if (message.containsKey(LOC_STREAMING_NOTIFICATION)) {
             locv89.process(message, collector);
-        } else if(type != null && type.toLowerCase().equals("meraki")){
-            meraki.process(message, collector);
         } else if (message.containsKey(LOC_NOTIFICATIONS)){
             locv10.process(message, collector);
         } else {
