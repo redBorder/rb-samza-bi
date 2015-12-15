@@ -55,10 +55,39 @@ public class MerakiProcessor extends Processor<Map<String, Object>> {
                     toCache.put(dimension, value);
                 }
             }
+            Map<String, Object> toDruid = new HashMap<>();
+
+
+            String rssiName;
+            Integer rssi = (Integer) message.get(CLIENT_RSSI_NUM);
+
+            if(rssi != null) {
+                if (rssi == 0) {
+                    toCache.put(CLIENT_RSSI, "unknown");
+                    rssiName = "unknown";
+                } else if (rssi <= -85) {
+                    toCache.put(CLIENT_RSSI, "bad");
+                    rssiName = "bad";
+                } else if (rssi <= -80) {
+                    toCache.put(CLIENT_RSSI, "low");
+                    rssiName = "low";
+                } else if (rssi <= -70) {
+                    toCache.put(CLIENT_RSSI, "medium");
+                    rssiName = "medium";
+                } else if (rssi <= -60) {
+                    toCache.put(CLIENT_RSSI, "good");
+                    rssiName = "good";
+                } else {
+                    toCache.put(CLIENT_RSSI, "excelent");
+                    rssiName = "excelent";
+                }
+
+                toCache.put(CLIENT_RSSI, rssiName);
+                toDruid.put(CLIENT_RSSI, rssiName);
+            }
 
             store.put(clientMac, toCache);
 
-            Map<String, Object> toDruid = new HashMap<>();
             toDruid.putAll(message);
 
             Map<String, Object> storeEnrichment = storeManager.enrich(toDruid);

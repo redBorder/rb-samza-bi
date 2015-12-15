@@ -69,18 +69,32 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                 Integer rssi = Collections.max(clientRssis);
                 String apMac = apMacs.get(clientRssis.indexOf(rssi));
 
-                if (rssi == 0)
+                String rssiName;
+
+                if (rssi == 0) {
                     toCache.put(CLIENT_RSSI, "unknown");
-                else if (rssi <= -85)
+                    rssiName = "unknown";
+                }
+                else if (rssi <= -85) {
                     toCache.put(CLIENT_RSSI, "bad");
-                else if (rssi <= -80)
+                    rssiName = "bad";
+                }
+                else if (rssi <= -80) {
                     toCache.put(CLIENT_RSSI, "low");
-                else if (rssi <= -70)
+                    rssiName = "low";
+                }
+                else if (rssi <= -70) {
                     toCache.put(CLIENT_RSSI, "medium");
-                else if (rssi <= -60)
+                    rssiName = "medium";
+                }
+                else if (rssi <= -60) {
                     toCache.put(CLIENT_RSSI, "good");
-                else
+                    rssiName = "good";
+                }
+                else {
                     toCache.put(CLIENT_RSSI, "excelent");
+                    rssiName = "excelent";
+                }
 
                 Map<String, Object> infoCache = storeInfo.get(mac + namespace_id);
                 String dot11Status = "PROBING";
@@ -126,6 +140,8 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                     toDruid.put(CLIENT_MAC, mac);
                     toDruid.putAll(toCache);
                     toDruid.put(NMSP_DOT11STATUS, dot11Status);
+                    toDruid.put(CLIENT_RSSI_NUM, rssi);
+                    toDruid.put(CLIENT_RSSI, rssiName);
                     toDruid.put("timestamp", System.currentTimeMillis() / 1000);
 
                     if (!namespace_id.equals(""))
