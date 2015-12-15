@@ -25,7 +25,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
     final public static String LOCATION_STORE = "location";
 
     private final List<String> dimToDruid = Arrays.asList(MARKET, MARKET_UUID, ORGANIZATION, ORGANIZATION_UUID,
-            DEPLOYMENT, DEPLOYMENT_UUID, SENSOR_NAME, SENSOR_UUID, NAMESPACE);
+            DEPLOYMENT, DEPLOYMENT_UUID, SENSOR_NAME, SENSOR_UUID, NAMESPACE, SERVICE_PROVIDER, SERVICE_PROVIDER_UUID);
 
     private KeyValueStore<String, Map<String, Object>> store;
     private Map<Integer, String> cache;
