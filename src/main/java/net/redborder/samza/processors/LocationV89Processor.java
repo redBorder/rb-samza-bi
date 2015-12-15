@@ -29,7 +29,7 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
     private Counter counter;
 
     private final List<String> dimToDruid = Arrays.asList(MARKET, MARKET_UUID, ORGANIZATION, ORGANIZATION_UUID,
-            DEPLOYMENT, DEPLOYMENT_UUID, SENSOR_NAME, SENSOR_UUID, NAMESPACE);
+            DEPLOYMENT, DEPLOYMENT_UUID, SENSOR_NAME, SENSOR_UUID, NAMESPACE, SERVICE_PROVIDER, SERVICE_PROVIDER_UUID);
 
     public LocationV89Processor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
         super(storeManager, enrichManager, config, context);

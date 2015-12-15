@@ -27,7 +27,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
 
     private final List<String> toCacheInfo = Arrays.asList(WIRELESS_STATION, WIRELESS_CHANNEL, WIRELESS_ID);
     private final List<String> toDruid = Arrays.asList(MARKET, MARKET_UUID, ORGANIZATION, ORGANIZATION_UUID,
-            DEPLOYMENT, DEPLOYMENT_UUID, SENSOR_NAME, SENSOR_UUID, NAMESPACE);
+            DEPLOYMENT, DEPLOYMENT_UUID, SENSOR_NAME, SENSOR_UUID, NAMESPACE, SERVICE_PROVIDER, SERVICE_PROVIDER_UUID);
 
     private KeyValueStore<String, Map<String, Object>> storeMeasure;
     private KeyValueStore<String, Map<String, Object>> storeInfo;
