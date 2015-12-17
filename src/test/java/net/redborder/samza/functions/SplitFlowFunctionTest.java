@@ -309,4 +309,33 @@ public class SplitFlowFunctionTest extends TestCase {
         assertNull(result.get(2).get(DURATION));
         assertNull(result.get(3).get(DURATION));
     }
+
+    @Test
+    public void numberFormatExceptions() {
+        Map<String, Object> message = new HashMap<>();
+
+        DateTime timestampDate = formatter.parseDateTime("2014-01-01 22:13:42");
+        DateTime timeNowDate = formatter.parseDateTime("2014-01-01 22:15:16");
+
+        message.put(TIMESTAMP, secs(timestampDate));
+        message.put(BYTES, 2000000000.0);
+        message.put(PKTS, 15625000);
+
+        List<Map<String, Object>> result = SplitFlowFunction.split(message, timeNowDate);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    public void eventWithoutBytes() {
+        Map<String, Object> message = new HashMap<>();
+
+        DateTime timestampDate = formatter.parseDateTime("2014-01-01 22:13:42");
+        DateTime timeNowDate = formatter.parseDateTime("2014-01-01 22:15:16");
+
+        message.put(TIMESTAMP, secs(timestampDate));
+        message.put(PKTS, 100);
+
+        List<Map<String, Object>> result = SplitFlowFunction.split(message, timeNowDate);
+        assertTrue(result.isEmpty());
+    }
 }

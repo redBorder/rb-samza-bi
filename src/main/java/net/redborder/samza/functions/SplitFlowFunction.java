@@ -134,15 +134,35 @@ public class SplitFlowFunction {
                 generatedPackets.set(last_index, last);
             }
         } else if (event.containsKey(Dimension.TIMESTAMP)) {
-            Long bytes = Long.parseLong(event.get(Dimension.BYTES).toString());
-            event.put(Dimension.BYTES, bytes);
-            generatedPackets.add(event);
+            try {
+                if (event.containsKey(Dimension.BYTES)){
+                    Long bytes = Long.parseLong(event.get(Dimension.BYTES).toString());
+                    event.put(Dimension.BYTES, bytes);
+                    generatedPackets.add(event);
+                } else {
+                    log.warn("Event doesn't contain bytes {}.", event);
+                    return generatedPackets;
+                }
+            } catch (NumberFormatException e) {
+                log.warn("Invalid number of bytes in packet {}.", event);
+                return generatedPackets;
+            }
         } else {
-            Long bytes = Long.parseLong(event.get(Dimension.BYTES).toString());
-            event.put(Dimension.BYTES, bytes);
-            log.warn("Packet without timestamp -> {}.", event);
-            event.put(Dimension.TIMESTAMP, now.getMillis() / 1000);
-            generatedPackets.add(event);
+            try {
+                if (event.containsKey(Dimension.BYTES)){
+                    Long bytes = Long.parseLong(event.get(Dimension.BYTES).toString());
+                    event.put(Dimension.BYTES, bytes);
+                    log.warn("Packet without timestamp -> {}.", event);
+                    event.put(Dimension.TIMESTAMP, now.getMillis() / 1000);
+                    generatedPackets.add(event);
+                } else {
+                    log.warn("Event doesn't contain bytes {}.", event);
+                    return generatedPackets;
+                }
+            } catch (NumberFormatException e) {
+                log.warn("Invalid number of bytes in packet {}.", event);
+                return generatedPackets;
+            }
         }
 
         // We will leave the duration of the message only on the first generated packet
