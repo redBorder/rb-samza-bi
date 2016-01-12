@@ -62,6 +62,8 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
                 systemStream = new SystemStream("druid_location", getDatasource(message, ENRICHMENT_LOC_OUTPUT_TOPIC));
             } else if (stream.equals(IOC_TOPIC)) {
                 systemStream = new SystemStream("druid_ioc", getDatasource(message, IOC_DATASOURCE));
+            } else if (stream.equals(CHANGES_TOPIC)) {
+                systemStream = new SystemStream("druid_changes", getDatasource(message, CHANGES_DATASOURCE));
             } else {
                 log.warn("Undefined input stream name: " + stream);
             }
@@ -70,7 +72,7 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
                 try {
                     collector.send(new OutgoingMessageEnvelope(systemStream, null, message));
                     counter.inc();
-                }catch (Exception ex){
+                } catch (Exception ex) {
                     log.error("Error sending to tranquility!! ", ex);
                 }
             }

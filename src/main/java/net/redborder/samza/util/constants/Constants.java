@@ -18,4 +18,6 @@ public class Constants {
     public static final String MALWARE_TOPIC = "rb_malware_post";
     public static final String IOC_DATASOURCE = "rb_ioc";
     public static final String IOC_TOPIC = "rb_ioc_post";
+    public static final String CHANGES_DATASOURCE = "rb_changes";
+    public static final String CHANGES_TOPIC = "rb_changes";
 }
