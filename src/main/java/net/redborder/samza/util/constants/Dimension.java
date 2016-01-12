@@ -87,6 +87,9 @@ public class Dimension {
     public static final String HASH_SCORE = "hash_score";
     public static final String IP_SCORE = "ip_score";
     public static final String URL_SCORE = "url_score";
+    public static final String PROBE_HASH_SCORE = "probe_hash_score";
+    public static final String PROBE_IP_SCORE = "probe_ip_score";
+    public static final String PROBE_URL_SCORE = "probe_url_score";
 
     public static final String URL = "url";
     public static final String FILE_NAME = "file_name";
