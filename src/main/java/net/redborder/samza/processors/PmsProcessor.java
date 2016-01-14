@@ -43,6 +43,8 @@ public class PmsProcessor extends Processor<Map<String, Object>> {
         String namespace = (String) enrichmentMsg.get(NAMESPACE_UUID);
         String clientGender = (String) enrichmentMsg.get(CLIENT_GENDER);
         String clientAuth = (String) enrichmentMsg.get(AUTH_TYPE);
+        String staffName = (String) enrichmentMsg.get(STAFF_NAME);
+
 
         String namespace_id = namespace == null ? "" : namespace.toString();
 
@@ -50,6 +52,10 @@ public class PmsProcessor extends Processor<Map<String, Object>> {
 
         if(guestName != null) {
             toCache.put(CLIENT_FULLNAME, guestName);
+        }
+
+        if(staffName != null) {
+            toCache.put(CLIENT_FULLNAME, staffName);
         }
 
         if(clientGender != null) {
