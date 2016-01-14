@@ -244,5 +244,6 @@ public class Dimension {
     //Dwell
     public final static String WINDOW = "window";
 
-
+    //ICAP
+    public final static String PROXY_IP = "proxy_ip";
 }
