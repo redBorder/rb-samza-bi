@@ -47,6 +47,7 @@ public class IocBeamFactory implements BeamFactory {
 
         final List<AggregatorFactory> aggregators = ImmutableList.of(
                 new CountAggregatorFactory(EVENTS_AGGREGATOR),
+                new HyperUniquesAggregatorFactory("endpoints", "endpoint_uuid"),
                 new HyperUniquesAggregatorFactory("iocs", "ioc")
         );
 
