@@ -33,10 +33,10 @@ public class LocationBeamFactory implements BeamFactory {
 
     @Override
     public Beam<Object> makeBeam(SystemStream stream, Config config) {
-        final int maxRows = Integer.valueOf(config.get("redborder.beam.state.maxrows", "200000"));
-        final String intermediatePersist = config.get("redborder.beam.state.intermediatePersist", "PT20m");
+        final int maxRows = Integer.valueOf(config.get("redborder.beam.location.maxrows", "200000"));
+        final String intermediatePersist = config.get("redborder.beam.location.intermediatePersist", "PT20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
-        final long indexGranularity = Long.valueOf(config.get("systems.druid_state.beam.indexGranularity", "60000"));
+        final long indexGranularity = Long.valueOf(config.get("systems.druid_location.beam.indexGranularity", "60000"));
         final String dataSource = stream.getStream();
 
         final Integer partitions = AutoScalingUtils.getPartitions(dataSource);
