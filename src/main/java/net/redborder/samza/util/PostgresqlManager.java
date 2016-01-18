@@ -22,7 +22,8 @@ import java.util.Map;
 
 public class PostgresqlManager {
 
-    public static final String POSTGRESQL_STORE = "postgresql";
+    public static final String WLC_PSQL_STORE = "wlc-psql";
+    public static final String SENSOR_PSQL_STORE = "sensor-psql";
     private final Logger log = LoggerFactory.getLogger(PostgresqlManager.class);
     private final String[] enrichColumns = {"campus", "building", "floor", "deployment",
             "namespace", "market", "organization", "service_provider", "zone", "campus_uuid",
@@ -30,7 +31,8 @@ public class PostgresqlManager {
             "organization_uuid", "service_provider_uuid"};
 
     private Connection conn = null;
-    private KeyValueStore<String, Map<String, Object>> storePostgreSql;
+    private KeyValueStore<String, Map<String, Object>> storeWLCSql;
+    private KeyValueStore<String, Map<String, Object>> storeSensorSql;
     private Map<String, MacScramble> scrambles = new HashMap<>();
     private String macScramblePrefix = null;
     private StoreManager smanager;
@@ -49,7 +51,8 @@ public class PostgresqlManager {
             String user = config.get("redborder.postgresql.user");
             String pass = config.get("redborder.postgresql.pass");
             macScramblePrefix = config.get("redborder.macscramble.prefix");
-            storePostgreSql = storeManager.getStore(POSTGRESQL_STORE);
+            storeWLCSql = storeManager.getStore(WLC_PSQL_STORE);
+            storeSensorSql = storeManager.getStore(SENSOR_PSQL_STORE);
 
             try {
                 if (uri != null && user != null) {
@@ -117,6 +120,71 @@ public class PostgresqlManager {
     }
 
     public void update() {
+        updateWLC();
+        updateSensor();
+    }
+
+    public void updateSensor() {
+        Statement st = null;
+        ResultSet rs = null;
+
+        try {
+            if (conn != null) {
+                st = conn.createStatement();
+                rs = st.executeQuery("SELECT uuid, latitude, longitude FROM sensors");
+
+                Map<String, Map<String, Object>> tmpCache = new HashMap<>();
+
+                while (rs.next()) {
+                    String uuid = rs.getString("uuid");
+                    String longitude = rs.getString("longitude");
+                    String latitude = rs.getString("latitude");
+
+                    if (uuid != null && latitude != null && longitude != null) {
+                        Map<String, Object> location = new HashMap<>();
+                        Double longitudeDbl = (double) Math.round(Double.valueOf(longitude) * 100000) / 100000;
+                        Double latitudeDbl = (double) Math.round(Double.valueOf(latitude) * 100000) / 100000;
+                        location.put("client_latlong", latitudeDbl + "," + longitudeDbl);
+
+                        tmpCache.put(uuid, location);
+                        storeSensorSql.put(uuid, location);
+                    }
+                }
+
+
+                KeyValueIterator<String, Map<String, Object>> iterator = storeSensorSql.all();
+
+                List<String> toRemove = new ArrayList<>();
+                while (iterator.hasNext()) {
+                    Entry<String, Map<String, Object>> entry = iterator.next();
+                    String key = entry.getKey();
+
+                    if (!tmpCache.containsKey(key)) {
+                        toRemove.add(key);
+                    }
+                }
+
+                for (String key : toRemove) {
+                    storeSensorSql.delete(key);
+                }
+            }
+        } catch (SQLException e) {
+            log.error("The postgreSQL query failed! " + e.toString());
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+            } catch (Exception e) {
+            }
+            try {
+                if (st != null) st.close();
+            } catch (Exception e) {
+            }
+        }
+
+    }
+
+    public void updateWLC() {
         Statement st = null;
         ResultSet rs = null;
         long entries = 0L;
@@ -195,12 +263,12 @@ public class PostgresqlManager {
                     if (!location.isEmpty()) {
                         log.debug("AP: {} LOCATION: {}", rs.getString("mac_address"), location);
                         tmpCache.put(rs.getString("mac_address"), location);
-                        storePostgreSql.put(rs.getString("mac_address"), location);
+                        storeWLCSql.put(rs.getString("mac_address"), location);
 
                     }
                 }
 
-                KeyValueIterator<String, Map<String, Object>> iterator = storePostgreSql.all();
+                KeyValueIterator<String, Map<String, Object>> iterator = storeWLCSql.all();
 
                 List<String> toRemove = new ArrayList<>();
                 while (iterator.hasNext()) {
@@ -213,7 +281,7 @@ public class PostgresqlManager {
                 }
 
                 for (String key : toRemove) {
-                    storePostgreSql.delete(key);
+                    storeWLCSql.delete(key);
                     log.info("Removing {} from postgresqlStore", key);
                 }
 
