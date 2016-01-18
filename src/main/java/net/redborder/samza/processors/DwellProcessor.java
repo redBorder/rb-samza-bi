@@ -75,6 +75,19 @@ public class DwellProcessor extends Processor<Map<String, Object>> {
             client = (String) message.get(CLIENT_MAC);
             namespace = (String) message.get(NAMESPACE_UUID);
             logic(timestamp, namespace, client);
+        } else if (message.containsKey(CALLING_STATION_ID)) {
+            if (realTimestamp instanceof String) {
+                timestamp = Long.parseLong((String) realTimestamp);
+            } else if (realTimestamp instanceof Integer) {
+                Integer t = (Integer) realTimestamp;
+                timestamp = t.longValue();
+            } else if (realTimestamp instanceof Long) {
+                timestamp = (Long) realTimestamp;
+            }
+
+            client = (String) message.get(CALLING_STATION_ID);
+            namespace = (String) message.get(NAMESPACE_UUID);
+            logic(timestamp, namespace, client);
         } else {
             log.warn("Dwell message doesn't process: [{}]", message);
         }
@@ -82,8 +95,9 @@ public class DwellProcessor extends Processor<Map<String, Object>> {
 
     private void logic(Long timestamp, String namespace, String client) {
         if (client != null) {
+            client = client.toLowerCase();
             String namespace_id = namespace == null ? "" : namespace.toString();
-            String key = client + namespace_id;
+            String key = client.toLowerCase() + namespace_id;
 
             Map<String, Object> lastValue = storeDwell.get(key);
 
