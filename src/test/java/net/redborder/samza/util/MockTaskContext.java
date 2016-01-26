@@ -1,5 +1,6 @@
 package net.redborder.samza.util;
 
+import org.apache.samza.container.SamzaContainerContext;
 import org.apache.samza.container.TaskName;
 import org.apache.samza.metrics.MetricsRegistry;
 import org.apache.samza.system.SystemStreamPartition;
@@ -25,6 +26,11 @@ public class MockTaskContext implements TaskContext {
 
     @Override
     public TaskName getTaskName() {
+        return null;
+    }
+
+    @Override
+    public SamzaContainerContext getSamzaContainerContext() {
         return null;
     }
 

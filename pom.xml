@@ -13,7 +13,7 @@
 
     <properties>
         <jetty.version>8.1.11.v20130520</jetty.version>
-        <samza.version>0.9.1</samza.version>
+        <samza.version>0.10.0</samza.version>
     </properties>
 
     <distributionManagement>
@@ -41,6 +41,7 @@
     </repositories>
 
     <dependencies>
+        <!-- Samza -->
         <dependency>
             <groupId>org.apache.samza</groupId>
             <artifactId>samza-api</artifactId>
@@ -67,12 +68,6 @@
             <groupId>org.apache.samza</groupId>
             <artifactId>samza-yarn_2.10</artifactId>
             <version>${samza.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.samza</groupId>
@@ -100,11 +95,6 @@
             <version>1.6.2</version>
         </dependency>
         <dependency>
-            <groupId>com.metamx</groupId>
-            <artifactId>tranquility_2.10</artifactId>
-            <version>0.4.2</version>
-        </dependency>
-        <dependency>
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-server</artifactId>
             <version>${jetty.version}</version>
@@ -118,6 +108,33 @@
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-webapp</artifactId>
             <version>${jetty.version}</version>
+        </dependency>
+
+        <!-- Tranquility -->
+        <dependency>
+            <groupId>io.druid</groupId>
+            <artifactId>tranquility-samza_2.10</artifactId>
+            <version>0.7.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-jaxrs</artifactId>
+            <version>1.9.13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-xc</artifactId>
+            <version>1.9.13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-core-asl</artifactId>
+            <version>1.9.13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>1.9.13</version>
         </dependency>
         <dependency>
             <groupId>org.apache.zookeeper</groupId>
@@ -139,11 +156,22 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.9.13</version>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>19.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.inject</groupId>
+            <artifactId>guice</artifactId>
+            <version>4.0-beta</version>
+        </dependency>
+        <dependency>
+            <groupId>io.netty</groupId>
+            <artifactId>netty</artifactId>
+            <version>3.10.5.Final</version>
         </dependency>
 
+        <!-- Scrambling -->
         <dependency>
             <groupId>org.bouncycastle</groupId>
             <artifactId>bcprov-jdk15on</artifactId>
@@ -171,7 +199,6 @@
             <version>1.10.19</version>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

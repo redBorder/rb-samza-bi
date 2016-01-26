@@ -5,6 +5,7 @@ import com.metamx.common.Granularity;
 import com.metamx.tranquility.beam.Beam;
 import com.metamx.tranquility.beam.ClusteredBeamTuning;
 import com.metamx.tranquility.druid.*;
+import com.metamx.tranquility.partition.Partitioner;
 import com.metamx.tranquility.samza.BeamFactory;
 import com.metamx.tranquility.typeclass.Timestamper;
 import io.druid.data.input.impl.TimestampSpec;
@@ -94,7 +95,12 @@ public class FlowBeamFactory implements BeamFactory {
 
         return DruidBeams
                 .builder(timestamper)
-                .curator(curator)
+                .curator(curator).partitioner(new Partitioner(){
+                    @Override
+                    public int partition(Object o, int numPartitions) {
+                        return 0;
+                    }
+                })
                 .discoveryPath("/druid/discoveryPath")
                 .location(DruidLocation.create("overlord", "druid:local:firehose:%s", realDataSource))
                 .rollup(DruidRollup.create(DruidDimensions.specific(dimensions), aggregators, new DurationGranularity(indexGranularity, 0)))
@@ -106,7 +112,7 @@ public class FlowBeamFactory implements BeamFactory {
                         .warmingPeriod(new Period("PT15M"))
                         .windowPeriod(new Period("PT10M"))
                         .build())
-                .timestampSpec(new TimestampSpec(TIMESTAMP, "posix"))
+                .timestampSpec(new TimestampSpec(TIMESTAMP, "posix", null))
                 .buildBeam();
     }
 }

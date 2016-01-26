@@ -35,6 +35,16 @@ public class MockKeyValueStore implements KeyValueStore<String, Map<String, Obje
     }
 
     @Override
+    public Map<String, Map<String, Object>> getAll(List<String> list) {
+        return null;
+    }
+
+    @Override
+    public void deleteAll(List<String> list) {
+
+    }
+
+    @Override
     public KeyValueIterator<String, Map<String, Object>> range(String s, String k1) {
         return null;
     }

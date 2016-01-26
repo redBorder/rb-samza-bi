@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AutoScalingManager {
     private static final Logger log = LoggerFactory.getLogger(AutoScalingManager.class);
+    private final Integer TIME_MIN = 30;
 
     private Map<String, Long> eventsState = new ConcurrentHashMap<>();
     private Map<String, String> dataSourceState = new ConcurrentHashMap<>();
@@ -23,9 +24,9 @@ public class AutoScalingManager {
         eventsPerTask = config.getLong("redborder.indexing.eventsPerTask", 5000);
         upPercent = config.getDouble("redborder.indexing.upPercent", 0.80);
         downPercent = config.getDouble("redborder.indexing.downPercent", 0.20);
-        tiersLimit.put("gold", 1000);
-        tiersLimit.put("silver", 1000);
-        tiersLimit.put("bronze", 1000);
+        tiersLimit.put("gold", 10);
+        tiersLimit.put("silver", 10);
+        tiersLimit.put("bronze", 10);
 
         List<String> topicsAutoscaling = config.getList("redborder.indexing.autoscaling.topics",
                 Arrays.asList("rb_flow_post", "rb_event_post"));
@@ -66,6 +67,7 @@ public class AutoScalingManager {
 
             String realData = null;
 
+            log.info("Current partitions {}", currentPartitions);
             for (String topic : currentPartitions.keySet()) {
                 if (dataSource.contains(topic)) {
                     realData = topic;
@@ -74,12 +76,12 @@ public class AutoScalingManager {
             }
 
             if (realData != null) {
-                Long events = (entry.getValue() / 60) * currentPartitions.get(realData);
+                Long events = (entry.getValue() / TIME_MIN) * currentPartitions.get(realData);
                 String currentDataSource = dataSourceState.get(dataSource);
                 Integer partitions;
                 Integer replicas;
                 String tier;
-                log.debug("Current dataSource: " + currentDataSource);
+                log.info("Current dataSource: " + currentDataSource);
 
                 if (currentDataSource == null) {
                     Integer round = Math.round(events / eventsPerTask);
@@ -93,9 +95,9 @@ public class AutoScalingManager {
 
                     Long actualEvents = partitions * eventsPerTask;
 
-                    log.debug("Support events: " + actualEvents + " toDown: " + actualEvents * downPercent + " toUp: " + actualEvents * upPercent);
-                    log.debug("Current events: " + events);
-                    log.debug("Current partitions: " + partitions);
+                    log.info("Support events: " + actualEvents + " toDown: " + actualEvents * downPercent + " toUp: " + actualEvents * upPercent);
+                    log.info("Current events: " + events);
+                    log.info("Current partitions: " + partitions);
 
                     if (actualEvents * upPercent <= events) {
                         Integer limit = tiersLimit.get(tier) != null ? tiersLimit.get(tier) : 1;
@@ -112,11 +114,11 @@ public class AutoScalingManager {
                         }
                     }
 
-                    log.debug("New partitions: " + partitions);
+                    log.info("New partitions: " + partitions);
                 }
 
                 String updateDataSource = dataSource + "_" + tier + "_" + partitions + "_" + replicas;
-                log.debug("Datasource: " + dataSource + " -> " + updateDataSource);
+                log.info("Datasource: " + dataSource + " -> " + updateDataSource);
                 dataSourceState.put(dataSource, updateDataSource);
             }
         }

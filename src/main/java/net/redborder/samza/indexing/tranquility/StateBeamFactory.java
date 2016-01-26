@@ -90,7 +90,7 @@ public class StateBeamFactory implements BeamFactory {
                         .warmingPeriod(new Period("PT15M"))
                         .windowPeriod(new Period("PT10M"))
                         .build())
-                .timestampSpec(new TimestampSpec(TIMESTAMP, "posix"))
+                .timestampSpec(new TimestampSpec(TIMESTAMP, "posix", null))
                 .buildBeam();
     }
 }
