@@ -46,7 +46,7 @@ public class ChangesBeamFactory implements BeamFactory {
 
         final List<AggregatorFactory> aggregators = ImmutableList.of(
                 new CountAggregatorFactory(EVENTS_AGGREGATOR),
-                new HyperUniquesAggregatorFactory("iocs", "ioc")
+                new HyperUniquesAggregatorFactory("endpoints", "endpoint_uuid")
         );
 
         // The Timestamper should return the timestamp of the class your Samza task produces. Samza envelopes contain
