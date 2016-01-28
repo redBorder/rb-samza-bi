@@ -61,8 +61,7 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
         String wirelessStationSSID = (String) message.get(CALLED_STATION_ID);
         Map<String, Object> enrichment = (Map<String, Object>) message.get("enrichment");
 
-        String namespace = null;
-
+        String namespace = (String) message.get(NAMESPACE_UUID);
         String namespace_id = namespace == null ? "" : namespace;
 
         Object timestamp = message.get(TIMESTAMP);
