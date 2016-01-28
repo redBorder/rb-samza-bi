@@ -11,9 +11,7 @@ import io.druid.data.input.impl.TimestampSpec;
 import io.druid.granularity.DurationGranularity;
 import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
-import io.druid.query.aggregation.LongSumAggregatorFactory;
 import io.druid.query.aggregation.hyperloglog.HyperUniquesAggregatorFactory;
-import net.redborder.samza.indexing.autoscaling.AutoScalingUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -25,8 +23,8 @@ import org.joda.time.Period;
 import java.util.List;
 import java.util.Map;
 
-import static net.redborder.samza.util.constants.Aggregators.*;
-import static net.redborder.samza.util.constants.Dimension.*;
+import static net.redborder.samza.util.constants.Aggregators.EVENTS_AGGREGATOR;
+import static net.redborder.samza.util.constants.Dimension.TIMESTAMP;
 
 public class IocBeamFactory implements BeamFactory {
     @Override
@@ -35,11 +33,10 @@ public class IocBeamFactory implements BeamFactory {
         final String intermediatePersist = config.get("redborder.beam.ioc.intermediatePersist", "PT20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
         final long indexGranularity = Long.valueOf(config.get("systems.druid_ioc.beam.indexGranularity", "60000"));
-        final String dataSource = stream.getStream();
 
-        final Integer partitions = AutoScalingUtils.getPartitions(dataSource);
-        final Integer replicas = AutoScalingUtils.getReplicas(dataSource);
-        final String realDataSource = AutoScalingUtils.getDataSource(dataSource);
+        final String dataSource = stream.getStream();
+        final Integer partitions = 1;
+        final Integer replicas = 1;
 
         final List<String> dimensions = ImmutableList.of(
                 "endpoint_uuid", "ioc", "action"
@@ -74,7 +71,7 @@ public class IocBeamFactory implements BeamFactory {
                 .builder(timestamper)
                 .curator(curator)
                 .discoveryPath("/druid/discoveryPath")
-                .location(DruidLocation.create("overlord", "druid:local:firehose:%s", realDataSource))
+                .location(DruidLocation.create("overlord", "druid:local:firehose:%s", dataSource))
                 .rollup(DruidRollup.create(DruidDimensions.specific(dimensions), aggregators, new DurationGranularity(indexGranularity, 0)))
                 .druidTuning(DruidTuning.create(maxRows, new Period(intermediatePersist), 0))
                 .tuning(ClusteredBeamTuning.builder()

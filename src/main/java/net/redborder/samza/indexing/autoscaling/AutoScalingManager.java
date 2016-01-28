@@ -12,7 +12,7 @@ public class AutoScalingManager {
     private final Integer TIME_MIN = 30;
 
     private Map<String, Long> eventsState = new ConcurrentHashMap<>();
-    private Map<String, String> dataSourceState = new ConcurrentHashMap<>();
+    private Map<String, Map<String, Object>> dataSourceState = new ConcurrentHashMap<>();
     private Map<String, Integer> tiersLimit = new ConcurrentHashMap<>();
     private Map<String, Integer> currentPartitions = new HashMap<>();
 
@@ -55,16 +55,15 @@ public class AutoScalingManager {
         eventsState.put(dataSource, events);
     }
 
-    public String getDataSourcerWithPR(String dataSource) {
-        return dataSourceState.get(dataSource) != null ? dataSourceState.get(dataSource) : dataSource + "_bronze_1_1";
-    }
-
     public void updateStates() {
         log.info("Starting updateState autoscaling ...");
         log.info("The current state is: " + eventsState);
         for (Map.Entry<String, Long> entry : eventsState.entrySet()) {
-            String dataSource = entry.getKey();
+            String dataSourceTier = entry.getKey();
 
+            String [] dataSourceArray = dataSourceTier.split("[::]");
+            String dataSource = dataSourceArray[0];
+            String tier = dataSourceArray[1];
             String realData = null;
 
             log.info("Current partitions {}", currentPartitions);
@@ -77,21 +76,19 @@ public class AutoScalingManager {
 
             if (realData != null) {
                 Long events = (entry.getValue() / TIME_MIN) * currentPartitions.get(realData);
-                String currentDataSource = dataSourceState.get(dataSource);
+                Map<String, Object> currentDataSourceMetaData = dataSourceState.get(dataSource);
                 Integer partitions;
                 Integer replicas;
-                String tier;
-                log.info("Current dataSource: " + currentDataSource);
 
-                if (currentDataSource == null) {
+                log.info("Current dataSource: {} -> metadata: {}", dataSource , currentDataSourceMetaData);
+
+                if (currentDataSourceMetaData == null) {
                     Integer round = Math.round(events / eventsPerTask);
                     partitions = round == 0 ? 1 : round;
                     replicas = 1;
-                    tier = "bronze";
                 } else {
-                    partitions = AutoScalingUtils.getPartitions(currentDataSource);
-                    replicas = AutoScalingUtils.getReplicas(currentDataSource);
-                    tier = AutoScalingUtils.getTier(currentDataSource);
+                    partitions = (Integer) currentDataSourceMetaData.get("partitions");
+                    replicas = (Integer) currentDataSourceMetaData.get("replicas");
 
                     Long actualEvents = partitions * eventsPerTask;
 
@@ -117,9 +114,13 @@ public class AutoScalingManager {
                     log.info("New partitions: " + partitions);
                 }
 
-                String updateDataSource = dataSource + "_" + tier + "_" + partitions + "_" + replicas;
-                log.info("Datasource: " + dataSource + " -> " + updateDataSource);
-                dataSourceState.put(dataSource, updateDataSource);
+                Map<String, Object> dataSourceMetaData = new HashMap<>();
+                dataSourceMetaData.put("partitions", partitions);
+                dataSourceMetaData.put("replicas", replicas);
+                dataSourceMetaData.put("tier", tier);
+
+                log.info("Datasource: " + dataSource + " -> " + dataSourceMetaData);
+                dataSourceState.put(dataSource, dataSourceMetaData);
             }
         }
         log.info("Ending updateState autoscaling ...");
@@ -128,5 +129,16 @@ public class AutoScalingManager {
     public void resetStats() {
         for (String key : eventsState.keySet())
             eventsState.put(key, 0L);
+    }
+
+    public Integer getPartitions(String dataSource){
+        Map<String, Object> dsMetada = dataSourceState.get(dataSource);
+        Integer partitions = 1;
+
+        if(dsMetada != null){
+            partitions = dsMetada.get("partitions") == null ? 1 : (Integer) dsMetada.get("partitions");
+        }
+
+        return partitions;
     }
 }

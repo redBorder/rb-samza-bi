@@ -12,7 +12,6 @@ import io.druid.granularity.DurationGranularity;
 import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
 import io.druid.query.aggregation.hyperloglog.HyperUniquesAggregatorFactory;
-import net.redborder.samza.indexing.autoscaling.AutoScalingUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -34,11 +33,10 @@ public class ChangesBeamFactory implements BeamFactory {
         final String intermediatePersist = config.get("redborder.beam.changes.intermediatePersist", "PT20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
         final long indexGranularity = Long.valueOf(config.get("systems.druid_changes.beam.indexGranularity", "60000"));
-        final String dataSource = stream.getStream();
 
-        final Integer partitions = AutoScalingUtils.getPartitions(dataSource);
-        final Integer replicas = AutoScalingUtils.getReplicas(dataSource);
-        final String realDataSource = AutoScalingUtils.getDataSource(dataSource);
+        final String dataSource = stream.getStream();
+        final Integer partitions = 1;
+        final Integer replicas = 1;
 
         final List<String> dimensions = ImmutableList.of(
                 "s3_old", "s3_new", "flow_type", "endpoint_uuid", "md5"
@@ -72,7 +70,7 @@ public class ChangesBeamFactory implements BeamFactory {
                 .builder(timestamper)
                 .curator(curator)
                 .discoveryPath("/druid/discoveryPath")
-                .location(DruidLocation.create("overlord", "druid:local:firehose:%s", realDataSource))
+                .location(DruidLocation.create("overlord", "druid:local:firehose:%s", dataSource))
                 .rollup(DruidRollup.create(DruidDimensions.specific(dimensions), aggregators, new DurationGranularity(indexGranularity, 0)))
                 .druidTuning(DruidTuning.create(maxRows, new Period(intermediatePersist), 0))
                 .tuning(ClusteredBeamTuning.builder()

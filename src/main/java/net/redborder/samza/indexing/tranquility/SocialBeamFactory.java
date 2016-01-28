@@ -13,7 +13,6 @@ import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
 import io.druid.query.aggregation.LongSumAggregatorFactory;
 import io.druid.query.aggregation.hyperloglog.HyperUniquesAggregatorFactory;
-import net.redborder.samza.indexing.autoscaling.AutoScalingUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -35,11 +34,10 @@ public class SocialBeamFactory implements BeamFactory {
         final String intermediatePersist = config.get("redborder.beam.social.intermediatePersist", "PT20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
         final long indexGranularity = Long.valueOf(config.get("systems.druid_social.beam.indexGranularity", "60000"));
-        final String dataSource = stream.getStream();
 
-        final Integer partitions = AutoScalingUtils.getPartitions(dataSource);
-        final Integer replicas = AutoScalingUtils.getReplicas(dataSource);
-        final String realDataSource = AutoScalingUtils.getDataSource(dataSource);
+        final String dataSource = stream.getStream();
+        final Integer partitions = 1;
+        final Integer replicas = 1;
 
         final List<String> dimensions = ImmutableList.of(
                 CLIENT_LATLONG, SRC_COUNTRY_CODE, SENSOR_UUID, DEPLOYMENT, DEPLOYMENT_UUID, NAMESPACE, NAMESPACE_UUID, USER_SCREEN_NAME,
@@ -78,7 +76,7 @@ public class SocialBeamFactory implements BeamFactory {
                 .builder(timestamper)
                 .curator(curator)
                 .discoveryPath("/druid/discoveryPath")
-                .location(DruidLocation.create("overlord", "druid:local:firehose:%s", realDataSource))
+                .location(DruidLocation.create("overlord", "druid:local:firehose:%s", dataSource))
                 .rollup(DruidRollup.create(DruidDimensions.specific(dimensions), aggregators, new DurationGranularity(indexGranularity, 0)))
                 .druidTuning(DruidTuning.create(maxRows, new Period(intermediatePersist), 0))
                 .tuning(ClusteredBeamTuning.builder()

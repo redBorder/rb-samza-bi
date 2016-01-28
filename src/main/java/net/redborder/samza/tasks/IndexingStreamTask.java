@@ -70,7 +70,7 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
 
             if (systemStream != null) {
                 try {
-                    collector.send(new OutgoingMessageEnvelope(systemStream, null, message));
+                    collector.send(new OutgoingMessageEnvelope(systemStream, autoScalingManager.getPartitions(systemStream.getStream()), message));
                     counter.inc();
                 } catch (Exception ex) {
                     log.error("Error sending to tranquility!! ", ex);
@@ -84,18 +84,15 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
 
     private String getDatasource(Map<String, Object> message, String defaultDatasource) {
         Object namespaceId = message.get(NAMESPACE_UUID);
-        Object tier = message.get(TIER);
 
-        if (tier == null)
-            tier = "bronze";
 
-        String datasource = defaultDatasource + "_" + "none" + "_" + tier + "_1_1";
+        String datasource = defaultDatasource;
 
         if (useNamespace && namespaceId != null) {
+            Object tier = message.get(TIER) == null ? "broze" : message.get(TIER);
             String namespaceIdStr = String.valueOf(namespaceId);
-            datasource = defaultDatasource + "_" + namespaceIdStr + "_" + tier;
-            autoScalingManager.incrementEvents(datasource);
-            datasource = autoScalingManager.getDataSourcerWithPR(datasource);
+            datasource = defaultDatasource + "_" + namespaceIdStr;
+            autoScalingManager.incrementEvents(datasource + "[::]" + tier);
         }
 
         return datasource;
