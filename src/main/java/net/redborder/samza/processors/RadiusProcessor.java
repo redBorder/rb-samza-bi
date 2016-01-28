@@ -23,7 +23,9 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
     private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_FLOW_OUTPUT_TOPIC);
     public final static String RADIUS_STORE = "radius";
     private static final Logger log = LoggerFactory.getLogger(RadiusProcessor.class);
-
+    private final List<String> toDruid = Arrays.asList(MARKET, MARKET_UUID, ORGANIZATION, ORGANIZATION_UUID,
+            DEPLOYMENT, DEPLOYMENT_UUID, SENSOR_NAME, SENSOR_UUID, NAMESPACE, SERVICE_PROVIDER, SERVICE_PROVIDER_UUID,
+            NAMESPACE_UUID);
     private KeyValueStore<String, Map<String, Object>> storeRadius;
     private Counter messagesCounter;
     private StoreManager storeManager;
@@ -61,10 +63,6 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
 
         String namespace = null;
 
-        if (enrichment != null) {
-            namespace = (String) enrichment.get(NAMESPACE_UUID);
-        }
-
         String namespace_id = namespace == null ? "" : namespace;
 
         Object timestamp = message.get(TIMESTAMP);
@@ -72,6 +70,14 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
         if (clientMac != null) {
             clientMac = clientMac.replaceAll("-", ":").toLowerCase();
             toDruid.put(CLIENT_MAC, clientMac);
+
+            for (String dimension : this.toDruid) {
+                Object value = message.get(dimension);
+
+                if (value != null) {
+                    toDruid.put(dimension, value);
+                }
+            }
 
             if (enrichment != null) {
                 toDruid.putAll(enrichment);
