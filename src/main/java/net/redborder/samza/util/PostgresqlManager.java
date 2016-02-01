@@ -2,6 +2,8 @@ package net.redborder.samza.util;
 
 
 import net.redborder.samza.store.StoreManager;
+import org.apache.commons.lang.NumberUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.samza.config.Config;
 import org.apache.samza.storage.kv.Entry;
 import org.apache.samza.storage.kv.KeyValueIterator;
@@ -140,7 +142,8 @@ public class PostgresqlManager {
                     String longitude = rs.getString("longitude");
                     String latitude = rs.getString("latitude");
 
-                    if (uuid != null && latitude != null && longitude != null) {
+                    if (uuid != null && latitude != null && longitude != null
+                            && StringUtils.isNumeric(latitude) && StringUtils.isNumeric(longitude)) {
                         Map<String, Object> location = new HashMap<>();
                         Double longitudeDbl = (double) Math.round(Double.valueOf(longitude) * 100000) / 100000;
                         Double latitudeDbl = (double) Math.round(Double.valueOf(latitude) * 100000) / 100000;
