@@ -95,12 +95,7 @@ public class FlowBeamFactory implements BeamFactory {
 
         return DruidBeams
                 .builder(timestamper)
-                .curator(curator).partitioner(new Partitioner(){
-                    @Override
-                    public int partition(Object o, int numPartitions) {
-                        return 0;
-                    }
-                })
+                .curator(curator)
                 .discoveryPath("/druid/discoveryPath")
                 .location(DruidLocation.create("overlord", "druid:local:firehose:%s", realDataSource))
                 .rollup(DruidRollup.create(DruidDimensions.specific(dimensions), aggregators, new DurationGranularity(indexGranularity, 0)))
