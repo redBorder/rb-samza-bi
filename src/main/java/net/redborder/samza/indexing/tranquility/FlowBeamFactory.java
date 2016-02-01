@@ -1,8 +1,14 @@
 package net.redborder.samza.indexing.tranquility;
 
+import com.amazonaws.util.json.Jackson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.metamx.common.Granularity;
+import com.metamx.common.scala.timekeeper;
+import com.metamx.emitter.core.LoggingEmitter;
+import com.metamx.emitter.service.ServiceEmitter;
 import com.metamx.tranquility.beam.Beam;
+import com.metamx.tranquility.beam.ClusteredBeam;
 import com.metamx.tranquility.beam.ClusteredBeamTuning;
 import com.metamx.tranquility.druid.*;
 import com.metamx.tranquility.partition.Partitioner;
@@ -14,7 +20,6 @@ import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
 import io.druid.query.aggregation.LongSumAggregatorFactory;
 import io.druid.query.aggregation.hyperloglog.HyperUniquesAggregatorFactory;
-import net.redborder.samza.indexing.autoscaling.AutoScalingUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -35,16 +40,14 @@ public class FlowBeamFactory implements BeamFactory {
     private static final Logger log = LoggerFactory.getLogger(FlowBeamFactory.class);
 
     @Override
-    public Beam<Object> makeBeam(SystemStream stream, Config config) {
+    public Beam<Object> makeBeam(SystemStream stream, int partitions, Config config) {
         final int maxRows = Integer.valueOf(config.get("redborder.beam.flow.maxrows", "200000"));
-        final String dataSource = stream.getStream();
         final String intermediatePersist = config.get("redborder.beam.flow.intermediatePersist", "pt20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
         final long indexGranularity = Long.valueOf(config.get("systems.druid_flow.beam.indexGranularity", "60000"));
 
-        final Integer partitions = AutoScalingUtils.getPartitions(dataSource);
-        final Integer replicas = AutoScalingUtils.getReplicas(dataSource);
-        final String realDataSource = AutoScalingUtils.getDataSource(dataSource);
+        final String dataSource = stream.getStream();
+        final Integer replicas = 1;
 
         final List<String> dimensions = ImmutableList.of(
                 APPLICATION_ID_NAME, BIFLOW_DIRECTION, CONVERSATION, DIRECTION,
@@ -95,14 +98,9 @@ public class FlowBeamFactory implements BeamFactory {
 
         return DruidBeams
                 .builder(timestamper)
-                .curator(curator).partitioner(new Partitioner(){
-                    @Override
-                    public int partition(Object o, int numPartitions) {
-                        return 0;
-                    }
-                })
+                .curator(curator)
                 .discoveryPath("/druid/discoveryPath")
-                .location(DruidLocation.create("overlord", "druid:local:firehose:%s", realDataSource))
+                .location(DruidLocation.create("overlord", "druid:local:firehose:%s", dataSource))
                 .rollup(DruidRollup.create(DruidDimensions.specific(dimensions), aggregators, new DurationGranularity(indexGranularity, 0)))
                 .druidTuning(DruidTuning.create(maxRows, new Period(intermediatePersist), 0))
                 .tuning(ClusteredBeamTuning.builder()
