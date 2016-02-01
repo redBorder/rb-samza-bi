@@ -1,8 +1,14 @@
 package net.redborder.samza.indexing.tranquility;
 
+import com.amazonaws.util.json.Jackson;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.metamx.common.Granularity;
+import com.metamx.common.scala.timekeeper;
+import com.metamx.emitter.core.LoggingEmitter;
+import com.metamx.emitter.service.ServiceEmitter;
 import com.metamx.tranquility.beam.Beam;
+import com.metamx.tranquility.beam.ClusteredBeam;
 import com.metamx.tranquility.beam.ClusteredBeamTuning;
 import com.metamx.tranquility.druid.*;
 import com.metamx.tranquility.partition.Partitioner;
@@ -34,14 +40,13 @@ public class FlowBeamFactory implements BeamFactory {
     private static final Logger log = LoggerFactory.getLogger(FlowBeamFactory.class);
 
     @Override
-    public Beam<Object> makeBeam(SystemStream stream, Config config) {
+    public Beam<Object> makeBeam(SystemStream stream, int partitions, Config config) {
         final int maxRows = Integer.valueOf(config.get("redborder.beam.flow.maxrows", "200000"));
         final String intermediatePersist = config.get("redborder.beam.flow.intermediatePersist", "pt20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
         final long indexGranularity = Long.valueOf(config.get("systems.druid_flow.beam.indexGranularity", "60000"));
 
         final String dataSource = stream.getStream();
-        final Integer partitions = 1;
         final Integer replicas = 1;
 
         final List<String> dimensions = ImmutableList.of(
@@ -93,12 +98,7 @@ public class FlowBeamFactory implements BeamFactory {
 
         return DruidBeams
                 .builder(timestamper)
-                .curator(curator).partitioner(new Partitioner(){
-                    @Override
-                    public int partition(Object o, int numPartitions) {
-                        return 0;
-                    }
-                })
+                .curator(curator)
                 .discoveryPath("/druid/discoveryPath")
                 .location(DruidLocation.create("overlord", "druid:local:firehose:%s", dataSource))
                 .rollup(DruidRollup.create(DruidDimensions.specific(dimensions), aggregators, new DurationGranularity(indexGranularity, 0)))

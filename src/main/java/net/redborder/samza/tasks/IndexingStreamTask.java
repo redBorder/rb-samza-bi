@@ -89,10 +89,10 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
         String datasource = defaultDatasource;
 
         if (useNamespace && namespaceId != null) {
-            Object tier = message.get(TIER) == null ? "broze" : message.get(TIER);
+            Object tier = message.get(TIER) == null ? "bronze" : message.get(TIER);
             String namespaceIdStr = String.valueOf(namespaceId);
             datasource = defaultDatasource + "_" + namespaceIdStr;
-            autoScalingManager.incrementEvents(datasource + "[::]" + tier);
+            autoScalingManager.incrementEvents(datasource + "-autoscaling-" + tier);
         }
 
         return datasource;

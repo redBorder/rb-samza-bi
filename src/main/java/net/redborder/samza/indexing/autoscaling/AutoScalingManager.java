@@ -61,12 +61,11 @@ public class AutoScalingManager {
         for (Map.Entry<String, Long> entry : eventsState.entrySet()) {
             String dataSourceTier = entry.getKey();
 
-            String [] dataSourceArray = dataSourceTier.split("[::]");
+            String [] dataSourceArray = dataSourceTier.split("-autoscaling-");
             String dataSource = dataSourceArray[0];
             String tier = dataSourceArray[1];
             String realData = null;
 
-            log.info("Current partitions {}", currentPartitions);
             for (String topic : currentPartitions.keySet()) {
                 if (dataSource.contains(topic)) {
                     realData = topic;
@@ -101,6 +100,7 @@ public class AutoScalingManager {
                         if (partitions < limit) {
                             partitions++;
                         } else {
+                            log.info("Tier[{}], Limits[{}], Limit["+limit+"]", tier, tiersLimit);
                             log.warn("This dataSource is " + tier + " and it has " + partitions + " partitions! LIMITED.");
                         }
                     } else if (actualEvents * downPercent >= events) {
@@ -119,7 +119,7 @@ public class AutoScalingManager {
                 dataSourceMetaData.put("replicas", replicas);
                 dataSourceMetaData.put("tier", tier);
 
-                log.info("Datasource: " + dataSource + " -> " + dataSourceMetaData);
+                log.info("Current dataSource: {} -> metadata: {}", dataSource , dataSourceMetaData);
                 dataSourceState.put(dataSource, dataSourceMetaData);
             }
         }

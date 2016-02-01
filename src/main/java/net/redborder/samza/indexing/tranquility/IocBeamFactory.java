@@ -28,14 +28,13 @@ import static net.redborder.samza.util.constants.Dimension.TIMESTAMP;
 
 public class IocBeamFactory implements BeamFactory {
     @Override
-    public Beam<Object> makeBeam(SystemStream stream, Config config) {
+    public Beam<Object> makeBeam(SystemStream stream, int partitions, Config config) {
         final int maxRows = Integer.valueOf(config.get("redborder.beam.ioc.maxrows", "200000"));
         final String intermediatePersist = config.get("redborder.beam.ioc.intermediatePersist", "PT20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
         final long indexGranularity = Long.valueOf(config.get("systems.druid_ioc.beam.indexGranularity", "60000"));
 
         final String dataSource = stream.getStream();
-        final Integer partitions = 1;
         final Integer replicas = 1;
 
         final List<String> dimensions = ImmutableList.of(
