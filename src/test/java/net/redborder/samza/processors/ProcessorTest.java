@@ -79,7 +79,7 @@ public class ProcessorTest extends TestCase {
             message.put(TIMESTAMP, Long.valueOf(1429088471L));
 
             MockMessageCollector collector = new MockMessageCollector();
-            processor.process(message, collector);
+            processor.process("", message, collector);
 
             Map<String, Object> result = collector.getResult().get(0);
             message.put(DURATION, 0L);

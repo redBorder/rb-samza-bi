@@ -3,6 +3,7 @@ package net.redborder.samza.processors;
 import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.constants.Constants;
+import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.metrics.Counter;
 import org.apache.samza.storage.kv.KeyValueStore;
@@ -24,6 +25,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
     private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_FLOW_OUTPUT_TOPIC);
     public final static String NMSP_STORE_MEASURE = "nmsp-measure";
     public final static String NMSP_STORE_INFO = "nmsp-info";
+    private static final String DATASOURCE = "rb_flow";
 
     private final List<String> toCacheInfo = Arrays.asList(WIRELESS_STATION, WIRELESS_CHANNEL, WIRELESS_ID);
     private final List<String> toDruid = Arrays.asList(MARKET, MARKET_UUID, ORGANIZATION, ORGANIZATION_UUID,
@@ -31,6 +33,9 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
 
     private KeyValueStore<String, Map<String, Object>> storeMeasure;
     private KeyValueStore<String, Map<String, Object>> storeInfo;
+    private KeyValueStore<String, Long> countersStore;
+    private KeyValueStore<String, Long> flowsNumber;
+
     private Counter messagesCounter;
     private StoreManager storeManager;
     private EnrichManager enrichManager;
@@ -42,6 +47,8 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
         this.enrichManager = enrichManager;
         storeMeasure = storeManager.getStore(NMSP_STORE_MEASURE);
         storeInfo = storeManager.getStore(NMSP_STORE_INFO);
+        countersStore = (KeyValueStore<String, Long>) context.getStore("counter");
+        flowsNumber = (KeyValueStore<String, Long>) context.getStore("flows-number");
     }
 
     @Override
@@ -50,7 +57,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
     }
 
     @Override
-    public void process(Map<String, Object> message, MessageCollector collector) {
+    public void process(String stream, Map<String, Object> message, MessageCollector collector) {
         Map<String, Object> toCache = new HashMap<>();
         Map<String, Object> toDruid = new HashMap<>();
 
@@ -152,6 +159,29 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                     Map<String, Object> storeEnrichment = storeManager.enrich(toDruid);
                     storeEnrichment.putAll(toDruid);
                     Map<String, Object> enrichmentEvent = enrichManager.enrich(storeEnrichment);
+
+                    String datasource = DATASOURCE;
+                    String namespaceUUID = (String) enrichmentEvent.get(Dimension.NAMESPACE_UUID);
+
+                    if (namespaceUUID != null) {
+                        datasource = String.format("%s_%s", DATASOURCE, namespaceUUID);
+                    }
+
+                    Long counter = countersStore.get(datasource);
+
+                    if(counter == null){
+                        counter = 0L;
+                    }
+
+                    counter++;
+                    countersStore.put(datasource, counter);
+
+                    Long flows = flowsNumber.get(datasource);
+
+                    if(flows != null){
+                        enrichmentEvent.put("flows_count", flows);
+                    }
+
                     collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentEvent));
                 }
             }
@@ -205,6 +235,29 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
             Map<String, Object> storeEnrichment = storeManager.enrich(toDruid);
             storeEnrichment.putAll(toDruid);
             Map<String, Object> enrichmentEvent = enrichManager.enrich(storeEnrichment);
+
+            String datasource = DATASOURCE;
+            String namespaceUUID = (String) enrichmentEvent.get(Dimension.NAMESPACE_UUID);
+
+            if (namespaceUUID != null) {
+                datasource = String.format("%s_%s", DATASOURCE, namespaceUUID);
+            }
+
+            Long counter = countersStore.get(datasource);
+
+            if(counter == null){
+                counter = 0L;
+            }
+
+            counter++;
+            countersStore.put(datasource, counter);
+
+            Long flows = flowsNumber.get(datasource);
+
+            if(flows != null){
+                enrichmentEvent.put("flows_count", flows);
+            }
+
             collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentEvent));
         }
 

@@ -18,11 +18,9 @@ public class EventProcessor extends Processor<Map<String, Object>> {
     private static final Logger log = LoggerFactory.getLogger(EventProcessor.class);
     private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_EVENT_OUTPUT_TOPIC);
 
-    private Counter messagesCounter;
 
     public EventProcessor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
         super(storeManager, enrichManager, config, context);
-        this.messagesCounter = context.getMetricsRegistry().newCounter(getClass().getName(), "messages");
     }
 
     @Override
@@ -31,12 +29,11 @@ public class EventProcessor extends Processor<Map<String, Object>> {
     }
 
     @Override
-    public void process(Map<String, Object> message, MessageCollector collector) {
+    public void process(String stream, Map<String, Object> message, MessageCollector collector) {
         Map<String, Object> messageEnrichmentStore = this.storeManager.enrich(message);
         Map<String, Object> messageEnrichmentLocal = this.enrichManager.enrich(messageEnrichmentStore);
 
         log.trace(messageEnrichmentLocal.toString());
-        this.messagesCounter.inc();
         collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, messageEnrichmentLocal));
     }
 }

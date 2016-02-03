@@ -3,6 +3,7 @@ package net.redborder.samza.processors;
 import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.constants.Constants;
+import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.metrics.Counter;
 import org.apache.samza.storage.kv.KeyValueStore;
@@ -24,9 +25,11 @@ import static net.redborder.samza.util.constants.DimensionValue.LOC_ASSOCIATED;
 public class LocationV89Processor extends Processor<Map<String, Object>> {
     final public static String LOCATION_STORE = "location";
     private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_FLOW_OUTPUT_TOPIC);
+    private static final String DATASOURCE = "rb_flow";
 
     private KeyValueStore<String, Map<String, Object>> store;
-    private Counter counter;
+    private KeyValueStore<String, Long> countersStore;
+    private KeyValueStore<String, Long> flowsNumber;
 
     private final List<String> dimToDruid = Arrays.asList(MARKET, MARKET_UUID, ORGANIZATION, ORGANIZATION_UUID,
             DEPLOYMENT, DEPLOYMENT_UUID, SENSOR_NAME, SENSOR_UUID, NAMESPACE, SERVICE_PROVIDER, SERVICE_PROVIDER_UUID);
@@ -34,7 +37,8 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
     public LocationV89Processor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
         super(storeManager, enrichManager, config, context);
         store = storeManager.getStore(LOCATION_STORE);
-        counter = context.getMetricsRegistry().newCounter(getClass().getName(), "messages");
+        countersStore = (KeyValueStore<String, Long>) context.getStore("counter");
+        flowsNumber = (KeyValueStore<String, Long>) context.getStore("flows-number");
     }
 
     @Override
@@ -44,7 +48,7 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
 
     @Override
     @SuppressWarnings("unchecked cast")
-    public void process(Map<String, Object> message, MessageCollector collector) {
+    public void process(String stream, Map<String, Object> message, MessageCollector collector) {
         Map<String, Object> mseEventContent, location, mapInfo, toCache, toDruid;
         Map<String, Object> geoCoordinate = null;
         String mapHierarchy, locationFormat, state;
@@ -157,9 +161,30 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
 
             if (macAddress != null) store.put(macAddress + namespace_id, toCache);
 
-            counter.inc();
             Map<String, Object> storeEnrichment = storeManager.enrich(toDruid);
             Map<String, Object> enrichmentEvent = enrichManager.enrich(storeEnrichment);
+
+            String datasource = DATASOURCE;
+            String namespace = (String) enrichmentEvent.get(Dimension.NAMESPACE_UUID);
+
+            if (namespace != null) {
+                datasource = String.format("%s_%s", DATASOURCE, namespace);
+            }
+
+            Long counter = countersStore.get(datasource);
+
+            if(counter == null){
+                counter = 0L;
+            }
+
+            counter++;
+            countersStore.put(datasource, counter);
+
+            Long flows = flowsNumber.get(datasource);
+
+            if(flows != null){
+                enrichmentEvent.put("flows_count", flows);
+            }
 
             collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentEvent));
         }

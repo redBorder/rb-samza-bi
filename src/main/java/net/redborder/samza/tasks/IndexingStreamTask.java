@@ -1,5 +1,6 @@
 package net.redborder.samza.tasks;
 
+import com.google.api.client.util.Maps;
 import net.redborder.samza.indexing.autoscaling.AutoScalingManager;
 import org.apache.samza.config.Config;
 import org.apache.samza.metrics.Counter;
@@ -17,10 +18,11 @@ import static net.redborder.samza.util.constants.Dimension.*;
 
 public class IndexingStreamTask implements StreamTask, InitableTask, WindowableTask {
 
-    private static final Logger log = LoggerFactory.getLogger(EnrichmentStreamTask.class);
+    private static final Logger log = LoggerFactory.getLogger(IndexingStreamTask.class);
     private AutoScalingManager autoScalingManager;
     private Counter counter;
     private Boolean useNamespace = true;
+    Map<String, Map<String, Object>> dataSourcesStates = Maps.newHashMap();
 
     @Override
     public void init(Config config, TaskContext context) throws Exception {
@@ -31,7 +33,7 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
 
     @Override
     public void window(MessageCollector messageCollector, TaskCoordinator taskCoordinator) throws Exception {
-        autoScalingManager.updateStates();
+        dataSourcesStates.putAll(autoScalingManager.updateStates());
         autoScalingManager.resetStats();
     }
 
@@ -70,7 +72,7 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
 
             if (systemStream != null) {
                 try {
-                    collector.send(new OutgoingMessageEnvelope(systemStream, autoScalingManager.getPartitions(systemStream.getStream()), message));
+                    collector.send(new OutgoingMessageEnvelope(systemStream, getPartitions(systemStream.getStream()), message));
                     counter.inc();
                 } catch (Exception ex) {
                     log.error("Error sending to tranquility!! ", ex);
@@ -85,16 +87,28 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
     private String getDatasource(Map<String, Object> message, String defaultDatasource) {
         Object namespaceId = message.get(NAMESPACE_UUID);
 
-
         String datasource = defaultDatasource;
 
         if (useNamespace && namespaceId != null) {
             Object tier = message.get(TIER) == null ? "bronze" : message.get(TIER);
+            Object flowsCount = message.get("flows_count");
             String namespaceIdStr = String.valueOf(namespaceId);
             datasource = defaultDatasource + "_" + namespaceIdStr;
-            autoScalingManager.incrementEvents(datasource + "-autoscaling-" + tier);
+            autoScalingManager.updateEvents(datasource + "-autoscaling-" + tier, flowsCount);
         }
 
         return datasource;
+    }
+
+
+    private Integer getPartitions(String dataSource) {
+        Map<String, Object> dsMetada = dataSourcesStates.get(dataSource);
+        Integer partitions = 1;
+
+        if (dsMetada != null) {
+            partitions = dsMetada.get("partitions") == null ? 1 : (Integer) dsMetada.get("partitions");
+        }
+
+        return partitions;
     }
 }
