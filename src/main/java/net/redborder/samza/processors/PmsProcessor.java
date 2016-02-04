@@ -35,7 +35,7 @@ public class PmsProcessor extends Processor<Map<String, Object>> {
     }
 
     @Override
-    public void process(Map<String, Object> message, MessageCollector collector) {
+    public void process(String stream, Map<String, Object> message, MessageCollector collector) {
         Map<String, Object> enrichmentMsg = storeManager.enrich(message);
 
         String clientMac = (String) enrichmentMsg.get(CLIENT_MAC);

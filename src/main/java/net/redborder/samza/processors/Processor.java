@@ -88,7 +88,11 @@ public abstract class Processor<T> {
         return processors.get(streamName);
     }
 
-    public abstract void process(T message, MessageCollector collector);
+    public abstract void process(String stream, T message, MessageCollector collector);
+
+    public void process(T message, MessageCollector collector) {
+        process("", message, collector);
+    }
 
     public abstract String getName();
 }

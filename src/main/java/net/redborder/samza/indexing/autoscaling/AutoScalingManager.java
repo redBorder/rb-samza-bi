@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AutoScalingManager {
     private static final Logger log = LoggerFactory.getLogger(AutoScalingManager.class);
-    private final Integer TIME_MIN = 30;
+    private Integer window_time;
 
     private Map<String, Long> eventsState = new ConcurrentHashMap<>();
     private Map<String, Map<String, Object>> dataSourceState = new ConcurrentHashMap<>();
@@ -18,12 +18,13 @@ public class AutoScalingManager {
 
     private static Double upPercent = 0.80;
     private static Double downPercent = 0.20;
-    private static long eventsPerTask = 10000;
+    private static long eventsPerTask = 5000;
 
     public AutoScalingManager(Config config) {
         eventsPerTask = config.getLong("redborder.indexing.eventsPerTask", 5000);
         upPercent = config.getDouble("redborder.indexing.upPercent", 0.80);
         downPercent = config.getDouble("redborder.indexing.downPercent", 0.20);
+        window_time = config.getInt("task.window.ms", 60000) / 1000;
         tiersLimit.put("gold", 10);
         tiersLimit.put("silver", 10);
         tiersLimit.put("bronze", 10);
@@ -49,19 +50,23 @@ public class AutoScalingManager {
         }
     }
 
-    public void incrementEvents(String dataSource) {
-        Long events = eventsState.get(dataSource) != null ? eventsState.get(dataSource) : 0L;
-        events++;
-        eventsState.put(dataSource, events);
+    public void updateEvents(String dataSource, Object events) {
+        if (events != null) {
+            if (events instanceof Long) {
+                eventsState.put(dataSource, (Long) events);
+            } else if (events instanceof Integer) {
+                eventsState.put(dataSource, ((Integer) events).longValue());
+            }
+        }
     }
 
-    public void updateStates() {
+    public Map<String, Map<String, Object>> updateStates() {
         log.info("Starting updateState autoscaling ...");
         log.info("The current state is: " + eventsState);
         for (Map.Entry<String, Long> entry : eventsState.entrySet()) {
             String dataSourceTier = entry.getKey();
 
-            String [] dataSourceArray = dataSourceTier.split("-autoscaling-");
+            String[] dataSourceArray = dataSourceTier.split("-autoscaling-");
             String dataSource = dataSourceArray[0];
             String tier = dataSourceArray[1];
             String realData = null;
@@ -74,17 +79,30 @@ public class AutoScalingManager {
             }
 
             if (realData != null) {
-                Long events = (entry.getValue() / TIME_MIN) * currentPartitions.get(realData);
+                Long events = (entry.getValue() / window_time) * currentPartitions.get(realData);
                 Map<String, Object> currentDataSourceMetaData = dataSourceState.get(dataSource);
                 Integer partitions;
                 Integer replicas;
 
-                log.info("Current dataSource: {} -> metadata: {}", dataSource , currentDataSourceMetaData);
+                log.info("Current dataSource: {} -> metadata: {}", dataSource, currentDataSourceMetaData);
+                Integer limit = tiersLimit.get(tier) != null ? tiersLimit.get(tier) : 1;
+
+                Integer desirePartitions = (int) Math.ceil(events.floatValue() / eventsPerTask);
 
                 if (currentDataSourceMetaData == null) {
-                    Integer round = Math.round(events / eventsPerTask);
-                    partitions = round == 0 ? 1 : round;
+
+                    if (desirePartitions == 0) {
+                        partitions = 1;
+                    } else if (desirePartitions <= limit) {
+                        partitions = desirePartitions;
+                    } else {
+                        partitions = limit;
+                    }
+
                     replicas = 1;
+
+                    log.info("First time [" + dataSource + "] desirePartitions[{}], currentPartitions[{}]",
+                            desirePartitions, partitions);
                 } else {
                     partitions = (Integer) currentDataSourceMetaData.get("partitions");
                     replicas = (Integer) currentDataSourceMetaData.get("replicas");
@@ -92,26 +110,30 @@ public class AutoScalingManager {
                     Long actualEvents = partitions * eventsPerTask;
 
                     log.info("Support events: " + actualEvents + " toDown: " + actualEvents * downPercent + " toUp: " + actualEvents * upPercent);
-                    log.info("Current events: " + events);
-                    log.info("Current partitions: " + partitions);
+                    log.info("Current(events[{}] partitions[{}])", events, partitions);
 
                     if (actualEvents * upPercent <= events) {
-                        Integer limit = tiersLimit.get(tier) != null ? tiersLimit.get(tier) : 1;
-                        if (partitions < limit) {
-                            partitions++;
+
+                        if (desirePartitions < limit) {
+                            if (desirePartitions == 0) {
+                                partitions = 1;
+                            } else {
+                                partitions = desirePartitions;
+                            }
+                            log.info("Increasing dataSource[{}], in [{}] partitions", dataSource, partitions);
                         } else {
-                            log.info("Tier[{}], Limits[{}], Limit["+limit+"]", tier, tiersLimit);
-                            log.warn("This dataSource is " + tier + " and it has " + partitions + " partitions! LIMITED.");
+                            partitions = limit;
+                            log.warn("DataSource {} limited!! Tier[" + tier + "], Limits[{}], Limit[" + limit + "], DesirePartitions[" + desirePartitions + "]",
+                                    dataSource, tiersLimit);
                         }
                     } else if (actualEvents * downPercent >= events) {
-                        if (partitions > 1) {
-                            partitions--;
-                        } else {
+                        if (desirePartitions == 0) {
                             partitions = 1;
+                        } else if (partitions > desirePartitions) {
+                            partitions = desirePartitions;
                         }
+                        log.info("Decreasing dataSource[{}], in [{}] partitions", dataSource, partitions);
                     }
-
-                    log.info("New partitions: " + partitions);
                 }
 
                 Map<String, Object> dataSourceMetaData = new HashMap<>();
@@ -119,26 +141,17 @@ public class AutoScalingManager {
                 dataSourceMetaData.put("replicas", replicas);
                 dataSourceMetaData.put("tier", tier);
 
-                log.info("Current dataSource: {} -> metadata: {}", dataSource , dataSourceMetaData);
+                log.info("Current dataSource[{}], metadata[{}], events[" + events + "]", dataSource, dataSourceMetaData);
                 dataSourceState.put(dataSource, dataSourceMetaData);
             }
         }
         log.info("Ending updateState autoscaling ...");
+
+        return dataSourceState;
     }
 
     public void resetStats() {
         for (String key : eventsState.keySet())
             eventsState.put(key, 0L);
-    }
-
-    public Integer getPartitions(String dataSource){
-        Map<String, Object> dsMetada = dataSourceState.get(dataSource);
-        Integer partitions = 1;
-
-        if(dsMetada != null){
-            partitions = dsMetada.get("partitions") == null ? 1 : (Integer) dsMetada.get("partitions");
-        }
-
-        return partitions;
     }
 }

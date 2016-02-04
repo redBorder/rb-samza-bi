@@ -21,16 +21,11 @@ public class LocationProcessor extends Processor<Map<String, Object>> {
     private static final Logger log = LoggerFactory.getLogger(LocationProcessor.class);
     private LocationV89Processor locv89;
     private LocationV10Processor locv10;
-    private MerakiProcessor meraki;
-    private Counter counter;
 
     public LocationProcessor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
         super(storeManager, enrichManager, config, context);
         locv89 = new LocationV89Processor(storeManager, enrichManager, config, context);
         locv10 = new LocationV10Processor(storeManager, enrichManager, config, context);
-        meraki = new MerakiProcessor(storeManager, enrichManager, config, context);
-
-        counter = context.getMetricsRegistry().newCounter(getClass().getName(), "messages");
     }
 
     @Override
@@ -40,7 +35,7 @@ public class LocationProcessor extends Processor<Map<String, Object>> {
 
     @Override
     @SuppressWarnings("unchecked cast")
-    public void process(Map<String, Object> message, MessageCollector collector) {
+    public void process(String stream, Map<String, Object> message, MessageCollector collector) {
         if (message.containsKey(LOC_STREAMING_NOTIFICATION)) {
             locv89.process(message, collector);
         } else if (message.containsKey(LOC_NOTIFICATIONS)){
@@ -48,6 +43,5 @@ public class LocationProcessor extends Processor<Map<String, Object>> {
         } else {
             log.warn("Unknow location message: {}", message);
         }
-        counter.inc();
     }
 }
