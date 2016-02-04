@@ -3,12 +3,15 @@ package net.redborder.samza.tasks;
 import net.redborder.samza.processors.Processor;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.PostgresqlManager;
+import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.metrics.Counter;
 import org.apache.samza.storage.kv.Entry;
 import org.apache.samza.storage.kv.KeyValueIterator;
 import org.apache.samza.storage.kv.KeyValueStore;
 import org.apache.samza.system.IncomingMessageEnvelope;
+import org.apache.samza.system.OutgoingMessageEnvelope;
+import org.apache.samza.system.SystemStream;
 import org.apache.samza.task.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,11 +55,11 @@ public class EnrichmentStreamTask implements StreamTask, InitableTask, Windowabl
 
         List<String> toDelete2 = new ArrayList<>();
         KeyValueIterator<String, Long> iter2 = countersStore.all();
-        while(iter1.hasNext()){
-            toDelete1.add(iter1.next().getKey());
+        while(iter2.hasNext()){
+            toDelete2.add(iter2.next().getKey());
         }
 
-        countersStore.deleteAll(toDelete1);
+        countersStore.deleteAll(toDelete2);
 
     }
 
@@ -79,6 +82,7 @@ public class EnrichmentStreamTask implements StreamTask, InitableTask, Windowabl
 
     @Override
     public void window(MessageCollector messageCollector, TaskCoordinator taskCoordinator) throws Exception {
+        log.info("Window Calling [{}]", windowTimes);
         if(windowTimes.equals(FIVE_MINUTES)) {
             postgresqlManager.update();
             postgresqlManager.updateSalts();
@@ -90,9 +94,15 @@ public class EnrichmentStreamTask implements StreamTask, InitableTask, Windowabl
         List<String> toReset = new ArrayList<>();
         while(iter.hasNext()){
             Entry<String, Long> count = iter.next();
-            log.info("Updateing flows count [{}]  [{}]", count.getKey(), count.getValue());
+            log.debug("Updating flows count [{}]  [{}]", count.getKey(), count.getValue());
             flowsNumberStore.put(count.getKey(), count.getValue());
             toReset.add(count.getKey());
+
+            Map<String, Object> metric = makeMetric(count.getKey(), count.getValue());
+
+            if(!metric.isEmpty()) {
+                messageCollector.send(new OutgoingMessageEnvelope(new SystemStream("kafka", "rb_monitor"), metric));
+            }
         }
 
         for(String key : toReset){
@@ -100,5 +110,28 @@ public class EnrichmentStreamTask implements StreamTask, InitableTask, Windowabl
         }
 
         windowTimes++;
+    }
+
+    private Map<String, Object> makeMetric(String key, Long value){
+        Map<String, Object> metric = new HashMap<>();
+
+        if(key != null && value != null) {
+            String taskName = context.getTaskName().getTaskName().split(" ")[1];
+            Integer container = context.getSamzaContainerContext().id;
+
+            String[] keys = key.split("_");
+
+            if(keys.length>=3){
+                metric.put("namespace_uuid", keys[keys.length - 1]);
+            }
+
+            metric.put("type", "enrichmentstreamtask");
+            metric.put("monitor", "enrichmentstreamtask_messages");
+            metric.put("timestamp", System.currentTimeMillis() / 1000L);
+            metric.put("sensor_name", String.format("samza-%s-%s-%s", container, taskName, key));
+            metric.put("value", value);
+        }
+
+        return metric;
     }
 }
