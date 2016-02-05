@@ -36,7 +36,7 @@ public class LocationLogicProcessor extends Processor<Map<String, Object>> {
     @Override
     public void process(Map<String, Object> message, MessageCollector collector) {
         String type = (String) message.get(TYPE);
-        if (type.equals("mse10") || type.equals("mse") || type.equals("nmsp-info") || type.equals("nmsp-measure") || type.equals("radius")) {
+        if (type != null && (type.equals("mse10") || type.equals("mse") || type.equals("nmsp-info") || type.equals("nmsp-measure") || type.equals("radius"))) {
             Map<String, Object> toDruid = new HashMap<>();
             Map<String, Object> toCache = new HashMap<>();
 
