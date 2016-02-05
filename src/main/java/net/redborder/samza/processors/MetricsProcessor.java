@@ -32,7 +32,7 @@ public class MetricsProcessor extends Processor<Object> {
     }
 
     @Override
-    public void process(Object message, MessageCollector collector) {
+    public void process(String stream, Object message, MessageCollector collector) {
         if (message instanceof Map) {
             Map<String, Object> messageMap = (Map<String, Object>) message;
             if (messageMap.containsKey("asMap")) {

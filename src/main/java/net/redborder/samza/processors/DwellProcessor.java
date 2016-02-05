@@ -34,7 +34,7 @@ public class DwellProcessor extends Processor<Map<String, Object>> {
     }
 
     @Override
-    public void process(Map<String, Object> message, MessageCollector collector) {
+    public void process(String stream, Map<String, Object> message, MessageCollector collector) {
         Object realTimestamp = message.get(TIMESTAMP);
         Long timestamp = System.currentTimeMillis() / 1000;
         String client;

@@ -19,7 +19,7 @@ public class DummyProcessor extends Processor<Map<String, Object>> {
     }
 
     @Override
-    public void process(Map<String, Object> message, MessageCollector collector) {
+    public void process(String stream, Map<String, Object> message, MessageCollector collector) {
         log.warn("The dummy process method was called!");
     }
 }

@@ -6,6 +6,7 @@ import net.redborder.samza.util.constants.Constants;
 
 import static net.redborder.samza.util.constants.Dimension.*;
 
+import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.storage.kv.KeyValueStore;
 import org.apache.samza.system.OutgoingMessageEnvelope;
@@ -22,6 +23,9 @@ public class LocationLogicProcessor extends Processor<Map<String, Object>> {
     private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_LOC_OUTPUT_TOPIC);
     private KeyValueStore<String, Map<String, Object>> storeLogic;
     public final static String LOCATION_STORE_LOGIC = "location-logic";
+    private static final String DATASOURCE = "rb_loc_post";
+    private KeyValueStore<String, Long> countersStore;
+    private KeyValueStore<String, Long> flowsNumber;
 
     private final List<String> dimToDruid = Arrays.asList(MARKET, MARKET_UUID, ORGANIZATION, ORGANIZATION_UUID,
             DEPLOYMENT, DEPLOYMENT_UUID, SENSOR_NAME, SENSOR_UUID, NAMESPACE, TYPE, TIMESTAMP);
@@ -31,10 +35,12 @@ public class LocationLogicProcessor extends Processor<Map<String, Object>> {
         this.storeManager = storeManager;
         this.enrichManager = enrichManager;
         storeLogic = storeManager.getStore(LOCATION_STORE_LOGIC);
+        countersStore = (KeyValueStore<String, Long>) context.getStore("counter");
+        flowsNumber = (KeyValueStore<String, Long>) context.getStore("flows-number");
     }
 
     @Override
-    public void process(Map<String, Object> message, MessageCollector collector) {
+    public void process(String stream, Map<String, Object> message, MessageCollector collector) {
         String type = (String) message.get(TYPE);
         if (type != null && (type.equals("mse10") || type.equals("mse") || type.equals("nmsp-info") || type.equals("nmsp-measure") || type.equals("radius"))) {
             Map<String, Object> toDruid = new HashMap<>();
@@ -143,6 +149,29 @@ public class LocationLogicProcessor extends Processor<Map<String, Object>> {
 
             storeLogic.put(client_mac + namespace_id, toCache);
             Map<String, Object> enrichmentEvent = enrichManager.enrich(toDruid);
+
+            String datasource = DATASOURCE;
+            String namespace = (String) enrichmentEvent.get(Dimension.NAMESPACE_UUID);
+
+            if (namespace != null) {
+                datasource = String.format("%s_%s", DATASOURCE, namespace);
+            }
+
+            Long counter = countersStore.get(datasource);
+
+            if(counter == null){
+                counter = 0L;
+            }
+
+            counter++;
+            countersStore.put(datasource, counter);
+
+            Long flows = flowsNumber.get(datasource);
+
+            if(flows != null){
+                enrichmentEvent.put("flows_count", flows);
+            }
+
             collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentEvent));
         }
     }

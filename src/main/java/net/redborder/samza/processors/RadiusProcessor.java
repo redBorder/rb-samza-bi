@@ -3,6 +3,7 @@ package net.redborder.samza.processors;
 import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.constants.Constants;
+import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.metrics.Counter;
 import org.apache.samza.storage.kv.KeyValueStore;
@@ -22,10 +23,15 @@ import static net.redborder.samza.util.constants.Dimension.*;
 public class RadiusProcessor extends Processor<Map<String, Object>> {
     private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_FLOW_OUTPUT_TOPIC);
     public final static String RADIUS_STORE = "radius";
+    private static final String DATASOURCE = "rb_flow";
     private static final Logger log = LoggerFactory.getLogger(RadiusProcessor.class);
+
     private final List<String> toDruid = Arrays.asList(MARKET, MARKET_UUID, ORGANIZATION, ORGANIZATION_UUID,
             DEPLOYMENT, DEPLOYMENT_UUID, SENSOR_NAME, SENSOR_UUID, NAMESPACE, SERVICE_PROVIDER, SERVICE_PROVIDER_UUID,
             NAMESPACE_UUID);
+
+    private KeyValueStore<String, Long> countersStore;
+    private KeyValueStore<String, Long> flowsNumber;
     private KeyValueStore<String, Map<String, Object>> storeRadius;
     private Counter messagesCounter;
     private StoreManager storeManager;
@@ -39,6 +45,8 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
         this.storeManager = storeManager;
         this.enrichManager = enrichManager;
         storeRadius = storeManager.getStore(RADIUS_STORE);
+        countersStore = (KeyValueStore<String, Long>) context.getStore("counter");
+        flowsNumber = (KeyValueStore<String, Long>) context.getStore("flows-number");
     }
 
     @Override
@@ -47,7 +55,7 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
     }
 
     @Override
-    public void process(Map<String, Object> message, MessageCollector collector) {
+    public void process(String stream, Map<String, Object> message, MessageCollector collector) {
         Map<String, Object> toCache = new HashMap<>();
         Map<String, Object> toDruid = new HashMap<>();
 
@@ -138,6 +146,23 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
             Map<String, Object> storeMessage = storeManager.enrich(toDruid);
             storeMessage.putAll(toDruid);
             Map<String, Object> enrichmentMessage = enrichManager.enrich(storeMessage);
+
+            String datasource = DATASOURCE;
+            String namespaceUUID = (String) enrichmentMessage.get(Dimension.NAMESPACE_UUID);
+
+            if (namespaceUUID != null) {
+                datasource = String.format("%s_%s", DATASOURCE, namespaceUUID);
+            }
+
+            Long counter = countersStore.get(datasource);
+            counter++;
+            countersStore.put(datasource, counter);
+
+            Long flows = flowsNumber.get(datasource);
+
+            if(flows != null){
+                enrichmentMessage.put("flows_count", flows);
+            }
 
             collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentMessage));
         }
