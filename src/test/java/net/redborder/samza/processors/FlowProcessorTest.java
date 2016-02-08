@@ -50,7 +50,7 @@ public class FlowProcessorTest extends TestCase {
         for (String store : storesListAsString.split(",")) {
             List<String> keys = Arrays.asList(properties.getProperty("redborder.store." + store + ".keys").split(","));
             String storeOverwriteStr = properties.getProperty("redborder.store." + store + ".overwrite");
-            boolean storeOverwrite = (storeOverwriteStr == null || storeOverwriteStr == "true");
+            boolean storeOverwrite = (storeOverwriteStr == null || storeOverwriteStr.equals("true"));
 
             when(config.getList("redborder.store." + store + ".keys", Arrays.asList(CLIENT_MAC, NAMESPACE_UUID))).thenReturn(keys);
             when(config.getBoolean("redborder.store." + store + ".overwrite", true)).thenReturn(storeOverwrite);

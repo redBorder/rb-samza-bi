@@ -21,7 +21,15 @@ public class MockTaskContext implements TaskContext {
 
     @Override
     public Object getStore(String s) {
-        return new MockKeyValueStore();
+        Object m;
+
+        if (s.equals("counter")) {
+            m = new MockKeyValueLongStore();
+        } else {
+            m = new MockKeyValueStore();
+        }
+
+        return m;
     }
 
     @Override

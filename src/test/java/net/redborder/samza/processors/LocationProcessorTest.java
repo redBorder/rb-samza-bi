@@ -3,6 +3,7 @@ package net.redborder.samza.processors;
 import junit.framework.TestCase;
 import net.redborder.samza.enrichments.EnrichManager;
 import net.redborder.samza.store.StoreManager;
+import net.redborder.samza.util.MockKeyValueLongStore;
 import net.redborder.samza.util.MockKeyValueStore;
 import net.redborder.samza.util.MockMessageCollector;
 import net.redborder.samza.util.MockTaskContext;
@@ -27,6 +28,7 @@ import static org.mockito.Mockito.when;
 public class LocationProcessorTest extends TestCase {
 
     static MockKeyValueStore storeLocation;
+    static MockKeyValueLongStore storeCounter;
 
     static LocationProcessor locationProcessor;
     static EnrichManager enrichManager;

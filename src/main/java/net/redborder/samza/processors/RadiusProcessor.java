@@ -155,6 +155,11 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
             }
 
             Long counter = countersStore.get(datasource);
+
+            if(counter == null){
+                counter = 0L;
+            }
+
             counter++;
             countersStore.put(datasource, counter);
 
