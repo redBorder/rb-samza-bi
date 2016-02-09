@@ -2,6 +2,7 @@ package net.redborder.samza.tasks;
 
 import com.google.api.client.util.Maps;
 import net.redborder.samza.indexing.autoscaling.AutoScalingManager;
+import net.redborder.samza.indexing.autoscaling.DataSourceMetadata;
 import org.apache.samza.config.Config;
 import org.apache.samza.metrics.Counter;
 import org.apache.samza.system.IncomingMessageEnvelope;
@@ -34,7 +35,6 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
     @Override
     public void window(MessageCollector messageCollector, TaskCoordinator taskCoordinator) throws Exception {
         dataSourcesStates.putAll(autoScalingManager.updateStates());
-        autoScalingManager.resetStats();
     }
 
     @Override
@@ -90,11 +90,14 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
         String datasource = defaultDatasource;
 
         if (useNamespace && namespaceId != null) {
-            Object tier = message.get(TIER) == null ? "bronze" : message.get(TIER);
             Object flowsCount = message.get("flows_count");
+            Integer maxPartitions = (Integer) message.get("index_partitions");
+            Integer replicas = (Integer)message.get("index_replicas");
+
             String namespaceIdStr = String.valueOf(namespaceId);
             datasource = defaultDatasource + "_" + namespaceIdStr;
-            autoScalingManager.updateEvents(datasource + "-autoscaling-" + tier, flowsCount);
+
+            autoScalingManager.updateEvents(datasource, new DataSourceMetadata(maxPartitions, replicas, flowsCount));
         }
 
         return datasource;

@@ -33,10 +33,10 @@ public class ApStateProcessor extends Processor<Map<String, Object>> {
         Map<String, Object> messageEnrichmentStore = this.storeManager.enrich(message);
 
         String datasource = DATASOURCE;
-        String namespace = (String) messageEnrichmentStore.get(Dimension.NAMESPACE_UUID);
+        Object namespace = messageEnrichmentStore.get(Dimension.NAMESPACE_UUID);
 
         if (namespace != null) {
-            datasource = String.format("%s_%s", DATASOURCE, namespace);
+            datasource = String.format("%s_%s", DATASOURCE, namespace.toString());
         }
 
         Long counter = countersStore.get(datasource);

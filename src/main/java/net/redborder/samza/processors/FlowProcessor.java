@@ -47,10 +47,10 @@ public class FlowProcessor extends Processor<Map<String, Object>> {
         List<Map<String, Object>> splittedMsg = SplitFlowFunction.split(messageEnrichmentLocal);
 
         String datasource = DATASOURCE;
-        String namespace = (String) messageEnrichmentLocal.get(Dimension.NAMESPACE_UUID);
+        Object namespace = messageEnrichmentLocal.get(Dimension.NAMESPACE_UUID);
 
         if (namespace != null) {
-            datasource = String.format("%s_%s", DATASOURCE, namespace);
+            datasource = String.format("%s_%s", DATASOURCE, namespace.toString());
         }
 
         Long counter = countersStore.get(datasource);

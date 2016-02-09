@@ -38,14 +38,14 @@ public class DwellProcessor extends Processor<Map<String, Object>> {
         Object realTimestamp = message.get(TIMESTAMP);
         Long timestamp = System.currentTimeMillis() / 1000;
         String client;
-        String namespace;
+        Object namespace;
 
         if (message.containsKey(LOC_NOTIFICATIONS)) {
             List<Map<String, Object>> messages = (ArrayList) message.get(LOC_NOTIFICATIONS);
 
             for (Map<String, Object> msg : messages) {
                 timestamp = (Long) msg.get(TIMESTAMP) / 1000L;
-                namespace = (String) msg.get(NAMESPACE_UUID);
+                namespace = msg.get(NAMESPACE_UUID);
                 client = (String) msg.get(LOC_DEVICEID);
                 logic(timestamp, namespace, client);
             }
@@ -55,7 +55,7 @@ public class DwellProcessor extends Processor<Map<String, Object>> {
             String dateString = (String) mseEventContent.get(TIMESTAMP);
             Map<String, Object> location = (Map<String, Object>) mseEventContent.get(LOC_LOCATION);
             client = (String) location.get(LOC_MACADDR);
-            namespace = (String) message.get(NAMESPACE_UUID);
+            namespace = message.get(NAMESPACE_UUID);
 
             if (dateString != null) {
                 timestamp = new DateTime(dateString).withZone(DateTimeZone.UTC).getMillis() / 1000;
@@ -73,7 +73,7 @@ public class DwellProcessor extends Processor<Map<String, Object>> {
             }
 
             client = (String) message.get(CLIENT_MAC);
-            namespace = (String) message.get(NAMESPACE_UUID);
+            namespace = message.get(NAMESPACE_UUID);
             logic(timestamp, namespace, client);
         } else if (message.containsKey(CALLING_STATION_ID)) {
             if (realTimestamp instanceof String) {
@@ -86,14 +86,14 @@ public class DwellProcessor extends Processor<Map<String, Object>> {
             }
 
             client = (String) message.get(CALLING_STATION_ID);
-            namespace = (String) message.get(NAMESPACE_UUID);
+            namespace = message.get(NAMESPACE_UUID);
             logic(timestamp, namespace, client);
         } else {
             log.warn("Dwell message doesn't process: [{}]", message);
         }
     }
 
-    private void logic(Long timestamp, String namespace, String client) {
+    private void logic(Long timestamp, Object namespace, String client) {
         if (client != null) {
             client = client.toLowerCase();
             String namespace_id = namespace == null ? "" : namespace.toString();

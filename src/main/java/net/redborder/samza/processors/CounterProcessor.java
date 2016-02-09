@@ -22,7 +22,7 @@ public class CounterProcessor extends Processor<Map<String, Object>> {
 
     @Override
     public void process(String stream, Map<String, Object> message, MessageCollector collector) {
-        String namespaceUUID = (String) message.get(Dimension.NAMESPACE_UUID);
+        Object namespaceUUID = message.get(Dimension.NAMESPACE_UUID);
 
         String baseStream = "";
 
@@ -37,7 +37,7 @@ public class CounterProcessor extends Processor<Map<String, Object>> {
         else if (stream.contains("rb_social"))
             baseStream = "rb_social";
 
-        String id = namespaceUUID != null ? baseStream + "_" + namespaceUUID : baseStream;
+        String id = namespaceUUID != null ? baseStream + "_" + namespaceUUID.toString() : baseStream;
 
         Counter count = counters.get(id);
 
