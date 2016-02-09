@@ -55,7 +55,7 @@ public class AutoScalingManager {
 
     public Map<String, Map<String, Object>> updateStates() {
         log.info("Starting updateState autoscaling ...");
-        log.info("The current state is: " + eventsState);
+        log.debug("The current state is: " + eventsState);
         for (Map.Entry<String, DataSourceMetadata> entry : eventsState.entrySet()) {
             String dataSource = entry.getKey();
 
@@ -74,9 +74,7 @@ public class AutoScalingManager {
                 Integer partitions;
                 Integer replicas;
 
-                log.info("Current dataSource: {} -> metadata: {}", dataSource, currentDataSourceMetaData);
                 Integer limit = entry.getValue().maxPartitions();
-
                 Integer desirePartitions = (int) Math.ceil(events.floatValue() / eventsPerTask);
 
                 if (currentDataSourceMetaData == null) {
@@ -99,9 +97,7 @@ public class AutoScalingManager {
 
                     Long actualEvents = partitions * eventsPerTask;
 
-                    log.info("Support events: " + actualEvents + " toDown: " + actualEvents * downPercent + " toUp: " + actualEvents * upPercent);
-                    log.info("Current(events[{}] partitions[{}])", events, partitions);
-
+                    log.info("[{}] Support events: " + actualEvents + " toDown: " + actualEvents * downPercent + " toUp: " + actualEvents * upPercent, dataSource);
                     if (actualEvents * upPercent <= events) {
 
                         if (desirePartitions < limit) {
@@ -110,10 +106,10 @@ public class AutoScalingManager {
                             } else {
                                 partitions = desirePartitions;
                             }
-                            log.info("Increasing dataSource[{}], in [{}] partitions", dataSource, partitions);
+                            log.debug("Increasing dataSource[{}], in [{}] partitions", dataSource, partitions);
                         } else {
                             partitions = limit;
-                            log.warn("DataSource {} limited! Limit[" + limit + "], DesirePartitions[" + desirePartitions + "]",
+                            log.warn("[{}] limited! Limit[" + limit + "], DesirePartitions[" + desirePartitions + "]",
                                     dataSource);
                         }
                     } else if (actualEvents * downPercent >= events) {
@@ -122,7 +118,7 @@ public class AutoScalingManager {
                         } else if (partitions > desirePartitions) {
                             partitions = desirePartitions;
                         }
-                        log.info("Decreasing dataSource[{}], in [{}] partitions", dataSource, partitions);
+                        log.debug("Decreasing dataSource[{}], in [{}] partitions", dataSource, partitions);
                     }
                 }
 
@@ -130,7 +126,7 @@ public class AutoScalingManager {
                 dataSourceMetaData.put("partitions", partitions);
                 dataSourceMetaData.put("replicas", replicas);
 
-                log.info("Current dataSource[{}], metadata[{}], events[" + events + "]", dataSource, dataSourceMetaData);
+                log.info("[{}], metadata[{}], events[" + events + "]", dataSource, dataSourceMetaData);
                 dataSourceState.put(dataSource, dataSourceMetaData);
             }
         }

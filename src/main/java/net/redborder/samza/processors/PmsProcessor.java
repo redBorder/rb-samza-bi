@@ -40,7 +40,7 @@ public class PmsProcessor extends Processor<Map<String, Object>> {
 
         String clientMac = (String) enrichmentMsg.get(CLIENT_MAC);
         String guestName = (String) enrichmentMsg.get(GUEST_NAME);
-        String namespace = (String) enrichmentMsg.get(NAMESPACE_UUID);
+        Object namespace = enrichmentMsg.get(NAMESPACE_UUID);
         String clientGender = (String) enrichmentMsg.get(CLIENT_GENDER);
         String clientAuth = (String) enrichmentMsg.get(AUTH_TYPE);
         String staffName = (String) enrichmentMsg.get(STAFF_NAME);

@@ -56,7 +56,7 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
         Double latitude, longitude;
         String[] zone;
 
-        String namespace_id = message.get(NAMESPACE_UUID) == null ? "" : (String) message.get(NAMESPACE_UUID);
+        Object namespace_id = message.get(NAMESPACE_UUID) == null ? "" : message.get(NAMESPACE_UUID);
         mseEventContent = (Map<String, Object>) message.get(LOC_STREAMING_NOTIFICATION);
 
         if (mseEventContent != null) {
@@ -165,7 +165,7 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
             Map<String, Object> enrichmentEvent = enrichManager.enrich(storeEnrichment);
 
             String datasource = DATASOURCE;
-            String namespace = (String) enrichmentEvent.get(Dimension.NAMESPACE_UUID);
+            Object namespace = enrichmentEvent.get(Dimension.NAMESPACE_UUID);
 
             if (namespace != null) {
                 datasource = String.format("%s_%s", DATASOURCE, namespace);

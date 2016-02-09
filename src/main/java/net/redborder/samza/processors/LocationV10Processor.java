@@ -93,7 +93,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                 Map<String, Object> toDruid = new HashMap<>();
 
                 String clientMac = (String) msg.get(LOC_DEVICEID);
-                String namespace_id = msg.get(NAMESPACE_UUID) == null ? "" : (String) msg.get(NAMESPACE_UUID);
+                Object namespace_id = msg.get(NAMESPACE_UUID) == null ? "" : msg.get(NAMESPACE_UUID);
 
                 if (msg.get(LOC_SSID) != null)
                     toCache.put(WIRELESS_ID, msg.get(LOC_SSID));
@@ -168,7 +168,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                 Map<String, Object> enrichmentEvent = enrichManager.enrich(storeEnrichment);
 
                 String datasource = DATASOURCE;
-                String namespace = (String) enrichmentEvent.get(Dimension.NAMESPACE_UUID);
+                Object namespace = enrichmentEvent.get(Dimension.NAMESPACE_UUID);
 
                 if (namespace != null) {
                     datasource = String.format("%s_%s", DATASOURCE, namespace);
@@ -207,7 +207,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                 Map<String, Object> toCache = new HashMap<>();
                 Map<String, Object> toDruid = new HashMap<>();
 
-                String namespace_id = msg.get(NAMESPACE_UUID) == null ? "" : (String) msg.get(NAMESPACE_UUID);
+                Object namespace_id = msg.get(NAMESPACE_UUID) == null ? "" : msg.get(NAMESPACE_UUID);
                 String clientMac = (String) msg.get(LOC_DEVICEID);
                 String locationMapHierarchy = (String) msg.get(LOC_MAP_HIERARCHY_V10);
 
@@ -270,7 +270,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                 Map<String, Object> enrichmentEvent = enrichManager.enrich(storeEnrichment);
 
                 String datasource = DATASOURCE;
-                String namespace = (String) enrichmentEvent.get(Dimension.NAMESPACE_UUID);
+                Object namespace = enrichmentEvent.get(Dimension.NAMESPACE_UUID);
 
                 if (namespace != null) {
                     datasource = String.format("%s_%s", DATASOURCE, namespace);

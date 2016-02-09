@@ -5,10 +5,15 @@ public class DataSourceMetadata {
     private Integer replicas;
     private Long events;
 
-    public DataSourceMetadata(Integer maxPartitions, Integer replicas, Long events){
+    public DataSourceMetadata(Integer maxPartitions, Integer replicas, Object events){
         this.maxPartitions = maxPartitions;
         this.replicas = replicas;
-        this.events = events;
+
+        if(events instanceof  Long) {
+            this.events = (Long) events;
+        } else if(events instanceof Integer){
+            this.events = ((Integer) events).longValue();
+        }
     }
 
     public Integer maxPartitions(){
@@ -21,5 +26,10 @@ public class DataSourceMetadata {
 
     public Long events(){
         return events == null ? 0L : events;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("[Events[%s] Partitions[%s] Replicas[%s]]", events, maxPartitions, replicas);
     }
 }

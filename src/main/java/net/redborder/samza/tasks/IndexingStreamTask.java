@@ -90,9 +90,9 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
         String datasource = defaultDatasource;
 
         if (useNamespace && namespaceId != null) {
-            Long flowsCount = (Long) message.get("flows_count");
-            Integer maxPartitions = (Integer) message.get("flows_count");
-            Integer replicas = (Integer)message.get("flows_count");
+            Object flowsCount = message.get("flows_count");
+            Integer maxPartitions = (Integer) message.get("index_partitions");
+            Integer replicas = (Integer)message.get("index_replicas");
 
             String namespaceIdStr = String.valueOf(namespaceId);
             datasource = defaultDatasource + "_" + namespaceIdStr;

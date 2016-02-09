@@ -52,9 +52,9 @@ public class LocationLogicProcessor extends Processor<Map<String, Object>> {
             String newCampus = (String) message.get(CAMPUS_UUID);
             String newZone = (String) message.get(ZONE_UUID);
             String wirelessStation = (String) message.get(WIRELESS_STATION);
-            String namespace_id = message.get(NAMESPACE_UUID) == null ? "" : (String) message.get(NAMESPACE_UUID);
+            Object namespace_id = message.get(NAMESPACE_UUID) == null ? "" : message.get(NAMESPACE_UUID);
 
-            Map<String, Object> locationCache = storeLogic.get(client_mac + namespace_id);
+            Map<String, Object> locationCache = storeLogic.get(client_mac + namespace_id.toString());
 
             if (newFloor == null)
                 newFloor = "unknown";
@@ -147,11 +147,11 @@ public class LocationLogicProcessor extends Processor<Map<String, Object>> {
             toCache.put(ZONE_UUID, newZone);
             toCache.put(WIRELESS_STATION, wirelessStation);
 
-            storeLogic.put(client_mac + namespace_id, toCache);
+            storeLogic.put(client_mac + namespace_id.toString(), toCache);
             Map<String, Object> enrichmentEvent = enrichManager.enrich(toDruid);
 
             String datasource = DATASOURCE;
-            String namespace = (String) enrichmentEvent.get(Dimension.NAMESPACE_UUID);
+            Object namespace = enrichmentEvent.get(Dimension.NAMESPACE_UUID);
 
             if (namespace != null) {
                 datasource = String.format("%s_%s", DATASOURCE, namespace);

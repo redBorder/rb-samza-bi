@@ -79,10 +79,10 @@ public class StoreManager {
                 Map<String, Object> contents = keyValueStore.get(mergeKey);
 
                 if(contents == null){
-                    String key = (String) enrichment.get(keys.get(0));
+                    Object key = enrichment.get(keys.get(0));
 
                     if(key != null) {
-                        contents = keyValueStore.get(key);
+                        contents = keyValueStore.get(key.toString());
                     }
                 }
 

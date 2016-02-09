@@ -64,7 +64,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
         String type = (String) message.get(TYPE);
         String mac = (String) message.get(CLIENT_MAC);
 
-        String namespace = (String) message.get(NAMESPACE_UUID);
+        Object namespace = message.get(NAMESPACE_UUID);
         String namespace_id = namespace == null ? "" : namespace.toString();
 
         if (type != null && type.equals(NMSP_TYPE_MEASURE)) {
@@ -161,7 +161,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                     Map<String, Object> enrichmentEvent = enrichManager.enrich(storeEnrichment);
 
                     String datasource = DATASOURCE;
-                    String namespaceUUID = (String) enrichmentEvent.get(Dimension.NAMESPACE_UUID);
+                    Object namespaceUUID = enrichmentEvent.get(Dimension.NAMESPACE_UUID);
 
                     if (namespaceUUID != null) {
                         datasource = String.format("%s_%s", DATASOURCE, namespaceUUID);
@@ -237,7 +237,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
             Map<String, Object> enrichmentEvent = enrichManager.enrich(storeEnrichment);
 
             String datasource = DATASOURCE;
-            String namespaceUUID = (String) enrichmentEvent.get(Dimension.NAMESPACE_UUID);
+            Object namespaceUUID = enrichmentEvent.get(Dimension.NAMESPACE_UUID);
 
             if (namespaceUUID != null) {
                 datasource = String.format("%s_%s", DATASOURCE, namespaceUUID);
