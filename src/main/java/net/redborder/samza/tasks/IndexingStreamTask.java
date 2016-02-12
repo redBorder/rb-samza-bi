@@ -74,7 +74,7 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
 
             if (systemStream != null) {
                 try {
-                    collector.send(new OutgoingMessageEnvelope(systemStream, getPartitions(systemStream.getStream()), message));
+                    collector.send(new OutgoingMessageEnvelope(systemStream, getPR(systemStream.getStream()), message));
                     counter.inc();
                 } catch (Exception ex) {
                     log.error("Error sending to tranquility!! ", ex);
@@ -106,14 +106,19 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
     }
 
 
-    private Integer getPartitions(String dataSource) {
+    private int [] getPR(String dataSource) {
         Map<String, Object> dsMetada = dataSourcesStates.get(dataSource);
         Integer partitions = 1;
+        Integer replicas = 1;
 
         if (dsMetada != null) {
             partitions = dsMetada.get("partitions") == null ? 1 : (Integer) dsMetada.get("partitions");
         }
 
-        return partitions;
+        if (dsMetada != null) {
+            replicas = dsMetada.get("replicas") == null ? 1 : (Integer) dsMetada.get("replicas");
+        }
+
+        return new int[]{partitions, replicas};
     }
 }

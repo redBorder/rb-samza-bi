@@ -30,14 +30,13 @@ import static net.redborder.samza.util.constants.Dimension.*;
 public class HashtagBeamFactory implements BeamFactory {
 
     @Override
-    public Beam<Object> makeBeam(SystemStream stream, int partitions, Config config) {
+    public Beam<Object> makeBeam(SystemStream stream, int partitions, int replicas, Config config) {
         final int maxRows = Integer.valueOf(config.get("redborder.beam.state.maxrows", "200000"));
         final String intermediatePersist = config.get("redborder.beam.state.intermediatePersist", "PT20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
         final long indexGranularity = Long.valueOf(config.get("systems.druid_hashtag.beam.indexGranularity", "60000"));
 
         final String dataSource = stream.getStream();
-        final Integer replicas = 1;
 
         final List<String> dimensions = ImmutableList.of(
                 SENSOR_NAME, SENSOR_UUID, DEPLOYMENT, DEPLOYMENT_UUID, NAMESPACE, NAMESPACE_UUID, TYPE, VALUE,

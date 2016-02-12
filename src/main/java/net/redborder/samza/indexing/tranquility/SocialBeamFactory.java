@@ -29,14 +29,13 @@ import static net.redborder.samza.util.constants.Dimension.*;
 
 public class SocialBeamFactory implements BeamFactory {
     @Override
-    public Beam<Object> makeBeam(SystemStream stream, int partitions, Config config) {
+    public Beam<Object> makeBeam(SystemStream stream, int partitions, int replicas, Config config) {
         final int maxRows = Integer.valueOf(config.get("redborder.beam.social.maxrows", "200000"));
         final String intermediatePersist = config.get("redborder.beam.social.intermediatePersist", "PT20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
         final long indexGranularity = Long.valueOf(config.get("systems.druid_social.beam.indexGranularity", "60000"));
 
         final String dataSource = stream.getStream();
-        final Integer replicas = 1;
 
         final List<String> dimensions = ImmutableList.of(
                 CLIENT_LATLONG, SRC_COUNTRY_CODE, SENSOR_UUID, DEPLOYMENT, DEPLOYMENT_UUID, NAMESPACE, NAMESPACE_UUID, USER_SCREEN_NAME,

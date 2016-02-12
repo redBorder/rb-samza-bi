@@ -40,14 +40,13 @@ public class FlowBeamFactory implements BeamFactory {
     private static final Logger log = LoggerFactory.getLogger(FlowBeamFactory.class);
 
     @Override
-    public Beam<Object> makeBeam(SystemStream stream, int partitions, Config config) {
+    public Beam<Object> makeBeam(SystemStream stream, int partitions, int replicas, Config config) {
         final int maxRows = Integer.valueOf(config.get("redborder.beam.flow.maxrows", "200000"));
         final String intermediatePersist = config.get("redborder.beam.flow.intermediatePersist", "pt20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
         final long indexGranularity = Long.valueOf(config.get("systems.druid_flow.beam.indexGranularity", "60000"));
 
         final String dataSource = stream.getStream();
-        final Integer replicas = 1;
 
         final List<String> dimensions = ImmutableList.of(
                 APPLICATION_ID_NAME, BIFLOW_DIRECTION, CONVERSATION, DIRECTION,
