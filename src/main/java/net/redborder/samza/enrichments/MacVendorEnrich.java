@@ -8,7 +8,8 @@ import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
 
-import static net.redborder.samza.util.constants.Dimension.*;
+import static net.redborder.samza.util.constants.Dimension.CLIENT_MAC;
+import static net.redborder.samza.util.constants.Dimension.CLIENT_MAC_VENDOR;
 
 public class MacVendorEnrich implements IEnrich {
     private static final Logger log = LoggerFactory.getLogger(MacVendorEnrich.class);

@@ -11,13 +11,12 @@ import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static net.redborder.samza.util.constants.Dimension.*;
-
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static net.redborder.samza.util.constants.Dimension.*;
 
 public class DwellProcessor extends Processor<Map<String, Object>> {
     public final static String DWELL_STORE = "dwell";

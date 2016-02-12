@@ -23,8 +23,6 @@ import java.util.Map;
 
 import static net.redborder.samza.util.constants.Aggregators.EVENTS_AGGREGATOR;
 import static net.redborder.samza.util.constants.Dimension.*;
-import static net.redborder.samza.util.constants.Dimension.NAMESPACE;
-import static net.redborder.samza.util.constants.Dimension.NAMESPACE_UUID;
 
 public class IotBeamFactory implements BeamFactory {
     @Override

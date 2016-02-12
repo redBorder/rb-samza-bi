@@ -16,11 +16,10 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.runners.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
-import static net.redborder.samza.util.constants.Dimension.*;
-
 import java.util.HashMap;
 import java.util.Map;
 
+import static net.redborder.samza.util.constants.Dimension.*;
 import static org.mockito.Matchers.anyMap;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;

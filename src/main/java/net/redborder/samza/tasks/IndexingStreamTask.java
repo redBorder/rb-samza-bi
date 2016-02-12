@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 import static net.redborder.samza.util.constants.Constants.*;
-import static net.redborder.samza.util.constants.Dimension.*;
+import static net.redborder.samza.util.constants.Dimension.NAMESPACE_UUID;
 
 public class IndexingStreamTask implements StreamTask, InitableTask, WindowableTask {
 

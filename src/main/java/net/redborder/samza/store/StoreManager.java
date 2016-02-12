@@ -2,8 +2,6 @@ package net.redborder.samza.store;
 
 import net.redborder.samza.processors.LocationLogicProcessor;
 import org.apache.samza.config.Config;
-import org.apache.samza.storage.kv.Entry;
-import org.apache.samza.storage.kv.KeyValueIterator;
 import org.apache.samza.storage.kv.KeyValueStore;
 import org.apache.samza.task.TaskContext;
 import org.slf4j.Logger;

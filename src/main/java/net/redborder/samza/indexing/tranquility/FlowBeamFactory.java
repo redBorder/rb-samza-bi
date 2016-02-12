@@ -1,17 +1,10 @@
 package net.redborder.samza.indexing.tranquility;
 
-import com.amazonaws.util.json.Jackson;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableList;
 import com.metamx.common.Granularity;
-import com.metamx.common.scala.timekeeper;
-import com.metamx.emitter.core.LoggingEmitter;
-import com.metamx.emitter.service.ServiceEmitter;
 import com.metamx.tranquility.beam.Beam;
-import com.metamx.tranquility.beam.ClusteredBeam;
 import com.metamx.tranquility.beam.ClusteredBeamTuning;
 import com.metamx.tranquility.druid.*;
-import com.metamx.tranquility.partition.Partitioner;
 import com.metamx.tranquility.samza.BeamFactory;
 import com.metamx.tranquility.typeclass.Timestamper;
 import io.druid.data.input.impl.TimestampSpec;

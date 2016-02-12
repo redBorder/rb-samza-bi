@@ -3,7 +3,6 @@ package net.redborder.samza.tasks;
 import net.redborder.samza.processors.Processor;
 import net.redborder.samza.store.StoreManager;
 import net.redborder.samza.util.PostgresqlManager;
-import net.redborder.samza.util.constants.Dimension;
 import org.apache.samza.config.Config;
 import org.apache.samza.metrics.Counter;
 import org.apache.samza.storage.kv.Entry;

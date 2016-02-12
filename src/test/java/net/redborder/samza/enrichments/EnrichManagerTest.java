@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static net.redborder.samza.util.constants.Dimension.*;
-
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 

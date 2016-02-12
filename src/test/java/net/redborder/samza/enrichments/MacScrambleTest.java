@@ -2,7 +2,6 @@ package net.redborder.samza.enrichments;
 
 import junit.framework.TestCase;
 import net.redborder.samza.util.MacScramble;
-import net.redborder.samza.util.constants.Dimension;
 import org.bouncycastle.util.encoders.Hex;
 import org.junit.Test;
 import org.junit.runner.RunWith;

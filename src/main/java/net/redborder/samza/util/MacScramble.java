@@ -1,12 +1,12 @@
 package net.redborder.samza.util;
 
 
-import java.security.GeneralSecurityException;
-import java.util.Arrays;
-
 import org.bouncycastle.crypto.digests.SHA256Digest;
 import org.bouncycastle.crypto.generators.PKCS5S2ParametersGenerator;
 import org.bouncycastle.crypto.params.KeyParameter;
+
+import java.security.GeneralSecurityException;
+import java.util.Arrays;
 
 public class MacScramble {
     private static byte[] mac_prefix = "fdah7usad782345@".getBytes();
