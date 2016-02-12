@@ -20,4 +20,6 @@ public class Constants {
     public static final String IOC_TOPIC = "rb_ioc_post";
     public static final String CHANGES_DATASOURCE = "rb_changes";
     public static final String CHANGES_TOPIC = "rb_changes";
+    public static final String IOT_TOPIC = "rb_iot_post";
+    public static final String IOT_DATASOURCE = "rb_iot";
 }
