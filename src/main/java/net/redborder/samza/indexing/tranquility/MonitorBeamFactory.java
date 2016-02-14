@@ -21,6 +21,7 @@ import org.joda.time.Period;
 import java.util.List;
 import java.util.Map;
 
+import static net.redborder.samza.util.constants.Aggregators.EVENTS_AGGREGATOR;
 import static net.redborder.samza.util.constants.Dimension.TIMESTAMP;
 
 public class MonitorBeamFactory implements BeamFactory {
@@ -36,7 +37,7 @@ public class MonitorBeamFactory implements BeamFactory {
         final List<String> exclusions = ImmutableList.of("unit", "type");
 
         final List<AggregatorFactory> aggregators = ImmutableList.<AggregatorFactory>of(
-                new CountAggregatorFactory("events"),
+                new CountAggregatorFactory(EVENTS_AGGREGATOR),
                 new DoubleSumAggregatorFactory("sum_value", "value"),
                 new MaxAggregatorFactory("max_value", "value"),
                 new MinAggregatorFactory("min_value", "value"));
