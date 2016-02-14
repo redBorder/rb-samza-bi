@@ -133,6 +133,13 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
             }
 
             for (String dimension : dimToDruid) {
+                Object value = mseEventContent.get(dimension);
+                if (value != null) {
+                    toDruid.put(dimension, value);
+                }
+            }
+
+            for (String dimension : dimToDruid) {
                 Object value = message.get(dimension);
                 if (value != null) {
                     toDruid.put(dimension, value);
