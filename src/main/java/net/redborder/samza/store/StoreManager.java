@@ -1,6 +1,7 @@
 package net.redborder.samza.store;
 
 import net.redborder.samza.processors.LocationLogicProcessor;
+import net.redborder.samza.util.PostgresqlManager;
 import org.apache.samza.config.Config;
 import org.apache.samza.storage.kv.KeyValueStore;
 import org.apache.samza.task.TaskContext;
@@ -58,8 +59,58 @@ public class StoreManager {
     public Map<String, Object> enrich(Map<String, Object> message) {
         Map<String, Object> enrichment = new HashMap<>(message);
 
-        for(String store : storesList){
-            if(!store.equals(LocationLogicProcessor.LOCATION_STORE_LOGIC)) {
+        for (String store : storesList) {
+            if (store.equals(PostgresqlManager.SENSOR_PSQL_STORE) || store.equals(PostgresqlManager.WLC_PSQL_STORE)) {
+                Store storeData = stores.get(store);
+                List<String> keys = storeData.getKeys();
+                String namespace = (String) message.get(NAMESPACE_UUID);
+
+                StringBuilder builder = new StringBuilder();
+
+                for (String key : keys) {
+                    Object kv = enrichment.get(key);
+                    if (kv != null) {
+                        builder.append(kv);
+                    }
+                }
+
+                String mergeKey = builder.toString();
+                KeyValueStore<String, Map<String, Object>> keyValueStore = storeData.getStore();
+                Map<String, Object> contents = keyValueStore.get(mergeKey);
+
+                if (contents == null) {
+                    Object key = enrichment.get(keys.get(0));
+
+                    if (key != null) {
+                        contents = keyValueStore.get(key.toString());
+                    }
+                }
+
+                if (contents != null) {
+                    String psqlNamespace = (String) contents.get(NAMESPACE_UUID);
+                    if (namespace != null && psqlNamespace != null) {
+                        if(namespace.equals(psqlNamespace)){
+                            if (storeData.mustOverwrite()) {
+                                enrichment.putAll(contents);
+                            } else {
+                                Map<String, Object> newData = new HashMap<>();
+                                newData.putAll(contents);
+                                newData.putAll(enrichment);
+                                enrichment = newData;
+                            }
+                        }
+                    } else {
+                        if (storeData.mustOverwrite()) {
+                            enrichment.putAll(contents);
+                        } else {
+                            Map<String, Object> newData = new HashMap<>();
+                            newData.putAll(contents);
+                            newData.putAll(enrichment);
+                            enrichment = newData;
+                        }
+                    }
+                }
+            } else if (!store.equals(LocationLogicProcessor.LOCATION_STORE_LOGIC)) {
                 Store storeData = stores.get(store);
                 List<String> keys = storeData.getKeys();
                 StringBuilder builder = new StringBuilder();
@@ -76,15 +127,15 @@ public class StoreManager {
                 KeyValueStore<String, Map<String, Object>> keyValueStore = storeData.getStore();
                 Map<String, Object> contents = keyValueStore.get(mergeKey);
 
-                if(contents == null){
+                if (contents == null) {
                     Object key = enrichment.get(keys.get(0));
 
-                    if(key != null) {
+                    if (key != null) {
                         contents = keyValueStore.get(key.toString());
                     }
                 }
 
-                log.debug("msgType: " + message.get(TYPE) + " store: "+ store + " key: " + enrichment.get(keys.get(0)) + " mergeKey: {} - contents: {}", mergeKey, contents);
+                log.debug("msgType: " + message.get(TYPE) + " store: " + store + " key: " + enrichment.get(keys.get(0)) + " mergeKey: {} - contents: {}", mergeKey, contents);
 
                 if (contents != null) {
                     if (storeData.mustOverwrite()) {
