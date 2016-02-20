@@ -35,8 +35,8 @@ public class IotBeamFactory implements BeamFactory {
         final String dataSource = stream.getStream();
 
         final List<String> dimensions = ImmutableList.of(
-                SENSOR_UUID, "monitor", "value", "proxy_uuid", DEPLOYMENT, DEPLOYMENT_UUID, NAMESPACE, NAMESPACE_UUID,
-                MARKET, MARKET_UUID, ORGANIZATION, ORGANIZATION_UUID, CLIENT_LATLNG, COORDINATES_MAP, CAMPUS,
+                SENSOR_UUID, "monitor", "proxy_uuid", DEPLOYMENT, DEPLOYMENT_UUID, NAMESPACE, NAMESPACE_UUID,
+                MARKET, MARKET_UUID, ORGANIZATION, ORGANIZATION_UUID, CLIENT_LATLNG, CAMPUS,
                 CAMPUS_UUID, BUILDING, BUILDING_UUID, FLOOR, FLOOR_UUID
         );
 
