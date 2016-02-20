@@ -27,7 +27,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
     public final static String NMSP_STORE_INFO = "nmsp-info";
     private static final String DATASOURCE = "rb_flow";
 
-    private final List<String> toCacheInfo = Arrays.asList(WIRELESS_STATION, WIRELESS_CHANNEL, WIRELESS_ID);
+    private final List<String> toCacheInfo = Arrays.asList(WIRELESS_STATION, WIRELESS_CHANNEL, WIRELESS_ID, NMSP_DOT11PROTOCOL);
     private final List<String> toDruid = Arrays.asList(MARKET, MARKET_UUID, ORGANIZATION, ORGANIZATION_UUID,
             DEPLOYMENT, DEPLOYMENT_UUID, SENSOR_NAME, SENSOR_UUID, NAMESPACE, SERVICE_PROVIDER, SERVICE_PROVIDER_UUID);
 
@@ -208,6 +208,8 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                     toCache.put(dimension, value);
                 }
             }
+
+            String band = (String) message.get(NMSP_DOT11PROTOCOL);
 
             toCache.put("last_seen", timestamp);
             toCache.put(NMSP_DOT11STATUS, "ASSOCIATED");
