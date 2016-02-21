@@ -149,7 +149,14 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                     toDruid.put(NMSP_DOT11STATUS, dot11Status);
                     toDruid.put(CLIENT_RSSI_NUM, rssi);
                     toDruid.put(CLIENT_RSSI, rssiName);
-                    toDruid.put("timestamp", System.currentTimeMillis() / 1000);
+
+                    Object timestamp = message.get(TIMESTAMP);
+
+                    if(timestamp == null){
+                        timestamp = System.currentTimeMillis() / 1000;
+                    }
+
+                    toDruid.put("timestamp", timestamp);
 
                     if (!namespace_id.equals(""))
                         toDruid.put(NAMESPACE_UUID, namespace_id);
