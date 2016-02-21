@@ -128,7 +128,6 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
                         toCache.put(CLIENT_ID, clientId);
                     }
                 } else {
-                    log.info("Doesn't match: [{}]", clientId);
                     toCache.put(CLIENT_ID, clientId);
                 }
             }
