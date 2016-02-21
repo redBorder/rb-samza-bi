@@ -11,9 +11,11 @@ import org.apache.samza.system.OutgoingMessageEnvelope;
 import org.apache.samza.system.SystemStream;
 import org.apache.samza.task.MessageCollector;
 import org.apache.samza.task.TaskContext;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -39,8 +41,9 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
     private Counter messagesCounter;
     private StoreManager storeManager;
     private EnrichManager enrichManager;
+    private Map<String, Map<String, Object>> mobileCodeData;
     private Pattern pattern = Pattern.compile("^([a-fA-F0-9][a-fA-F0-9][:\\-][a-fA-F0-9][a-fA-F0-9][:\\-][a-fA-F0-9][a-fA-F0-9][:\\-][a-fA-F0-9][a-fA-F0-9][:\\-][a-fA-F0-9][a-fA-F0-9][:\\-][a-fA-F0-9][a-fA-F0-9])[:\\-]((.*))?");
-
+    Pattern mobilePattern = Pattern.compile("[0-9A-Z]\\w+@wlan.mnc([0-9]\\w+).mcc([0-9]\\w+).[A-Za-z0-9]\\w+.[A-Za-z0-9]\\w+");
 
     public RadiusProcessor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
         super(storeManager, enrichManager, config, context);
@@ -50,6 +53,13 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
         storeRadius = storeManager.getStore(RADIUS_STORE);
         countersStore = (KeyValueStore<String, Long>) context.getStore("counter");
         flowsNumber = (KeyValueStore<String, Long>) context.getStore("flows-number");
+
+        try {
+            mobileCodeData = new ObjectMapper().readValue("/tmp/mobile_code.json", Map.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            mobileCodeData = new HashMap<>();
+        }
     }
 
     @Override
@@ -103,7 +113,20 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
                 toDruid.put(SENSOR_IP, sensorIP);
             }
             if (clientId != null) {
-                toCache.put(CLIENT_ID, clientId);
+                Matcher matcher = mobilePattern.matcher(clientId);
+
+                if (matcher.find()) {
+                    String mobileCode = matcher.group(1) + matcher.group(2);
+                    Map<String, Object> operator = mobileCodeData.get(mobileCode);
+
+                    if (operator != null) {
+                        toCache.putAll(operator);
+                    } else {
+                        toCache.put(CLIENT_ID, clientId);
+                    }
+                } else {
+                    toCache.put(CLIENT_ID, clientId);
+                }
             }
             if (operatorName != null) {
                 toCache.put(WIRELESS_OPERATOR, operatorName);
@@ -159,7 +182,7 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
 
             Long counter = countersStore.get(datasource);
 
-            if(counter == null){
+            if (counter == null) {
                 counter = 0L;
             }
 
@@ -168,7 +191,7 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
 
             Long flows = flowsNumber.get(datasource);
 
-            if(flows != null){
+            if (flows != null) {
                 enrichmentMessage.put("flows_count", flows);
             }
 
