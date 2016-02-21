@@ -15,6 +15,7 @@ import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -55,7 +56,7 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
         flowsNumber = (KeyValueStore<String, Long>) context.getStore("flows-number");
 
         try {
-            mobileCodeData = new ObjectMapper().readValue("/tmp/mobile_code.json", Map.class);
+            mobileCodeData = new ObjectMapper().readValue(new File("/tmp/mobile_code.json"), Map.class);
         } catch (IOException e) {
             log.error("Error parser /tmp/mobile_code.json", e);
             mobileCodeData = new HashMap<>();
