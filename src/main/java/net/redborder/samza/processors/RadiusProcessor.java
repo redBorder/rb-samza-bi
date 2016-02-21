@@ -57,7 +57,7 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
         try {
             mobileCodeData = new ObjectMapper().readValue("/tmp/mobile_code.json", Map.class);
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error("Error parser /tmp/mobile_code.json", e);
             mobileCodeData = new HashMap<>();
         }
 
