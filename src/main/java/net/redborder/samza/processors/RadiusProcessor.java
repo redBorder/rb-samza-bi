@@ -121,7 +121,6 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
                 if (matcher.find()) {
                     String mobileCode = matcher.group(1) + matcher.group(2);
                     Map<String, Object> operator = mobileCodeData.get(mobileCode);
-                    log.info("MobileCode [{}] Operator[{}]", mobileCode, operator);
                     if (operator != null) {
                         toCache.putAll(operator);
                     } else {
