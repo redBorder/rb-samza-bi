@@ -49,7 +49,7 @@ public class LocationLogicProcessor extends Processor<Map<String, Object>> {
             String newFloor = (String) message.get(FLOOR_UUID);
             String newBuilding = (String) message.get(BUILDING_UUID);
             String newCampus = (String) message.get(CAMPUS_UUID);
-            String newZone = (String) message.get(ZONE_UUID);
+            String newZone = (String) message.get(ZONE);
             String wirelessStation = (String) message.get(WIRELESS_STATION);
             Object namespace_id = message.get(NAMESPACE_UUID) == null ? "" : message.get(NAMESPACE_UUID);
 
