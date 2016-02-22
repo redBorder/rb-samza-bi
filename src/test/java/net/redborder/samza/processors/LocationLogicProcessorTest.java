@@ -76,7 +76,7 @@ public class LocationLogicProcessorTest extends TestCase {
         message.put(CAMPUS_UUID, "CAMPUS-A");
         message.put(BUILDING_UUID, "BUILDING-A");
         message.put(FLOOR_UUID, "FLOOR-A");
-        message.put(ZONE_UUID, "ZONE-A");
+        message.put(ZONE, "ZONE-A");
         message.put(TYPE, "nmsp-measure");
         message.put(WIRELESS_STATION, "33:33:33:33:33:33");
         message.put(TIMESTAMP, 1388609700L);
@@ -102,7 +102,7 @@ public class LocationLogicProcessorTest extends TestCase {
         message1.put(CAMPUS_UUID, "CAMPUS-B");
         message1.put(BUILDING_UUID, "BUILDING-B");
         message1.put(TYPE, "nmsp-measure");
-        message1.put(ZONE_UUID, "ZONE-B");
+        message1.put(ZONE, "ZONE-B");
         message1.put(FLOOR_UUID, "FLOOR-B");
         message1.put(WIRELESS_STATION, "33:33:33:33:33:31");
         message1.put(NAMESPACE_UUID, "12345");
@@ -150,7 +150,7 @@ public class LocationLogicProcessorTest extends TestCase {
         message.put(CAMPUS_UUID, "CAMPUS-A");
         message.put(BUILDING_UUID, "BUILDING-A");
         message.put(FLOOR_UUID, "FLOOR-A");
-        message.put(ZONE_UUID, "ZONE-A");
+        message.put(ZONE, "ZONE-A");
         message.put(TYPE, "nmsp-measure");
         message.put(WIRELESS_STATION, "33:33:33:33:33:33");
         message.put(TIMESTAMP, 1388609700L);
@@ -176,7 +176,7 @@ public class LocationLogicProcessorTest extends TestCase {
         message1.put(CAMPUS_UUID, "CAMPUS-B");
         message1.put(BUILDING_UUID, "BUILDING-B");
         message1.put(TYPE, "nmsp-measure");
-        message1.put(ZONE_UUID, "ZONE-B");
+        message1.put(ZONE, "ZONE-B");
         message1.put(FLOOR_UUID, "FLOOR-B");
         message1.put(WIRELESS_STATION, "33:33:33:33:33:31");
         message1.put(NAMESPACE_UUID, "1234");
