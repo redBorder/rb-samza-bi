@@ -10,6 +10,8 @@ import org.apache.samza.system.OutgoingMessageEnvelope;
 import org.apache.samza.system.SystemStream;
 import org.apache.samza.task.MessageCollector;
 import org.apache.samza.task.TaskContext;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,6 +22,8 @@ import static net.redborder.samza.util.constants.Dimension.*;
 
 public class LocationLogicProcessor extends Processor<Map<String, Object>> {
     private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_LOC_OUTPUT_TOPIC);
+    private static final Logger log = LoggerFactory.getLogger(LocationLogicProcessor.class);
+
     private KeyValueStore<String, Map<String, Object>> storeLogic;
     public final static String LOCATION_STORE_LOGIC = "location-logic";
     private static final String DATASOURCE = "rb_loc_post";
@@ -75,47 +79,53 @@ public class LocationLogicProcessor extends Processor<Map<String, Object>> {
                 String oldBuilding = (String) locationCache.get(BUILDING_UUID);
                 String oldCampus = (String) locationCache.get(CAMPUS_UUID);
                 String oldwirelessStation = (String) locationCache.get(WIRELESS_STATION);
-                String oldZone = (String) locationCache.get(ZONE_UUID);
+                String oldZone = (String) locationCache.get(ZONE);
 
-                if (oldFloor != null)
+                if (oldFloor != null) {
                     if (!oldFloor.equals(newFloor)) {
                         toDruid.put(FLOOR_OLD, oldFloor);
-                        toDruid.put(FLOOR_NEW, newFloor);
                     } else {
-                        toDruid.put(FLOOR, newFloor);
+                        toDruid.put(FLOOR_OLD, newFloor);
                     }
 
-                if (oldZone != null)
+                    toDruid.put(FLOOR_NEW, newFloor);
+                }
+
+                if (oldZone != null) {
                     if (!oldZone.equals(newZone)) {
                         toDruid.put(ZONE_OLD, oldZone);
-                        toDruid.put(ZONE_NEW, newZone);
                     } else {
-                        toDruid.put(ZONE, newZone);
+                        toDruid.put(ZONE_OLD, newZone);
                     }
+                    toDruid.put(ZONE_NEW, newZone);
+                }
 
-                if (oldwirelessStation != null)
+                if (oldwirelessStation != null) {
                     if (!oldwirelessStation.equals(wirelessStation)) {
                         toDruid.put(WIRELESS_STATION_OLD, oldwirelessStation);
-                        toDruid.put(WIRELESS_STATION_NEW, wirelessStation);
                     } else {
-                        toDruid.put(WIRELESS_STATION, wirelessStation);
+                        toDruid.put(WIRELESS_STATION_OLD, wirelessStation);
                     }
+                    toDruid.put(WIRELESS_STATION_NEW, wirelessStation);
+                }
 
-                if (oldBuilding != null)
+                if (oldBuilding != null) {
                     if (!oldBuilding.equals(newBuilding)) {
                         toDruid.put(BUILDING_OLD, oldBuilding);
-                        toDruid.put(BUILDING_NEW, newBuilding);
                     } else {
-                        toDruid.put(BUILDING, newBuilding);
+                        toDruid.put(BUILDING_OLD, newBuilding);
                     }
+                    toDruid.put(BUILDING_NEW, newBuilding);
+                }
 
-                if (oldCampus != null)
+                if (oldCampus != null) {
                     if (!oldCampus.equals(newCampus)) {
                         toDruid.put(CAMPUS_OLD, oldCampus);
-                        toDruid.put(CAMPUS_NEW, newCampus);
                     } else {
-                        toDruid.put(CAMPUS, newCampus);
+                        toDruid.put(CAMPUS_OLD, newCampus);
                     }
+                    toDruid.put(CAMPUS_NEW, newCampus);
+                }
 
             } else {
                 toDruid.put(FLOOR_NEW, newFloor);
@@ -123,6 +133,11 @@ public class LocationLogicProcessor extends Processor<Map<String, Object>> {
                 toDruid.put(BUILDING_NEW, newBuilding);
                 toDruid.put(ZONE_NEW, newZone);
                 toDruid.put(WIRELESS_STATION_NEW, wirelessStation);
+                toDruid.put(FLOOR_OLD, "outside");
+                toDruid.put(CAMPUS_OLD, "outside");
+                toDruid.put(BUILDING_OLD, "outside");
+                toDruid.put(ZONE_OLD, "outside");
+                toDruid.put(WIRELESS_STATION_OLD, "outside");
             }
 
 
@@ -143,7 +158,7 @@ public class LocationLogicProcessor extends Processor<Map<String, Object>> {
             toCache.put(FLOOR_UUID, newFloor);
             toCache.put(CAMPUS_UUID, newCampus);
             toCache.put(BUILDING_UUID, newBuilding);
-            toCache.put(ZONE_UUID, newZone);
+            toCache.put(ZONE, newZone);
             toCache.put(WIRELESS_STATION, wirelessStation);
 
             storeLogic.put(client_mac + namespace_id.toString(), toCache);
@@ -158,7 +173,7 @@ public class LocationLogicProcessor extends Processor<Map<String, Object>> {
 
             Long counter = countersStore.get(datasource);
 
-            if(counter == null){
+            if (counter == null) {
                 counter = 0L;
             }
 
@@ -167,7 +182,7 @@ public class LocationLogicProcessor extends Processor<Map<String, Object>> {
 
             Long flows = flowsNumber.get(datasource);
 
-            if(flows != null){
+            if (flows != null) {
                 enrichmentEvent.put("flows_count", flows);
             }
 
