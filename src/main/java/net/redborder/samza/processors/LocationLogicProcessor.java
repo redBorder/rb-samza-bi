@@ -10,8 +10,6 @@ import org.apache.samza.system.OutgoingMessageEnvelope;
 import org.apache.samza.system.SystemStream;
 import org.apache.samza.task.MessageCollector;
 import org.apache.samza.task.TaskContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -22,8 +20,6 @@ import static net.redborder.samza.util.constants.Dimension.*;
 
 public class LocationLogicProcessor extends Processor<Map<String, Object>> {
     private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_LOC_OUTPUT_TOPIC);
-    private static final Logger log = LoggerFactory.getLogger(LocationLogicProcessor.class);
-
     private KeyValueStore<String, Map<String, Object>> storeLogic;
     public final static String LOCATION_STORE_LOGIC = "location-logic";
     private static final String DATASOURCE = "rb_loc_post";
@@ -53,33 +49,33 @@ public class LocationLogicProcessor extends Processor<Map<String, Object>> {
             String newFloor = (String) message.get(FLOOR_UUID);
             String newBuilding = (String) message.get(BUILDING_UUID);
             String newCampus = (String) message.get(CAMPUS_UUID);
-            String newZone = (String) message.get(ZONE);
+            String newZone = (String) message.get(ZONE_UUID);
             String wirelessStation = (String) message.get(WIRELESS_STATION);
             Object namespace_id = message.get(NAMESPACE_UUID) == null ? "" : message.get(NAMESPACE_UUID);
 
             Map<String, Object> locationCache = storeLogic.get(client_mac + namespace_id.toString());
 
             if (newFloor == null)
-                newFloor = "unknown";
+                newFloor = "outside";
 
             if (newBuilding == null)
-                newBuilding = "unknown";
+                newBuilding = "outside";
 
             if (newCampus == null)
-                newCampus = "unknown";
+                newCampus = "outside";
 
             if (newZone == null)
-                newZone = "unknown";
+                newZone = "outside";
 
             if (wirelessStation == null)
-                wirelessStation = "unknown";
+                wirelessStation = "outside";
 
             if (locationCache != null) {
                 String oldFloor = (String) locationCache.get(FLOOR_UUID);
                 String oldBuilding = (String) locationCache.get(BUILDING_UUID);
                 String oldCampus = (String) locationCache.get(CAMPUS_UUID);
                 String oldwirelessStation = (String) locationCache.get(WIRELESS_STATION);
-                String oldZone = (String) locationCache.get(ZONE);
+                String oldZone = (String) locationCache.get(ZONE_UUID);
 
                 if (oldFloor != null) {
                     if (!oldFloor.equals(newFloor)) {
@@ -158,7 +154,7 @@ public class LocationLogicProcessor extends Processor<Map<String, Object>> {
             toCache.put(FLOOR_UUID, newFloor);
             toCache.put(CAMPUS_UUID, newCampus);
             toCache.put(BUILDING_UUID, newBuilding);
-            toCache.put(ZONE, newZone);
+            toCache.put(ZONE_UUID, newZone);
             toCache.put(WIRELESS_STATION, wirelessStation);
 
             storeLogic.put(client_mac + namespace_id.toString(), toCache);

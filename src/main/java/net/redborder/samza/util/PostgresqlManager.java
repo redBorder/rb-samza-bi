@@ -26,8 +26,10 @@ public class PostgresqlManager {
     public static final String WLC_PSQL_STORE = "wlc-psql";
     public static final String SENSOR_PSQL_STORE = "sensor-psql";
     private final Logger log = LoggerFactory.getLogger(PostgresqlManager.class);
+
+    // zone_uuid is the psql id.
     private final String[] enrichColumns = {"campus", "building", "floor", "deployment",
-            "namespace", "market", "organization", "service_provider", "zone", "campus_uuid",
+            "namespace", "market", "organization", "service_provider", "zone", "zone_uuid", "campus_uuid",
             "building_uuid", "floor_uuid", "deployment_uuid", "namespace_uuid", "market_uuid",
             "organization_uuid", "service_provider_uuid"};
 
@@ -195,7 +197,7 @@ public class PostgresqlManager {
             if (conn != null) {
                 st = conn.createStatement();
                 rs = st.executeQuery("SELECT DISTINCT ON (access_points.mac_address) access_points.ip_address, access_points.mac_address, access_points.enrichment," +
-                        " zones.name AS zone, access_points.latitude AS latitude, access_points.longitude AS longitude, floors.name AS floor, " +
+                        " zones.name AS zone, zones.id AS zone_uuid, access_points.latitude AS latitude, access_points.longitude AS longitude, floors.name AS floor, " +
                         " floors.uuid AS floor_uuid, buildings.name AS building, buildings.uuid AS building_uuid, campuses.name AS campus, campuses.uuid AS campus_uuid," +
                         " deployments.name AS deployment, deployments.uuid AS deployment_uuid, namespaces.name AS namespace, namespaces.uuid AS namespace_uuid," +
                         " markets.name AS market, markets.uuid AS market_uuid, organizations.name AS organization, organizations.uuid AS organization_uuid," +
