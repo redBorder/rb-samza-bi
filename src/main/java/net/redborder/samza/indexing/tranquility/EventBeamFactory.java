@@ -63,8 +63,13 @@ public class EventBeamFactory implements BeamFactory {
                 @Override
                 public DateTime timestamp(Object obj) {
                     final Map<String, Object> theMap = (Map<String, Object>) obj;
-                    Long date = Long.parseLong(theMap.get(TIMESTAMP).toString());
-                    date = date * 1000;
+                    Long date;
+
+                    if(theMap.containsKey(TIMESTAMP)) {
+                        date = Long.parseLong(theMap.get(TIMESTAMP).toString()) * 1000;
+                    } else {
+                        date = System.currentTimeMillis();
+                    }
                     return new DateTime(date.longValue());
                 }
             };
