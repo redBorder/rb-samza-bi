@@ -64,6 +64,14 @@ public class MerakiProcessor extends Processor<Map<String, Object>> {
             String rssiName;
             Integer rssi = (Integer) message.get(CLIENT_RSSI_NUM);
 
+            if(message.containsKey(SRC)){
+                toCache.put(DOT11STATUS, "ASSOCIATED");
+                toDruid.put(DOT11STATUS, "ASSOCIATED");
+            } else {
+                toCache.put(DOT11STATUS, "PROBING");
+                toDruid.put(DOT11STATUS, "PROBING");
+            }
+
             if(rssi != null) {
                 if (rssi == 0) {
                     toCache.put(CLIENT_RSSI, "unknown");
