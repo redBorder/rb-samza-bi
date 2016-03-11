@@ -14,5 +14,8 @@ public class Aggregators {
     public final static String SUM_WIRELESS_TX_POWER_AGGREGATOR = "sum_wireless_tx_power";
     public final static String SUM_FOLLOWERS_AGGREGATOR = "sum_followers";
     public final static String FILES_AGGREGATOR = "files";
+    public final static String RSSI_HISTOGRAM = "hist_rssi";
+    public final static String DWELL_HISTOGRAM = "hist_dwell";
+
 }
 

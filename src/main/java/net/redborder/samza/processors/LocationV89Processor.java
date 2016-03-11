@@ -148,9 +148,7 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
 
             toDruid.putAll(toCache);
             toDruid.put(CLIENT_RSSI, "unknown");
-            toDruid.put(CLIENT_RSSI_NUM, 0);
             toDruid.put(CLIENT_SNR, "unknown");
-            toDruid.put(CLIENT_SNR_NUM, 0);
 
             if (!namespace_id.equals(""))
                 toDruid.put(NAMESPACE_UUID, namespace_id);
