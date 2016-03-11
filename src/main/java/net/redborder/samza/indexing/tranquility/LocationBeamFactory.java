@@ -40,7 +40,7 @@ public class LocationBeamFactory implements BeamFactory {
         final String dataSource = stream.getStream();
 
         final List<String> dimensions = ImmutableList.of(
-            NEW_LOC, OLD_LOC, TYPE
+            NEW_LOC, OLD_LOC, TYPE, TRANSITION
         );
 
         final List<AggregatorFactory> aggregators = ImmutableList.of(

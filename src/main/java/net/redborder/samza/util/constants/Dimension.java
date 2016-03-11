@@ -217,6 +217,7 @@ public class Dimension {
     public final static String OLD_LOC = "old";
     public final static String NEW_LOC = "new";
     public final static String DWELL_TIME = "dwell_time";
+    public final static String TRANSITION = "transition";
 
     // Radius
     public final static String PACKET_SRC_IP_ADDRESS = "Packet-Src-IP-Address";
