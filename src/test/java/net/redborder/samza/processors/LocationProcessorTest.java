@@ -104,8 +104,6 @@ public class LocationProcessorTest extends TestCase {
         locationProcessor.process(message, collector);
 
         result.put(DOT11STATUS, "ASSOCIATED");
-        result.put(BYTES, 0);
-        result.put(PKTS, 0);
         result.put(TYPE, "mse");
         result.put(CAMPUS, "Campus Test");
         result.put(BUILDING, "Building Test");
@@ -165,8 +163,6 @@ public class LocationProcessorTest extends TestCase {
         result.put(CLIENT_MAC, "00:00:00:00:00:00");
         result.put(DOT11STATUS, "PROBING");
         result.put(WIRELESS_STATION, "AA:AA:AA:AA:AA:AA");
-        result.put(PKTS, 0);
-        result.put(BYTES, 0);
         result.put(TYPE, "mse10-location");
         result.put(SENSOR_NAME, "rb-loc");
         result.put(NAMESPACE_UUID, namespace_id);
@@ -202,8 +198,6 @@ public class LocationProcessorTest extends TestCase {
         result.put(CLIENT_MAC, "00:00:00:00:00:00");
         result.put(WIRELESS_ID, "rb-corp");
         result.put(DOT11STATUS, "ASSOCIATED");
-        result.put(PKTS, 0);
-        result.put(BYTES, 0);
         result.put(SENSOR_NAME, "rb-assoc");
         result.put(WIRELESS_STATION, "AA:AA:AA:AA:AA:AA");
         result.put(DOT11PROTOCOL, "IEEE_802_11_B");
@@ -220,9 +214,7 @@ public class LocationProcessorTest extends TestCase {
 
         result.put(ZONE, "ZoneD");
         result.put(DOT11STATUS, "ASSOCIATED");
-        result.put(BYTES, 0);
         result.put(WIRELESS_STATION, "AA:AA:AA:AA:AA:AA");
-        result.put(PKTS, 0);
         result.put(TYPE, "mse10-location");
         result.put(CAMPUS, "CampusA");
         result.put(BUILDING, "BuildingB");
@@ -250,9 +242,7 @@ public class LocationProcessorTest extends TestCase {
 
         result.put(ZONE, "ZoneD");
         result.put(DOT11STATUS, "PROBING");
-        result.put(BYTES, 0);
         result.put(WIRELESS_STATION, "AA:AA:AA:AA:AA:AA");
-        result.put(PKTS, 0);
         result.put(TYPE, "mse10-location");
         result.put(CAMPUS, "CampusA");
         result.put(BUILDING, "BuildingB");

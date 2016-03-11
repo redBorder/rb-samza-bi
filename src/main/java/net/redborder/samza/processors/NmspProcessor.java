@@ -22,10 +22,10 @@ import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_MEASUR
 
 public class NmspProcessor extends Processor<Map<String, Object>> {
     private static final Logger log = LoggerFactory.getLogger(NmspProcessor.class);
-    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_FLOW_OUTPUT_TOPIC);
+    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_LOC_OUTPUT_TOPIC);
     public final static String NMSP_STORE_MEASURE = "nmsp-measure";
     public final static String NMSP_STORE_INFO = "nmsp-info";
-    private static final String DATASOURCE = "rb_flow";
+    private static final String DATASOURCE = "rb_location";
 
     private final List<String> toCacheInfo = Arrays.asList(WIRELESS_STATION, WIRELESS_CHANNEL, WIRELESS_ID, NMSP_DOT11PROTOCOL);
     private final List<String> toDruid = Arrays.asList(MARKET, MARKET_UUID, ORGANIZATION, ORGANIZATION_UUID,
@@ -141,8 +141,6 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                         }
                     }
 
-                    toDruid.put(BYTES, 0);
-                    toDruid.put(PKTS, 0);
                     toDruid.put(TYPE, "nmsp-measure");
                     toDruid.put(CLIENT_MAC, mac);
                     toDruid.putAll(toCache);

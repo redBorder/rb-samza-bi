@@ -23,8 +23,8 @@ import static net.redborder.samza.util.constants.DimensionValue.LOC_ASSOCIATED;
 
 public class LocationV89Processor extends Processor<Map<String, Object>> {
     final public static String LOCATION_STORE = "location";
-    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_FLOW_OUTPUT_TOPIC);
-    private static final String DATASOURCE = "rb_flow";
+    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_LOC_OUTPUT_TOPIC);
+    private static final String DATASOURCE = "rb_location";
 
     private KeyValueStore<String, Map<String, Object>> store;
     private KeyValueStore<String, Long> countersStore;
@@ -155,8 +155,6 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
             if (!namespace_id.equals(""))
                 toDruid.put(NAMESPACE_UUID, namespace_id);
 
-            toDruid.put(BYTES, 0);
-            toDruid.put(PKTS, 0);
             toDruid.put(TYPE, "mse");
 
             if (dateString != null) {

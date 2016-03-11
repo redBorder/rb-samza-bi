@@ -19,9 +19,9 @@ import static net.redborder.samza.util.constants.Dimension.*;
 
 public class LocationV10Processor extends Processor<Map<String, Object>> {
     private static final Logger log = LoggerFactory.getLogger(LocationV10Processor.class);
-    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_FLOW_OUTPUT_TOPIC);
+    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_LOC_OUTPUT_TOPIC);
     final public static String LOCATION_STORE = "location";
-    private static final String DATASOURCE = "rb_flow";
+    private static final String DATASOURCE = "rb_location";
 
     private final List<String> dimToDruid = Arrays.asList(MARKET, MARKET_UUID, ORGANIZATION, ORGANIZATION_UUID,
             DEPLOYMENT, DEPLOYMENT_UUID, SENSOR_NAME, SENSOR_UUID, NAMESPACE, SERVICE_PROVIDER, SERVICE_PROVIDER_UUID);
@@ -113,8 +113,6 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                 toDruid.put(SENSOR_NAME, msg.get(LOC_SUBSCRIPTION_NAME));
                 toDruid.put(CLIENT_MAC, clientMac);
                 toDruid.put(TIMESTAMP, ((Long) msg.get(TIMESTAMP)) / 1000L);
-                toDruid.put(BYTES, 0);
-                toDruid.put(PKTS, 0);
                 toDruid.put(TYPE, "mse10-association");
                 toDruid.put(LOC_SUBSCRIPTION_NAME, msg.get(LOC_SUBSCRIPTION_NAME));
 
@@ -245,8 +243,6 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                     toDruid.put(TIMESTAMP, System.currentTimeMillis() / 1000L);
                 }
 
-                toDruid.put(BYTES, 0);
-                toDruid.put(PKTS, 0);
                 toDruid.put(CLIENT_MAC, clientMac);
                 toDruid.put(TYPE, "mse10-location");
 

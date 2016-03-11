@@ -1,6 +1,5 @@
 package net.redborder.samza.store;
 
-import net.redborder.samza.processors.LocationLogicProcessor;
 import net.redborder.samza.util.PostgresqlManager;
 import org.apache.samza.config.Config;
 import org.apache.samza.storage.kv.KeyValueStore;
@@ -110,7 +109,7 @@ public class StoreManager {
                         }
                     }
                 }
-            } else if (!store.equals(LocationLogicProcessor.LOCATION_STORE_LOGIC)) {
+            } else {
                 Store storeData = stores.get(store);
                 List<String> keys = storeData.getKeys();
                 StringBuilder builder = new StringBuilder();
