@@ -113,9 +113,7 @@ public class LocationProcessorTest extends TestCase {
         result.put(SENSOR_NAME, "sensor-testing");
         result.put(FLOOR, "Floor Test");
         result.put(CLIENT_RSSI, "unknown");
-        result.put(CLIENT_RSSI_NUM, 0);
         result.put(CLIENT_SNR, "unknown");
-        result.put(CLIENT_SNR_NUM, 0);
         result.put(SRC, "10.50.22.1");
         result.put(WIRELESS_STATION, "68:bc:0c:65:0a:a0");
         result.put(NAMESPACE_UUID, namespace_id);

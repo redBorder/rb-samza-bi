@@ -214,8 +214,6 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                 }
             }
 
-            String band = (String) message.get(NMSP_DOT11PROTOCOL);
-
             toCache.put("last_seen", timestamp);
             toCache.put(NMSP_DOT11STATUS, "ASSOCIATED");
 
@@ -228,8 +226,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                     toDruid.put(dimension, value);
                 }
             }
-            toDruid.put(BYTES, 0);
-            toDruid.put(PKTS, 0);
+
             toDruid.put("timestamp", timestamp);
             toDruid.put(TYPE, "nmsp-info");
 
