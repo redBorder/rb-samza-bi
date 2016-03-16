@@ -44,6 +44,8 @@ public class PmsProcessor extends Processor<Map<String, Object>> {
         String clientGender = (String) enrichmentMsg.get(CLIENT_GENDER);
         String clientAuth = (String) enrichmentMsg.get(AUTH_TYPE);
         String staffName = (String) enrichmentMsg.get(STAFF_NAME);
+        String loyaltyStatus = (String) enrichmentMsg.get(CLIENT_LOYALITY);
+        String vipStatus = (String) enrichmentMsg.get(CLIENT_VIP);
 
 
         String namespace_id = namespace == null ? "" : namespace.toString();
@@ -64,6 +66,14 @@ public class PmsProcessor extends Processor<Map<String, Object>> {
 
         if(clientAuth != null) {
             toCache.put(CLIENT_AUTH_TYPE, clientAuth);
+        }
+
+        if(vipStatus != null) {
+            toCache.put(CLIENT_VIP, vipStatus);
+        }
+
+        if(loyaltyStatus != null) {
+            toCache.put(CLIENT_LOYALITY, loyaltyStatus);
         }
 
         if(!toCache.isEmpty()) {
