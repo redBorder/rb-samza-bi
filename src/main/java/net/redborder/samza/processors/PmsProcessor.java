@@ -66,6 +66,12 @@ public class PmsProcessor extends Processor<Map<String, Object>> {
 
         if(clientAuth != null) {
             toCache.put(CLIENT_AUTH_TYPE, clientAuth);
+
+            if(clientAuth.equals("in_house_guest")){
+                toCache.put("in_house_guest_mac", clientMac);
+            } else if(clientAuth.equals("staff_device")){
+                toCache.put("staff_device_mac", clientMac);
+            }
         }
 
         if(vipStatus != null) {

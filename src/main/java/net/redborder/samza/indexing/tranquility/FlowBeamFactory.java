@@ -66,7 +66,9 @@ public class FlowBeamFactory implements BeamFactory {
                 new LongSumAggregatorFactory(SUM_RSSI_AGGREGATOR, CLIENT_RSSI_NUM),
                 new LongSumAggregatorFactory(SUM_DL_SCORE_AGGREGATOR, DARKLIST_SCORE),
                 new HyperUniquesAggregatorFactory(CLIENTS_AGGREGATOR, CLIENT_MAC),
-                new HyperUniquesAggregatorFactory(WIRELESS_STATIONS_AGGREGATOR, WIRELESS_STATION)
+                new HyperUniquesAggregatorFactory(WIRELESS_STATIONS_AGGREGATOR, WIRELESS_STATION),
+                new HyperUniquesAggregatorFactory("house_guest_clients", "in_house_guest_mac"),
+                new HyperUniquesAggregatorFactory("staff_device_clients", "staff_device_mac")
         );
 
         // The Timestamper should return the timestamp of the class your Samza task produces. Samza envelopes contain
