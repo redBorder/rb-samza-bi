@@ -63,25 +63,24 @@ public abstract class Processor<T> {
                     log.error("Couldn't create the instance associated with the enrichment " + enrichment, e);
                 }
             }
+            List<String> classNames = config.getList("redborder.processors." + streamName);
+            List<Processor> processorsList = new ArrayList<>();
 
-            try {
-                List<String> classNames = config.getList("redborder.processors." + streamName);
-                List<Processor> processorsList = new ArrayList<>();
-
-                for(String className : classNames) {
+            for (String className : classNames) {
+                try {
                     Class foundClass = Class.forName(className);
                     Constructor constructor = foundClass.getConstructor(StoreManager.class, EnrichManager.class, Config.class, TaskContext.class);
                     Processor processor = (Processor) constructor.newInstance(new Object[]{storeManager, enrichManager, config, context});
                     processorsList.add(processor);
-                }
 
-                processors.put(streamName, processorsList);
-            } catch (ClassNotFoundException e) {
-                log.error("Couldn't find the class associated with the stream " + streamName);
-                processors.put(streamName, Arrays.asList((Processor) new DummyProcessor()));
-            } catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
-                log.error("Couldn't create the instance associated with the stream " + streamName, e);
-                processors.put(streamName, Arrays.asList((Processor) new DummyProcessor()));
+                    processors.put(streamName, processorsList);
+                } catch (ClassNotFoundException e) {
+                    log.error("Couldn't find the class [" + className + "] associated with the stream " + streamName);
+                    processors.put(streamName, Arrays.asList((Processor) new DummyProcessor()));
+                } catch (NoSuchMethodException | InstantiationException | InvocationTargetException | IllegalAccessException e) {
+                    log.error("Couldn't create the instance associated with the stream " + streamName, e);
+                    processors.put(streamName, Arrays.asList((Processor) new DummyProcessor()));
+                }
             }
         }
 
