@@ -11,6 +11,7 @@ import io.druid.data.input.impl.TimestampSpec;
 import io.druid.granularity.DurationGranularity;
 import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
+import io.druid.query.aggregation.histogram.ApproximateHistogramAggregatorFactory;
 import io.druid.query.aggregation.histogram.ApproximateHistogramFoldingAggregatorFactory;
 import io.druid.query.aggregation.hyperloglog.HyperUniquesAggregatorFactory;
 import org.apache.curator.framework.CuratorFramework;
@@ -40,14 +41,16 @@ public class LocationBeamFactory implements BeamFactory {
         final String dataSource = stream.getStream();
 
         final List<String> dimensions = ImmutableList.of(
-            NEW_LOC, OLD_LOC, TYPE, TRANSITION
+                NEW_LOC, OLD_LOC, TYPE, TRANSITION, SERVICE_PROVIDER_UUID, ORGANIZATION_UUID, DEPLOYMENT_UUID,
+                NAMESPACE_UUID, MARKET_UUID, CAMPUS_UUID, BUILDING_UUID, FLOOR_UUID, ZONE_UUID, CLIENT_LATLONG,
+                DOT11STATUS
         );
 
         final List<AggregatorFactory> aggregators = ImmutableList.of(
                 new CountAggregatorFactory(EVENTS_AGGREGATOR),
                 new HyperUniquesAggregatorFactory(CLIENTS_AGGREGATOR, CLIENT_MAC),
-                new ApproximateHistogramFoldingAggregatorFactory(RSSI_HISTOGRAM, CLIENT_RSSI_NUM, 5, 7, -85f, -55f),
-                new ApproximateHistogramFoldingAggregatorFactory(DWELL_HISTOGRAM, DWELL_TIME, 144, 7, 1f, 1440f)
+                new HyperUniquesAggregatorFactory(SESSIONS_AGGREGATOR, SESSION),
+                new ApproximateHistogramFoldingAggregatorFactory(DWELL_HISTOGRAM, DWELL_TIME, 10000, 288, 0f, 1440f)
         );
 
         // The Timestamper should return the timestamp of the class your Samza task produces. Samza envelopes contain

@@ -200,7 +200,7 @@ public class PostgresqlManager {
                         " deployments.name AS deployment, deployments.uuid AS deployment_uuid, namespaces.name AS namespace, namespaces.uuid AS namespace_uuid," +
                         " markets.name AS market, markets.uuid AS market_uuid, organizations.name AS organization, organizations.uuid AS organization_uuid," +
                         " service_providers.name AS service_provider, service_providers.uuid AS service_provider_uuid" +
-                        " FROM access_points JOIN sensors ON (access_points.sensor_id = sensors.id OR access_points.switch_id = sensors.id)" +
+                        " FROM access_points JOIN sensors ON (access_points.sensor_id = sensors.id)" +
                         " LEFT JOIN access_points_zones AS zones_ids ON access_points.id = zones_ids.access_point_id" +
                         " LEFT JOIN zones ON zones_ids.zone_id = zones.id" +
                         " LEFT JOIN (SELECT * FROM sensors WHERE domain_type=101) AS floors ON floors.lft <= sensors.lft AND floors.rgt >= sensors.rgt" +

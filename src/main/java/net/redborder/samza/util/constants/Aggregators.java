@@ -7,6 +7,7 @@ public class Aggregators {
     public final static String SUM_RSSI_AGGREGATOR = "sum_rssi";
     public final static String SUM_DL_SCORE_AGGREGATOR = "sum_dl_score";
     public final static String CLIENTS_AGGREGATOR = "clients";
+    public final static String SESSIONS_AGGREGATOR = "sessions";
     public final static String WIRELESS_STATIONS_AGGREGATOR = "wireless_stations";
     public final static String USERS_AGGREGATOR = "users";
     public final static String SIGNATURES_AGGREGATOR = "signatures";
