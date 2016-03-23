@@ -29,15 +29,13 @@ public class PostgresqlManager {
     private final String[] enrichColumns = {"campus", "building", "floor", "deployment",
             "namespace", "market", "organization", "service_provider", "zone", "campus_uuid",
             "building_uuid", "floor_uuid", "deployment_uuid", "namespace_uuid", "market_uuid",
-            "organization_uuid", "service_provider_uuid"};
+            "organization_uuid", "service_provider_uuid", "zone_uuid"};
 
     private Connection conn = null;
     private KeyValueStore<String, Map<String, Object>> storeWLCSql;
     private KeyValueStore<String, Map<String, Object>> storeSensorSql;
     private Map<String, MacScramble> scrambles = new HashMap<>();
     private String macScramblePrefix = null;
-    private StoreManager smanager;
-
 
     public PostgresqlManager(Config config, StoreManager storeManager) {
         if (conn == null) {
@@ -46,8 +44,6 @@ public class PostgresqlManager {
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
-
-            smanager = storeManager;
             String uri = config.get("redborder.postgresql.uri");
             String user = config.get("redborder.postgresql.user");
             String pass = config.get("redborder.postgresql.pass");
@@ -195,7 +191,7 @@ public class PostgresqlManager {
             if (conn != null) {
                 st = conn.createStatement();
                 rs = st.executeQuery("SELECT DISTINCT ON (access_points.mac_address) access_points.ip_address, access_points.mac_address, access_points.enrichment," +
-                        " zones.name AS zone, access_points.latitude AS latitude, access_points.longitude AS longitude, floors.name AS floor, " +
+                        " zones.name AS zone, zones.id AS zone_uuid, access_points.latitude AS latitude, access_points.longitude AS longitude, floors.name AS floor, " +
                         " floors.uuid AS floor_uuid, buildings.name AS building, buildings.uuid AS building_uuid, campuses.name AS campus, campuses.uuid AS campus_uuid," +
                         " deployments.name AS deployment, deployments.uuid AS deployment_uuid, namespaces.name AS namespace, namespaces.uuid AS namespace_uuid," +
                         " markets.name AS market, markets.uuid AS market_uuid, organizations.name AS organization, organizations.uuid AS organization_uuid," +
