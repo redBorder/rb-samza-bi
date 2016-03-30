@@ -119,7 +119,56 @@ public class FlowProcessorTest extends TestCase {
 
             StringBuilder builder = new StringBuilder();
             for(String key : keys){
-                String kv = (String) message.get(key);
+                Object kv = message.get(key);
+                if(kv != null){
+                    builder.append(kv);
+                }
+            }
+            String mergeKey = builder.toString();
+
+            Map<String, Object> cache = new HashMap<>();
+            // The data that will be in each cache ...
+            cache.put("column_" + store + namespace_id, "value_" + store);
+            cache.put("column2_" + store + namespace_id, "value2" + store);
+            storeManager.getStore(store).put(mergeKey, cache);
+            // ... will end in the expected message too
+            expected.put("column_" + store + namespace_id, "value_" + store);
+            expected.put("column2_" + store + namespace_id, "value2" + store);
+        }
+
+        // Send the message
+        flowProcessor.process(message, collector);
+
+        // Lets see if the collector received it correctly
+        Map<String, Object> result = collector.getResult().get(0);
+        assertEquals(expected, result);
+    }
+
+    @Test
+    public void enrichmentCorrectlyUsingIntegerNamespaceId() {
+        MockMessageCollector collector = new MockMessageCollector();
+        Map<String, Object> expected = new HashMap<>();
+
+        Integer namespace_id = 1111111;
+
+        // The message that we will enrich
+        Map<String, Object> message = new HashMap<>();
+        message.put(CLIENT_MAC, "00:00:00:00:00:00");
+        message.put(WIRELESS_STATION, "00:00:00:00:00:00");
+        message.put(BYTES, 23L);
+        message.put(PKTS, 2L);
+        message.put(NAMESPACE_UUID, namespace_id);
+        message.put(TIMESTAMP, Long.valueOf(1429088471L));
+        expected.putAll(message);
+        expected.put(DURATION, 0L);
+
+
+        for (String store : stores) {
+            List<String> keys = Arrays.asList(properties.getProperty("redborder.store." + store + ".keys").split(","));
+
+            StringBuilder builder = new StringBuilder();
+            for(String key : keys){
+                Object kv = message.get(key);
                 if(kv != null){
                     builder.append(kv);
                 }
