@@ -51,7 +51,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
         storeInfo = storeManager.getStore(NMSP_STORE_INFO);
         countersStore = (KeyValueStore<String, Long>) context.getStore("counter");
         flowsNumber = (KeyValueStore<String, Long>) context.getStore("flows-number");
-        rssiLimit = config.getInt("com.redborder.rssiLimit.db", -70);
+        rssiLimit = config.getInt("redborder.rssiLimit.db", -70);
     }
 
     @Override
