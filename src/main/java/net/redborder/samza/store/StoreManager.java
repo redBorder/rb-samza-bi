@@ -62,7 +62,7 @@ public class StoreManager {
             if (store.equals(PostgresqlManager.SENSOR_PSQL_STORE) || store.equals(PostgresqlManager.WLC_PSQL_STORE)) {
                 Store storeData = stores.get(store);
                 List<String> keys = storeData.getKeys();
-                String namespace = (String) message.get(NAMESPACE_UUID);
+                Object namespace = message.get(NAMESPACE_UUID);
 
                 StringBuilder builder = new StringBuilder();
 
