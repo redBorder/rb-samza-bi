@@ -23,8 +23,8 @@ import static net.redborder.samza.util.constants.DimensionValue.NMSP_TYPE_MEASUR
 public class NmspProcessor extends Processor<Map<String, Object>> {
     private static final Logger log = LoggerFactory.getLogger(NmspProcessor.class);
     private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_LOC_OUTPUT_TOPIC);
-    public final static String NMSP_STORE_MEASURE = "nmsp-measure";
-    public final static String NMSP_STORE_INFO = "nmsp-info";
+    final static String NMSP_STORE_MEASURE = "nmsp-measure";
+    final static String NMSP_STORE_INFO = "nmsp-info";
     private static final String DATASOURCE = "rb_location";
 
     private final List<String> toCacheInfo = Arrays.asList(WIRELESS_STATION, WIRELESS_CHANNEL, WIRELESS_ID, NMSP_DOT11PROTOCOL);
@@ -40,6 +40,8 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
     private StoreManager storeManager;
     private EnrichManager enrichManager;
 
+    private Integer rssiLimit;
+
     public NmspProcessor(StoreManager storeManager, EnrichManager enrichManager, Config config, TaskContext context) {
         super(storeManager, enrichManager, config, context);
         this.messagesCounter = context.getMetricsRegistry().newCounter(getClass().getName(), "messages");
@@ -49,6 +51,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
         storeInfo = storeManager.getStore(NMSP_STORE_INFO);
         countersStore = (KeyValueStore<String, Long>) context.getStore("counter");
         flowsNumber = (KeyValueStore<String, Long>) context.getStore("flows-number");
+        rssiLimit = config.getInt("com.redborder.rssiLimit.db", -70);
     }
 
     @Override
@@ -81,26 +84,31 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                 if (rssi == 0) {
                     toCache.put(CLIENT_RSSI, "unknown");
                     rssiName = "unknown";
-                }
-                else if (rssi <= -85) {
+                } else if (rssi <= -85) {
                     toCache.put(CLIENT_RSSI, "bad");
                     rssiName = "bad";
-                }
-                else if (rssi <= -80) {
+                } else if (rssi <= -80) {
                     toCache.put(CLIENT_RSSI, "low");
                     rssiName = "low";
-                }
-                else if (rssi <= -70) {
+                } else if (rssi <= -70) {
                     toCache.put(CLIENT_RSSI, "medium");
                     rssiName = "medium";
-                }
-                else if (rssi <= -60) {
+                } else if (rssi <= -60) {
                     toCache.put(CLIENT_RSSI, "good");
                     rssiName = "good";
-                }
-                else {
+                } else {
                     toCache.put(CLIENT_RSSI, "excelent");
                     rssiName = "excelent";
+                }
+
+                if (rssi == 0) {
+                    toCache.put(CLIENT_PROFILE, "unknown");
+                } else if (rssi <= -70) {
+                    toCache.put(CLIENT_PROFILE, "soft");
+                } else if (rssi <= -60) {
+                    toCache.put(CLIENT_PROFILE, "medium");
+                } else {
+                    toCache.put(CLIENT_PROFILE, "hard");
                 }
 
                 Map<String, Object> infoCache = storeInfo.get(mac + namespace_id);
@@ -150,7 +158,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
 
                     Object timestamp = message.get(TIMESTAMP);
 
-                    if(timestamp == null){
+                    if (timestamp == null) {
                         timestamp = System.currentTimeMillis() / 1000;
                     }
 
@@ -174,7 +182,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
 
                     Long counter = countersStore.get(datasource);
 
-                    if(counter == null){
+                    if (counter == null) {
                         counter = 0L;
                     }
 
@@ -183,11 +191,13 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
 
                     Long flows = flowsNumber.get(datasource);
 
-                    if(flows != null){
+                    if (flows != null) {
                         enrichmentEvent.put("flows_count", flows);
                     }
 
-                    collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentEvent));
+                    if (rssi >= rssiLimit || dot11Status.equals("ASSOCIATED")) {
+                        collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentEvent));
+                    }
                 }
             }
         } else if (type != null && type.equals(NMSP_TYPE_INFO)) {
@@ -249,7 +259,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
 
             Long counter = countersStore.get(datasource);
 
-            if(counter == null){
+            if (counter == null) {
                 counter = 0L;
             }
 
@@ -258,7 +268,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
 
             Long flows = flowsNumber.get(datasource);
 
-            if(flows != null){
+            if (flows != null) {
                 enrichmentEvent.put("flows_count", flows);
             }
 

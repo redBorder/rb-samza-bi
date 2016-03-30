@@ -10,6 +10,7 @@ public class Dimension {
     public final static String DST_IP = "dst";
     public final static String SENSOR_NAME = "sensor_name";
     public final static String CLIENT_LATLNG = "client_latlong";
+    public final static String CLIENT_PROFILE = "client_profile";
     public final static String CLIENT_RSSI = "client_rssi";
     public final static String CLIENT_RSSI_NUM = "client_rssi_num";
     public final static String CLIENT_SNR = "client_snr";

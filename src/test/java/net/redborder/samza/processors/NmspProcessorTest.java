@@ -59,6 +59,7 @@ public class NmspProcessorTest extends TestCase {
         // Mock the storeManager in order to return the mock store
         // that we just instantiated
         storeManager = mock(StoreManager.class);
+        when(config.getInt("com.redborder.rssiLimit.db", -70)).thenReturn(-70);
         when(storeManager.getStore(NmspProcessor.NMSP_STORE_MEASURE)).thenReturn(storeMeasure);
         when(storeManager.getStore(NmspProcessor.NMSP_STORE_INFO)).thenReturn(storeInfo);
         when(storeManager.enrich(anyMap())).thenAnswer(new Answer<Map<String, Object>>() {
@@ -349,33 +350,40 @@ public class NmspProcessorTest extends TestCase {
         messageMeasure1.put(TYPE, NMSP_TYPE_MEASURE);
 
         nmspProcessor.process(messageMeasure1, collector);
-        Map<String, Object> toDruid = collector.getResult().get(0);
-        assertEquals(toDruid.get("client_rssi"), "bad");
+        List<Map<String, Object>> toDruidList = collector.getResult();
+        assertEquals(0, toDruidList.size());
+        assertEquals(storeMeasure.get("00:00:00:00:00:00").get("client_rssi"), "bad");
+
 
         messageMeasure1.put(NMSP_RSSI, Arrays.asList(-80));
         nmspProcessor.process(messageMeasure1, collector);
-        toDruid = collector.getResult().get(0);
-        assertEquals(toDruid.get("client_rssi"), "low");
+        assertEquals(0, toDruidList.size());
+        assertEquals(storeMeasure.get("00:00:00:00:00:00").get("client_rssi"), "low");
 
+        Map<String, Object> toDruid;
         messageMeasure1.put(NMSP_RSSI, Arrays.asList(-70));
         nmspProcessor.process(messageMeasure1, collector);
         toDruid = collector.getResult().get(0);
         assertEquals(toDruid.get("client_rssi"), "medium");
+        assertEquals(storeMeasure.get("00:00:00:00:00:00").get("client_rssi"), "medium");
 
         messageMeasure1.put(NMSP_RSSI, Arrays.asList(-60));
         nmspProcessor.process(messageMeasure1, collector);
         toDruid = collector.getResult().get(0);
         assertEquals(toDruid.get("client_rssi"), "good");
+        assertEquals(storeMeasure.get("00:00:00:00:00:00").get("client_rssi"), "good");
 
         messageMeasure1.put(NMSP_RSSI, Arrays.asList(-40));
         nmspProcessor.process(messageMeasure1, collector);
         toDruid = collector.getResult().get(0);
         assertEquals(toDruid.get("client_rssi"), "excelent");
+        assertEquals(storeMeasure.get("00:00:00:00:00:00").get("client_rssi"), "excelent");
 
         messageMeasure1.put(NMSP_RSSI, Arrays.asList(0));
         nmspProcessor.process(messageMeasure1, collector);
         toDruid = collector.getResult().get(0);
         assertEquals(toDruid.get("client_rssi"), "unknown");
+        assertEquals(storeMeasure.get("00:00:00:00:00:00").get("client_rssi"), "unknown");
     }
 
     @Test
