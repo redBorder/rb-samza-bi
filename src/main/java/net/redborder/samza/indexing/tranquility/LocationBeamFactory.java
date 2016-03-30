@@ -11,6 +11,7 @@ import io.druid.data.input.impl.TimestampSpec;
 import io.druid.granularity.DurationGranularity;
 import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
+import io.druid.query.aggregation.LongSumAggregatorFactory;
 import io.druid.query.aggregation.histogram.ApproximateHistogramAggregatorFactory;
 import io.druid.query.aggregation.histogram.ApproximateHistogramFoldingAggregatorFactory;
 import io.druid.query.aggregation.hyperloglog.HyperUniquesAggregatorFactory;
@@ -48,6 +49,7 @@ public class LocationBeamFactory implements BeamFactory {
 
         final List<AggregatorFactory> aggregators = ImmutableList.of(
                 new CountAggregatorFactory(EVENTS_AGGREGATOR),
+                new LongSumAggregatorFactory(DWELL_AGGREGATOR, DWELL_TIME),
                 new HyperUniquesAggregatorFactory(CLIENTS_AGGREGATOR, CLIENT_MAC),
                 new HyperUniquesAggregatorFactory(SESSIONS_AGGREGATOR, SESSION),
                 new ApproximateHistogramFoldingAggregatorFactory(DWELL_HISTOGRAM, DWELL_TIME, 10000, 288, 0f, 1440f)
