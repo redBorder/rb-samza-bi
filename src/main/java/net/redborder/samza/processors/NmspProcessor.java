@@ -102,7 +102,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                 }
 
                 if (rssi == 0) {
-                    toCache.put(CLIENT_PROFILE, "unknown");
+                    toCache.put(CLIENT_PROFILE, "hard");
                 } else if (rssi <= -75) {
                     toCache.put(CLIENT_PROFILE, "soft");
                 } else if (rssi <= -65) {
