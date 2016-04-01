@@ -51,7 +51,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
         storeInfo = storeManager.getStore(NMSP_STORE_INFO);
         countersStore = (KeyValueStore<String, Long>) context.getStore("counter");
         flowsNumber = (KeyValueStore<String, Long>) context.getStore("flows-number");
-        rssiLimit = config.getInt("redborder.rssiLimit.db", -85);
+        rssiLimit = config.getInt("redborder.rssiLimit.db", -80);
     }
 
     @Override
@@ -103,9 +103,9 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
 
                 if (rssi == 0) {
                     toCache.put(CLIENT_PROFILE, "unknown");
-                } else if (rssi <= -80) {
+                } else if (rssi <= -75) {
                     toCache.put(CLIENT_PROFILE, "soft");
-                } else if (rssi <= -70) {
+                } else if (rssi <= -65) {
                     toCache.put(CLIENT_PROFILE, "medium");
                 } else {
                     toCache.put(CLIENT_PROFILE, "hard");

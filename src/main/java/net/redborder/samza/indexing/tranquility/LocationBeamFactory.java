@@ -52,7 +52,7 @@ public class LocationBeamFactory implements BeamFactory {
                 new LongSumAggregatorFactory(DWELL_AGGREGATOR, DWELL_TIME),
                 new HyperUniquesAggregatorFactory(CLIENTS_AGGREGATOR, CLIENT_MAC),
                 new HyperUniquesAggregatorFactory(SESSIONS_AGGREGATOR, SESSION),
-                new ApproximateHistogramFoldingAggregatorFactory(DWELL_HISTOGRAM, DWELL_TIME, 10000, 288, 0f, 1440f)
+                new ApproximateHistogramFoldingAggregatorFactory(DWELL_HISTOGRAM, DWELL_TIME, 14400, 300, 3f, 1440f)
         );
 
         // The Timestamper should return the timestamp of the class your Samza task produces. Samza envelopes contain

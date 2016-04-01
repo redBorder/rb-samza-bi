@@ -59,7 +59,7 @@ public class NmspProcessorTest extends TestCase {
         // Mock the storeManager in order to return the mock store
         // that we just instantiated
         storeManager = mock(StoreManager.class);
-        when(config.getInt("redborder.rssiLimit.db", -85)).thenReturn(-85);
+        when(config.getInt("redborder.rssiLimit.db", -80)).thenReturn(-80);
         when(storeManager.getStore(NmspProcessor.NMSP_STORE_MEASURE)).thenReturn(storeMeasure);
         when(storeManager.getStore(NmspProcessor.NMSP_STORE_INFO)).thenReturn(storeInfo);
         when(storeManager.enrich(anyMap())).thenAnswer(new Answer<Map<String, Object>>() {
