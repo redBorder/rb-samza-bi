@@ -184,7 +184,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                     enrichmentEvent.put("flows_count", flows);
                 }
 
-                collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentEvent));
+                collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, clientMac, enrichmentEvent));
             }
         } catch (Exception ex) {
             log.warn("MSE10 association event dropped: " + message, ex);
@@ -284,7 +284,7 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                     enrichmentEvent.put("flows_count", flows);
                 }
 
-                collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentEvent));
+                collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, clientMac, enrichmentEvent));
             }
         } catch (Exception ex) {
             log.warn("MSE10 locationUpdate event dropped: " + message, ex);

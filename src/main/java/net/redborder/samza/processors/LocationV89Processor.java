@@ -188,7 +188,7 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
                 enrichmentEvent.put("flows_count", flows);
             }
 
-            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentEvent));
+            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, macAddress, enrichmentEvent));
         }
     }
 }

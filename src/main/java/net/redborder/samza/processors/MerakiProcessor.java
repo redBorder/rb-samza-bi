@@ -127,7 +127,7 @@ public class MerakiProcessor extends Processor<Map<String, Object>> {
                 enrichmentEvent.put("flows_count", flows);
             }
 
-            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentEvent));
+            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, clientMac, enrichmentEvent));
         } else {
             log.warn("This event {} doesn't have client mac.", message);
         }

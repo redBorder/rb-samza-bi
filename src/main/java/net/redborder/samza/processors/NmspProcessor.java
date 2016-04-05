@@ -196,7 +196,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                     }
 
                     if (rssi >= rssiLimit || dot11Status.equals("ASSOCIATED")) {
-                        collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentEvent));
+                        collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, mac, enrichmentEvent));
                     }
                 }
             }
@@ -272,7 +272,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                 enrichmentEvent.put("flows_count", flows);
             }
 
-            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentEvent));
+            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, mac, enrichmentEvent));
         }
 
         this.messagesCounter.inc();

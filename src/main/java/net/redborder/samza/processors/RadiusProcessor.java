@@ -170,7 +170,7 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
                 enrichmentMessage.put("flows_count", flows);
             }
 
-            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentMessage));
+            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, clientMac, enrichmentMessage));
         }
         this.messagesCounter.inc();
     }
