@@ -115,7 +115,7 @@ public class SplitFlowFunction {
 
                 Map<String, Object> to_send = new HashMap<>();
                 to_send.putAll(event);
-                to_send.put(Dimension.TIMESTAMP, this_end.getMillis() / 1000);
+                to_send.put(Dimension.TIMESTAMP, this_start.getMillis() / 1000);
                 to_send.put(Dimension.BYTES, this_bytes);
                 to_send.put(Dimension.PKTS, this_pkts);
                 to_send.remove(Dimension.FIRST_SWITCHED);
