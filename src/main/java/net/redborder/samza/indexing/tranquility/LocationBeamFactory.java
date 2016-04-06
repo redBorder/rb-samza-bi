@@ -44,12 +44,13 @@ public class LocationBeamFactory implements BeamFactory {
         final List<String> dimensions = ImmutableList.of(
                 NEW_LOC, OLD_LOC, TYPE, TRANSITION, SERVICE_PROVIDER_UUID, ORGANIZATION_UUID, DEPLOYMENT_UUID,
                 NAMESPACE_UUID, MARKET_UUID, CAMPUS_UUID, BUILDING_UUID, FLOOR_UUID, ZONE_UUID, CLIENT_LATLONG,
-                DOT11STATUS, CLIENT_PROFILE
+                DOT11STATUS, CLIENT_PROFILE, CLIENT_RSSI_NUM
         );
 
         final List<AggregatorFactory> aggregators = ImmutableList.of(
                 new CountAggregatorFactory(EVENTS_AGGREGATOR),
                 new LongSumAggregatorFactory(DWELL_AGGREGATOR, DWELL_TIME),
+                new LongSumAggregatorFactory(SUM_RSSI_AGGREGATOR, CLIENT_RSSI_NUM),
                 new HyperUniquesAggregatorFactory(CLIENTS_AGGREGATOR, CLIENT_MAC),
                 new HyperUniquesAggregatorFactory(SESSIONS_AGGREGATOR, SESSION),
                 new ApproximateHistogramFoldingAggregatorFactory(DWELL_HISTOGRAM, DWELL_TIME, 14400, 300, 3f, 1440f)
