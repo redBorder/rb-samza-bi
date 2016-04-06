@@ -59,7 +59,7 @@ public class SplitFlowFunctionTest extends TestCase {
         message.put(PKTS, 99);
 
         Map<String, Object> expected = new HashMap<>();
-        expected.put(TIMESTAMP, secs(timestampDate));
+        expected.put(TIMESTAMP, secs(firstSwitchDate));
         expected.put(BYTES, 999L);
         expected.put(PKTS, 99L);
 
@@ -84,10 +84,17 @@ public class SplitFlowFunctionTest extends TestCase {
         DateTime pktTime;
 
         expected = new HashMap<>();
-        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 22:11:00");
+        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 22:10:12");
         expected.put(TIMESTAMP, secs(pktTime));
         expected.put(BYTES, 228L);
         expected.put(PKTS, 22L);
+        expectedPackets.add(expected);
+
+        expected = new HashMap<>();
+        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 22:11:00");
+        expected.put(TIMESTAMP, secs(pktTime));
+        expected.put(BYTES, 285L);
+        expected.put(PKTS, 28L);
         expectedPackets.add(expected);
 
         expected = new HashMap<>();
@@ -100,16 +107,72 @@ public class SplitFlowFunctionTest extends TestCase {
         expected = new HashMap<>();
         pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 22:13:00");
         expected.put(TIMESTAMP, secs(pktTime));
-        expected.put(BYTES, 285L);
-        expected.put(PKTS, 28L);
-        expectedPackets.add(expected);
-
-        expected = new HashMap<>();
-        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 22:13:42");
-        expected.put(TIMESTAMP, secs(pktTime));
         expected.put(BYTES, 201L);
         expected.put(PKTS, 21L);
         expectedPackets.add(expected);
+
+        List<Map<String, Object>> result = SplitFlowFunction.split(message, timeNowDate);
+        assertEquals(expectedPackets, result);
+    }
+
+    @Test
+    public void basicSpli() {
+        Map<String, Object> message = new HashMap<>();
+        DateTime firstSwitchDate = formatter.withZoneUTC().parseDateTime("2016-04-06 10:01:26");
+        DateTime timestampDate = formatter.withZoneUTC().parseDateTime("2016-04-06 10:06:26");
+        DateTime timeNowDate = formatter.withZoneUTC().parseDateTime("2016-04-06 10:15:16");
+
+        message.put(TIMESTAMP, secs(timestampDate));
+        message.put(FIRST_SWITCHED, secs(firstSwitchDate));
+        message.put(BYTES, 316402980L);
+        message.put(PKTS, 316402980L);
+
+        List<Map<String, Object>> expectedPackets = new ArrayList<>();
+        Map<String, Object> expected;
+        DateTime pktTime;
+
+        expected = new HashMap<>();
+        pktTime = formatter.withZoneUTC().parseDateTime("2016-04-06 10:01:26");
+        expected.put(TIMESTAMP, secs(pktTime));
+        expected.put(BYTES, 35859004L);
+        expected.put(PKTS, 35859004L);
+        expectedPackets.add(expected);
+
+        expected = new HashMap<>();
+        pktTime = formatter.withZoneUTC().parseDateTime("2016-04-06 10:02:00");
+        expected.put(TIMESTAMP, secs(pktTime));
+        expected.put(BYTES, 63280596L);
+        expected.put(PKTS, 63280596L);
+        expectedPackets.add(expected);
+
+        expected = new HashMap<>();
+        pktTime = formatter.withZoneUTC().parseDateTime("2016-04-06 10:03:00");
+        expected.put(TIMESTAMP, secs(pktTime));
+        expected.put(BYTES, 63280596L);
+        expected.put(PKTS, 63280596L);
+        expectedPackets.add(expected);
+
+        expected = new HashMap<>();
+        pktTime = formatter.withZoneUTC().parseDateTime("2016-04-06 10:04:00");
+        expected.put(TIMESTAMP, secs(pktTime));
+        expected.put(BYTES, 63280596L);
+        expected.put(PKTS, 63280596L);
+        expectedPackets.add(expected);
+
+        expected = new HashMap<>();
+        pktTime = formatter.withZoneUTC().parseDateTime("2016-04-06 10:05:00");
+        expected.put(TIMESTAMP, secs(pktTime));
+        expected.put(BYTES, 63280596L);
+        expected.put(PKTS, 63280596L);
+        expectedPackets.add(expected);
+
+        expected = new HashMap<>();
+        pktTime = formatter.withZoneUTC().parseDateTime("2016-04-06 10:06:00");
+        expected.put(TIMESTAMP, secs(pktTime));
+        expected.put(BYTES, 27421592L);
+        expected.put(PKTS, 27421592L);
+        expectedPackets.add(expected);
+
 
         List<Map<String, Object>> result = SplitFlowFunction.split(message, timeNowDate);
         assertEquals(expectedPackets, result);
@@ -132,14 +195,14 @@ public class SplitFlowFunctionTest extends TestCase {
         DateTime pktTime;
 
         expected = new HashMap<>();
-        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 22:01:00");
+        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 22:00:16");
         expected.put(TIMESTAMP, secs(pktTime));
         expected.put(BYTES, 511L);
         expected.put(PKTS, 50L);
         expectedPackets.add(expected);
 
         expected = new HashMap<>();
-        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 22:01:42");
+        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 22:01:00");
         expected.put(TIMESTAMP, secs(pktTime));
         expected.put(BYTES, 488L);
         expected.put(PKTS, 49L);
@@ -163,27 +226,27 @@ public class SplitFlowFunctionTest extends TestCase {
 
         List<Map<String, Object>> expected = new ArrayList<>();
         Map<String, Object> msgExpected = new HashMap<>();
-        msgExpected.put(TIMESTAMP, secs(formatter.withZoneUTC().parseDateTime("2014-01-01 21:51:00")));
+        msgExpected.put(TIMESTAMP, secs(formatter.withZoneUTC().parseDateTime("2014-01-01 21:50:12")));
         msgExpected.put(BYTES, 145L);
         msgExpected.put(PKTS, 14L);
         Map<String, Object> msgExpected1 = new HashMap<>();
-        msgExpected1.put(TIMESTAMP, secs(formatter.withZoneUTC().parseDateTime("2014-01-01 21:52:00")));
+        msgExpected1.put(TIMESTAMP, secs(formatter.withZoneUTC().parseDateTime("2014-01-01 21:51:00")));
         msgExpected1.put(BYTES, 181L);
         msgExpected1.put(PKTS, 18L);
         Map<String, Object> msgExpected2 = new HashMap<>();
-        msgExpected2.put(TIMESTAMP, secs(formatter.withZoneUTC().parseDateTime("2014-01-01 21:53:00")));
+        msgExpected2.put(TIMESTAMP, secs(formatter.withZoneUTC().parseDateTime("2014-01-01 21:52:00")));
         msgExpected2.put(BYTES, 181L);
         msgExpected2.put(PKTS, 18L);
         Map<String, Object> msgExpected3 = new HashMap<>();
-        msgExpected3.put(TIMESTAMP, secs(formatter.withZoneUTC().parseDateTime("2014-01-01 21:54:00")));
+        msgExpected3.put(TIMESTAMP, secs(formatter.withZoneUTC().parseDateTime("2014-01-01 21:53:00")));
         msgExpected3.put(BYTES, 181L);
         msgExpected3.put(PKTS, 18L);
         Map<String, Object> msgExpected4 = new HashMap<>();
-        msgExpected4.put(TIMESTAMP, secs(formatter.withZoneUTC().parseDateTime("2014-01-01 21:55:00")));
+        msgExpected4.put(TIMESTAMP, secs(formatter.withZoneUTC().parseDateTime("2014-01-01 21:54:00")));
         msgExpected4.put(BYTES, 181L);
         msgExpected4.put(PKTS, 18L);
         Map<String, Object> msgExpected5 = new HashMap<>();
-        msgExpected5.put(TIMESTAMP, secs(formatter.withZoneUTC().parseDateTime("2014-01-01 21:55:42")));
+        msgExpected5.put(TIMESTAMP, secs(formatter.withZoneUTC().parseDateTime("2014-01-01 21:55:00")));
         msgExpected5.put(BYTES, 130L);
         msgExpected5.put(PKTS, 13L);
         expected.add(msgExpected);
@@ -212,7 +275,7 @@ public class SplitFlowFunctionTest extends TestCase {
 
         List<Map<String, Object>> expected = new ArrayList<>();
         Map<String, Object> msgExpected = new HashMap<>();
-        msgExpected.put(TIMESTAMP, secs(timestampDate));
+        msgExpected.put(TIMESTAMP, secs(firstSwitchDate));
         msgExpected.put(BYTES, 999L);
         msgExpected.put(PKTS, 99L);
         expected.add(msgExpected);
@@ -265,21 +328,21 @@ public class SplitFlowFunctionTest extends TestCase {
         DateTime pktTime;
 
         expected = new HashMap<>();
-        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 21:46:00");
+        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 21:45:12");
         expected.put(TIMESTAMP, secs(pktTime));
         expected.put(BYTES, 386L);
         expected.put(PKTS, 38L);
         expectedPackets.add(expected);
 
         expected = new HashMap<>();
-        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 21:47:00");
+        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 21:46:00");
         expected.put(TIMESTAMP, secs(pktTime));
         expected.put(BYTES, 483L);
         expected.put(PKTS, 47L);
         expectedPackets.add(expected);
 
         expected = new HashMap<>();
-        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 21:47:16");
+        pktTime = formatter.withZoneUTC().parseDateTime("2014-01-01 21:47:00");
         expected.put(TIMESTAMP, secs(pktTime));
         expected.put(BYTES, 130L);
         expected.put(PKTS, 14L);
