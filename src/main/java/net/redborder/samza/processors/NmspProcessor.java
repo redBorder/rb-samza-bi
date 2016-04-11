@@ -79,6 +79,35 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                 Integer rssi = Collections.max(clientRssis);
                 String apMac = apMacs.get(clientRssis.indexOf(rssi));
 
+                Map<String, Object> infoCache = storeInfo.get(mac + namespace_id);
+                String dot11Status = "PROBING";
+
+                if (infoCache == null) {
+                    toCache.put(CLIENT_RSSI_NUM, rssi);
+                    toCache.put(WIRELESS_STATION, apMac);
+                    toCache.put(NMSP_DOT11STATUS, "ASSOCIATED");
+                    dot11Status = "PROBING";
+                } else {
+                    Integer last_seen = (Integer) infoCache.get("last_seen");
+                    if ((last_seen + 3600) > (System.currentTimeMillis() / 1000)) {
+                        String apAssociated = (String) infoCache.get(WIRELESS_STATION);
+                        if (apMacs.contains(apAssociated)) {
+                            rssi = clientRssis.get(apMacs.indexOf(apAssociated));
+                            toCache.put(CLIENT_RSSI_NUM, rssi);
+                            toCache.putAll(infoCache);
+                            dot11Status = "ASSOCIATED";
+                        } else {
+                            toDruid = null;
+                        }
+                    } else {
+                        storeInfo.delete(mac + namespace_id);
+                        toCache.put(CLIENT_RSSI_NUM, rssi);
+                        toCache.put(WIRELESS_STATION, apMac);
+                        toCache.put(NMSP_DOT11STATUS, "ASSOCIATED");
+                        dot11Status = "PROBING";
+                    }
+                }
+
                 String rssiName;
 
                 if (rssi == 0) {
@@ -109,35 +138,6 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                     toCache.put(CLIENT_PROFILE, "medium");
                 } else {
                     toCache.put(CLIENT_PROFILE, "hard");
-                }
-
-                Map<String, Object> infoCache = storeInfo.get(mac + namespace_id);
-                String dot11Status = "PROBING";
-
-                if (infoCache == null) {
-                    toCache.put(CLIENT_RSSI_NUM, rssi);
-                    toCache.put(WIRELESS_STATION, apMac);
-                    toCache.put(NMSP_DOT11STATUS, "ASSOCIATED");
-                    dot11Status = "PROBING";
-                } else {
-                    Integer last_seen = (Integer) infoCache.get("last_seen");
-                    if ((last_seen + 3600) > (System.currentTimeMillis() / 1000)) {
-                        String apAssociated = (String) infoCache.get(WIRELESS_STATION);
-                        if (apMacs.contains(apAssociated)) {
-                            Integer rssiAssociated = clientRssis.get(apMacs.indexOf(apAssociated));
-                            toCache.put(CLIENT_RSSI_NUM, rssiAssociated);
-                            toCache.putAll(infoCache);
-                            dot11Status = "ASSOCIATED";
-                        } else {
-                            toDruid = null;
-                        }
-                    } else {
-                        storeInfo.delete(mac + namespace_id);
-                        toCache.put(CLIENT_RSSI_NUM, rssi);
-                        toCache.put(WIRELESS_STATION, apMac);
-                        toCache.put(NMSP_DOT11STATUS, "ASSOCIATED");
-                        dot11Status = "PROBING";
-                    }
                 }
 
                 if (toDruid != null) {
