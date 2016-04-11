@@ -9,6 +9,7 @@ public class Aggregators {
     public final static String CLIENTS_AGGREGATOR = "clients";
     public final static String DWELL_AGGREGATOR = "sum_dwell_time";
     public final static String SESSIONS_AGGREGATOR = "sessions";
+    public final static String SUM_REPETITIONS_AGGREGATOR = "sum_repetitions";
     public final static String WIRELESS_STATIONS_AGGREGATOR = "wireless_stations";
     public final static String USERS_AGGREGATOR = "users";
     public final static String SIGNATURES_AGGREGATOR = "signatures";

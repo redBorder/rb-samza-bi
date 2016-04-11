@@ -220,6 +220,7 @@ public class Dimension {
     public final static String DWELL_TIME = "dwell_time";
     public final static String TRANSITION = "transition";
     public final static String SESSION = "session";
+    public final static String REPETITIONS = "repetitions";
 
     // Radius
     public final static String PACKET_SRC_IP_ADDRESS = "Packet-Src-IP-Address";
