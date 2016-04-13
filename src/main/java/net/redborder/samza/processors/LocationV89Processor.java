@@ -163,6 +163,8 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
 
             if (macAddress != null) store.put(macAddress + namespace_id, toCache);
 
+            toDruid.put(CLIENT_PROFILE, "hard");
+
             Map<String, Object> storeEnrichment = storeManager.enrich(toDruid);
             Map<String, Object> enrichmentEvent = enrichManager.enrich(storeEnrichment);
 

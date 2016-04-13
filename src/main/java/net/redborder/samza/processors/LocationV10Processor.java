@@ -158,6 +158,8 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
 
                 store.put(clientMac + namespace_id, toCache);
 
+                toDruid.put(CLIENT_PROFILE, "hard");
+
                 Map<String, Object> storeEnrichment = storeManager.enrich(toDruid);
                 storeEnrichment.putAll(toDruid);
                 Map<String, Object> enrichmentEvent = enrichManager.enrich(storeEnrichment);

@@ -243,6 +243,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
             if (!namespace_id.equals(""))
                 toDruid.put(NAMESPACE_UUID, namespace_id);
 
+            toDruid.put(CLIENT_PROFILE, "hard");
             toDruid.put(CLIENT_MAC, mac);
             storeInfo.put(mac + namespace_id, toCache);
 

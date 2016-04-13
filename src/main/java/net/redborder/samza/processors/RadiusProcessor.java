@@ -142,6 +142,7 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
             }
 
             toDruid.put(TYPE, "radius");
+            toDruid.put(CLIENT_PROFILE, "hard");
             toDruid.putAll(toCache);
 
             Map<String, Object> storeMessage = storeManager.enrich(toDruid);
