@@ -142,7 +142,8 @@ public class PostgresqlManager {
                     String latitude = rs.getString("latitude");
 
                     if (uuid != null && latitude != null && longitude != null
-                            && StringUtils.isNumeric(latitude) && StringUtils.isNumeric(longitude)) {
+                            && StringUtils.isNumeric(latitude) && StringUtils.isNumeric(longitude) && !latitude.equals("")
+                            && !longitude.equals("")) {
                         Map<String, Object> location = new HashMap<>();
                         Double longitudeDbl = (double) Math.round(Double.valueOf(longitude) * 100000) / 100000;
                         Double latitudeDbl = (double) Math.round(Double.valueOf(latitude) * 100000) / 100000;
