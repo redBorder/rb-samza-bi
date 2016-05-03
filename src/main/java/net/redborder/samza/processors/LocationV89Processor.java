@@ -23,8 +23,8 @@ import static net.redborder.samza.util.constants.DimensionValue.LOC_ASSOCIATED;
 
 public class LocationV89Processor extends Processor<Map<String, Object>> {
     final public static String LOCATION_STORE = "location";
-    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_FLOW_OUTPUT_TOPIC);
-    private static final String DATASOURCE = "rb_flow";
+    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_LOC_OUTPUT_TOPIC);
+    private static final String DATASOURCE = "rb_location";
 
     private KeyValueStore<String, Map<String, Object>> store;
     private KeyValueStore<String, Long> countersStore;
@@ -148,15 +148,11 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
 
             toDruid.putAll(toCache);
             toDruid.put(CLIENT_RSSI, "unknown");
-            toDruid.put(CLIENT_RSSI_NUM, 0);
             toDruid.put(CLIENT_SNR, "unknown");
-            toDruid.put(CLIENT_SNR_NUM, 0);
 
             if (!namespace_id.equals(""))
                 toDruid.put(NAMESPACE_UUID, namespace_id);
 
-            toDruid.put(BYTES, 0);
-            toDruid.put(PKTS, 0);
             toDruid.put(TYPE, "mse");
 
             if (dateString != null) {
@@ -166,6 +162,8 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
             }
 
             if (macAddress != null) store.put(macAddress + namespace_id, toCache);
+
+            toDruid.put(CLIENT_PROFILE, "hard");
 
             Map<String, Object> storeEnrichment = storeManager.enrich(toDruid);
             Map<String, Object> enrichmentEvent = enrichManager.enrich(storeEnrichment);
@@ -192,7 +190,7 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
                 enrichmentEvent.put("flows_count", flows);
             }
 
-            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentEvent));
+            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, macAddress, enrichmentEvent));
         }
     }
 }

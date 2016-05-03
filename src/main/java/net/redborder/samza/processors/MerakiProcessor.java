@@ -22,9 +22,9 @@ import static net.redborder.samza.util.constants.Dimension.*;
 
 public class MerakiProcessor extends Processor<Map<String, Object>> {
     private static final Logger log = LoggerFactory.getLogger(MerakiProcessor.class);
-    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_FLOW_OUTPUT_TOPIC);
+    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_LOC_OUTPUT_TOPIC);
     final public static String LOCATION_STORE = "location";
-    private static final String DATASOURCE = "rb_flow";
+    private static final String DATASOURCE = "rb_location";
 
     private final List<String> dimToCache = Arrays.asList(CLIENT_LATLNG, WIRELESS_STATION, CLIENT_MAC_VENDOR,
             CLIENT_RSSI_NUM, CLIENT_OS);
@@ -127,7 +127,7 @@ public class MerakiProcessor extends Processor<Map<String, Object>> {
                 enrichmentEvent.put("flows_count", flows);
             }
 
-            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentEvent));
+            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, clientMac, enrichmentEvent));
         } else {
             log.warn("This event {} doesn't have client mac.", message);
         }

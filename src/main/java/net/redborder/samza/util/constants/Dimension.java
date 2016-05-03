@@ -10,6 +10,7 @@ public class Dimension {
     public final static String DST_IP = "dst";
     public final static String SENSOR_NAME = "sensor_name";
     public final static String CLIENT_LATLNG = "client_latlong";
+    public final static String CLIENT_PROFILE = "client_profile";
     public final static String CLIENT_RSSI = "client_rssi";
     public final static String CLIENT_RSSI_NUM = "client_rssi_num";
     public final static String CLIENT_SNR = "client_snr";
@@ -214,16 +215,12 @@ public class Dimension {
     public final static String FOLLOWERS = "followers";
 
     //LOCATION
-    public final static String CAMPUS_NEW = CAMPUS + "_new";
-    public final static String CAMPUS_OLD = CAMPUS + "_old";
-    public final static String FLOOR_NEW = FLOOR + "_new";
-    public final static String FLOOR_OLD = FLOOR + "_old";
-    public final static String BUILDING_NEW = BUILDING + "_new";
-    public final static String BUILDING_OLD = BUILDING + "_old";
-    public final static String ZONE_NEW = ZONE + "_new";
-    public final static String ZONE_OLD = ZONE + "_old";
-    public final static String WIRELESS_STATION_NEW = WIRELESS_STATION + "_new";
-    public final static String WIRELESS_STATION_OLD = WIRELESS_STATION + "_old";
+    public final static String OLD_LOC = "old";
+    public final static String NEW_LOC = "new";
+    public final static String DWELL_TIME = "dwell_time";
+    public final static String TRANSITION = "transition";
+    public final static String SESSION = "session";
+    public final static String REPETITIONS = "repetitions";
 
     // Radius
     public final static String PACKET_SRC_IP_ADDRESS = "Packet-Src-IP-Address";

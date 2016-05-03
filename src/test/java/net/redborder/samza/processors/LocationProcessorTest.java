@@ -104,8 +104,6 @@ public class LocationProcessorTest extends TestCase {
         locationProcessor.process(message, collector);
 
         result.put(DOT11STATUS, "ASSOCIATED");
-        result.put(BYTES, 0);
-        result.put(PKTS, 0);
         result.put(TYPE, "mse");
         result.put(CAMPUS, "Campus Test");
         result.put(BUILDING, "Building Test");
@@ -115,9 +113,8 @@ public class LocationProcessorTest extends TestCase {
         result.put(SENSOR_NAME, "sensor-testing");
         result.put(FLOOR, "Floor Test");
         result.put(CLIENT_RSSI, "unknown");
-        result.put(CLIENT_RSSI_NUM, 0);
         result.put(CLIENT_SNR, "unknown");
-        result.put(CLIENT_SNR_NUM, 0);
+        result.put(CLIENT_PROFILE,"hard");
         result.put(SRC, "10.50.22.1");
         result.put(WIRELESS_STATION, "68:bc:0c:65:0a:a0");
         result.put(NAMESPACE_UUID, namespace_id);
@@ -165,8 +162,6 @@ public class LocationProcessorTest extends TestCase {
         result.put(CLIENT_MAC, "00:00:00:00:00:00");
         result.put(DOT11STATUS, "PROBING");
         result.put(WIRELESS_STATION, "AA:AA:AA:AA:AA:AA");
-        result.put(PKTS, 0);
-        result.put(BYTES, 0);
         result.put(TYPE, "mse10-location");
         result.put(SENSOR_NAME, "rb-loc");
         result.put(NAMESPACE_UUID, namespace_id);
@@ -202,12 +197,11 @@ public class LocationProcessorTest extends TestCase {
         result.put(CLIENT_MAC, "00:00:00:00:00:00");
         result.put(WIRELESS_ID, "rb-corp");
         result.put(DOT11STATUS, "ASSOCIATED");
-        result.put(PKTS, 0);
-        result.put(BYTES, 0);
         result.put(SENSOR_NAME, "rb-assoc");
         result.put(WIRELESS_STATION, "AA:AA:AA:AA:AA:AA");
         result.put(DOT11PROTOCOL, "IEEE_802_11_B");
         result.put(TYPE, "mse10-association");
+        result.put(CLIENT_PROFILE,"hard");
         result.put(LOC_SUBSCRIPTION_NAME, "rb-assoc");
 
         enrichmentMessage = collector.getResult().get(0);
@@ -220,9 +214,7 @@ public class LocationProcessorTest extends TestCase {
 
         result.put(ZONE, "ZoneD");
         result.put(DOT11STATUS, "ASSOCIATED");
-        result.put(BYTES, 0);
         result.put(WIRELESS_STATION, "AA:AA:AA:AA:AA:AA");
-        result.put(PKTS, 0);
         result.put(TYPE, "mse10-location");
         result.put(CAMPUS, "CampusA");
         result.put(BUILDING, "BuildingB");
@@ -250,9 +242,7 @@ public class LocationProcessorTest extends TestCase {
 
         result.put(ZONE, "ZoneD");
         result.put(DOT11STATUS, "PROBING");
-        result.put(BYTES, 0);
         result.put(WIRELESS_STATION, "AA:AA:AA:AA:AA:AA");
-        result.put(PKTS, 0);
         result.put(TYPE, "mse10-location");
         result.put(CAMPUS, "CampusA");
         result.put(BUILDING, "BuildingB");

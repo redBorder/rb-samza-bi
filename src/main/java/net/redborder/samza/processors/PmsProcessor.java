@@ -19,7 +19,7 @@ import static net.redborder.samza.util.constants.Dimension.*;
 
 public class PmsProcessor extends Processor<Map<String, Object>> {
     private static final Logger log = LoggerFactory.getLogger(PmsProcessor.class);
-    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_FLOW_OUTPUT_TOPIC);
+    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_LOC_OUTPUT_TOPIC);
     public final static String PMS_STORE = "pms";
 
     private KeyValueStore<String, Map<String, Object>> storePms;

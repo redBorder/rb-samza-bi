@@ -24,9 +24,9 @@ import java.util.regex.Pattern;
 import static net.redborder.samza.util.constants.Dimension.*;
 
 public class RadiusProcessor extends Processor<Map<String, Object>> {
-    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_FLOW_OUTPUT_TOPIC);
+    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_LOC_OUTPUT_TOPIC);
     public final static String RADIUS_STORE = "radius";
-    private static final String DATASOURCE = "rb_flow";
+    private static final String DATASOURCE = "rb_location";
     private static final Logger log = LoggerFactory.getLogger(RadiusProcessor.class);
 
     private final List<String> toDruid = Arrays.asList(MARKET, MARKET_UUID, ORGANIZATION, ORGANIZATION_UUID,
@@ -141,9 +141,8 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
                 log.debug("PUT  client: {} - namesapce: {} - contents: " + toCache, clientMac, namespace_id);
             }
 
-            toDruid.put(BYTES, 0);
-            toDruid.put(PKTS, 0);
             toDruid.put(TYPE, "radius");
+            toDruid.put(CLIENT_PROFILE, "hard");
             toDruid.putAll(toCache);
 
             Map<String, Object> storeMessage = storeManager.enrich(toDruid);
@@ -172,7 +171,7 @@ public class RadiusProcessor extends Processor<Map<String, Object>> {
                 enrichmentMessage.put("flows_count", flows);
             }
 
-            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, enrichmentMessage));
+            collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, clientMac, enrichmentMessage));
         }
         this.messagesCounter.inc();
     }

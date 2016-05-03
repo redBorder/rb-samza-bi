@@ -11,6 +11,10 @@ import io.druid.data.input.impl.TimestampSpec;
 import io.druid.granularity.DurationGranularity;
 import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
+import io.druid.query.aggregation.DoubleSumAggregatorFactory;
+import io.druid.query.aggregation.LongSumAggregatorFactory;
+import io.druid.query.aggregation.histogram.ApproximateHistogramAggregatorFactory;
+import io.druid.query.aggregation.histogram.ApproximateHistogramFoldingAggregatorFactory;
 import io.druid.query.aggregation.hyperloglog.HyperUniquesAggregatorFactory;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -20,13 +24,12 @@ import org.apache.samza.system.SystemStream;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 
+
 import java.util.List;
 import java.util.Map;
 
-import static net.redborder.samza.util.constants.Aggregators.CLIENTS_AGGREGATOR;
-import static net.redborder.samza.util.constants.Aggregators.EVENTS_AGGREGATOR;
-import static net.redborder.samza.util.constants.Dimension.CLIENT_MAC;
-import static net.redborder.samza.util.constants.Dimension.TIMESTAMP;
+import static net.redborder.samza.util.constants.Aggregators.*;
+import static net.redborder.samza.util.constants.Dimension.*;
 
 public class LocationBeamFactory implements BeamFactory {
 
@@ -40,17 +43,20 @@ public class LocationBeamFactory implements BeamFactory {
         final String dataSource = stream.getStream();
 
         final List<String> dimensions = ImmutableList.of(
-                "client_mac", "sensor_name", "sensor_uuid", "deployment", "deployment_uuid",
-                "namespace", "namespace_uuid", "type", "floor",
-                "floor_uuid", "zone", "zone_uuid", "campus", "campus_uuid",
-                "building", "building_uuid", "wireless_station", "floor_old",
-                "floor_new", "zone_old", "zone_new", "wireless_station_old", "wireless_station_new",
-                "building_old", "building_new", "campus_old", "campus_new", "service_provider", "service_provider_uuid"
+                NEW_LOC, OLD_LOC, TYPE, TRANSITION, SERVICE_PROVIDER_UUID, ORGANIZATION_UUID, DEPLOYMENT_UUID,
+                NAMESPACE_UUID, MARKET_UUID, CAMPUS_UUID, BUILDING_UUID, FLOOR_UUID, ZONE_UUID, CLIENT_LATLONG,
+                DOT11STATUS, CLIENT_PROFILE, SENSOR_UUID
         );
 
         final List<AggregatorFactory> aggregators = ImmutableList.of(
                 new CountAggregatorFactory(EVENTS_AGGREGATOR),
-                new HyperUniquesAggregatorFactory(CLIENTS_AGGREGATOR, CLIENT_MAC)
+                new LongSumAggregatorFactory(DWELL_AGGREGATOR, DWELL_TIME),
+                new LongSumAggregatorFactory(SUM_RSSI_AGGREGATOR, CLIENT_RSSI_NUM),
+                new DoubleSumAggregatorFactory("sum_popularity", "popularity"),
+                new LongSumAggregatorFactory(SUM_REPETITIONS_AGGREGATOR, REPETITIONS),
+                new HyperUniquesAggregatorFactory(CLIENTS_AGGREGATOR, CLIENT_MAC),
+                new HyperUniquesAggregatorFactory(SESSIONS_AGGREGATOR, SESSION),
+                new ApproximateHistogramFoldingAggregatorFactory(DWELL_HISTOGRAM, DWELL_TIME, 50, 30, 3f, 1440f)
         );
 
         // The Timestamper should return the timestamp of the class your Samza task produces. Samza envelopes contain
