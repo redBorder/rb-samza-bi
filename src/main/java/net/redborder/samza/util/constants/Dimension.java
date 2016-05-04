@@ -246,4 +246,13 @@ public class Dimension {
 
     //ICAP
     public final static String PROXY_IP = "proxy_ip";
+
+    //Lilee
+    public static final String ASSET = "asset";
+    public static final String DIALER = "dialer";
+    public static final String SIM = "sim";
+    public static final String LATITUDE = "latitude";
+    public static final String LONGITUDE = "longitude";
+    public static final String TECH = "tech";
+    public static final String CARRIER = "carrier";
 }
