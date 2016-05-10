@@ -11,8 +11,9 @@ import io.druid.data.input.impl.SpatialDimensionSchema;
 import io.druid.data.input.impl.TimestampSpec;
 import io.druid.granularity.DurationGranularity;
 import io.druid.query.aggregation.*;
-import io.druid.query.aggregation.histogram.ApproximateHistogramFoldingAggregatorFactory;
-import io.druid.query.aggregation.hyperloglog.HyperUniquesAggregatorFactory;
+import io.druid.query.aggregation.AggregatorFactory;
+import io.druid.query.aggregation.CountAggregatorFactory;
+import io.druid.query.aggregation.DoubleSumAggregatorFactory;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -21,7 +22,8 @@ import org.apache.samza.system.SystemStream;
 import org.joda.time.DateTime;
 import org.joda.time.Period;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 import static net.redborder.samza.util.constants.Aggregators.*;
 import static net.redborder.samza.util.constants.Dimension.*;
@@ -34,6 +36,7 @@ public class LileeBeamFactory implements BeamFactory {
         final String intermediatePersist = config.get("redborder.beam.lilee.intermediatePersist", "PT20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
         final long indexGranularity = Long.valueOf(config.get("systems.druid_lilee.beam.indexGranularity", "60000"));
+
 
         final String dataSource = stream.getStream();
 

@@ -113,21 +113,15 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                 if (rssi == 0) {
                     toCache.put(CLIENT_RSSI, "unknown");
                     rssiName = "unknown";
-                } else if (rssi <= -85) {
+                } else if (rssi <= -80) {
                     toCache.put(CLIENT_RSSI, "bad");
                     rssiName = "bad";
-                } else if (rssi <= -80) {
-                    toCache.put(CLIENT_RSSI, "low");
-                    rssiName = "low";
                 } else if (rssi <= -70) {
-                    toCache.put(CLIENT_RSSI, "medium");
-                    rssiName = "medium";
-                } else if (rssi <= -60) {
+                    toCache.put(CLIENT_RSSI, "average");
+                    rssiName = "average";
+                } else {
                     toCache.put(CLIENT_RSSI, "good");
                     rssiName = "good";
-                } else {
-                    toCache.put(CLIENT_RSSI, "excelent");
-                    rssiName = "excelent";
                 }
 
                 if (rssi == 0) {

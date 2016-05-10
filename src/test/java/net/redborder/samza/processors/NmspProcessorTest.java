@@ -151,7 +151,7 @@ public class NmspProcessorTest extends TestCase {
         String client_rssi = (String) fromCache.get(CLIENT_RSSI);
 
         assertEquals("RssiCheck", client_rssi_num, -32);
-        assertEquals(client_rssi, "excelent");
+        assertEquals(client_rssi, "good");
     }
 
     @Test
@@ -177,7 +177,7 @@ public class NmspProcessorTest extends TestCase {
         String client_rssiA = (String) fromCacheA.get(CLIENT_RSSI);
 
         assertEquals("RssiCheck", client_rssi_numA, -32);
-        assertEquals(client_rssiA, "excelent");
+        assertEquals(client_rssiA, "good");
 
         message.put(CLIENT_MAC, "00:00:00:00:00:00");
         message.put(NMSP_AP_MAC, ap_macs);
@@ -358,14 +358,14 @@ public class NmspProcessorTest extends TestCase {
         messageMeasure1.put(NMSP_RSSI, Arrays.asList(-80));
         nmspProcessor.process(messageMeasure1, collector);
         toDruid = collector.getResult().get(0);
-        assertEquals(toDruid.get("client_rssi"), "low");
-        assertEquals(storeMeasure.get("00:00:00:00:00:00").get("client_rssi"), "low");
+        assertEquals(toDruid.get("client_rssi"), "bad");
+        assertEquals(storeMeasure.get("00:00:00:00:00:00").get("client_rssi"), "bad");
 
         messageMeasure1.put(NMSP_RSSI, Arrays.asList(-70));
         nmspProcessor.process(messageMeasure1, collector);
         toDruid = collector.getResult().get(0);
-        assertEquals(toDruid.get("client_rssi"), "medium");
-        assertEquals(storeMeasure.get("00:00:00:00:00:00").get("client_rssi"), "medium");
+        assertEquals(toDruid.get("client_rssi"), "average");
+        assertEquals(storeMeasure.get("00:00:00:00:00:00").get("client_rssi"), "average");
 
         messageMeasure1.put(NMSP_RSSI, Arrays.asList(-60));
         nmspProcessor.process(messageMeasure1, collector);
@@ -376,8 +376,8 @@ public class NmspProcessorTest extends TestCase {
         messageMeasure1.put(NMSP_RSSI, Arrays.asList(-40));
         nmspProcessor.process(messageMeasure1, collector);
         toDruid = collector.getResult().get(0);
-        assertEquals(toDruid.get("client_rssi"), "excelent");
-        assertEquals(storeMeasure.get("00:00:00:00:00:00").get("client_rssi"), "excelent");
+        assertEquals(toDruid.get("client_rssi"), "good");
+        assertEquals(storeMeasure.get("00:00:00:00:00:00").get("client_rssi"), "good");
 
         messageMeasure1.put(NMSP_RSSI, Arrays.asList(0));
         nmspProcessor.process(messageMeasure1, collector);
