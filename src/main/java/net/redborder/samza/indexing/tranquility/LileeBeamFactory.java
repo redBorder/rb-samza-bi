@@ -43,7 +43,7 @@ public class LileeBeamFactory implements BeamFactory {
         final List<String> dimensions = ImmutableList.of(
                 TECH, SIM, CARRIER, ASSET, DIALER, TYPE, SERVICE_PROVIDER_UUID, ORGANIZATION_UUID, DEPLOYMENT_UUID,
                 NAMESPACE_UUID, MARKET_UUID, CAMPUS_UUID, BUILDING_UUID, FLOOR_UUID, ZONE_UUID,
-                SENSOR_UUID
+                SENSOR_UUID, "vehicle_uuid", "vehicle"
         );
 
         final List<DruidSpatialDimension> spatilDimensions =
