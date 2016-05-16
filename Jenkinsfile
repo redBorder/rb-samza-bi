@@ -1,10 +1,12 @@
 
-node('runner') {
+node('docker') {
 	stage 'Compilation'
-	git branch: 'continuous-integration', credentialsId: 'jenkins_id', url: 'git@gitlab.redborder.lan:bigdata/rb-samza-bi.git'
-	def mvnHome = tool 'M3'
-	sh "${mvnHome}/bin/mvn clean package"
-	stash includes: 'target/rb-samza-bi*.tar.gz', name: 'rb-samza-bi'
+        def maven = docker.image('maven:latest')
+	maven.inside('-v /tmp/docker-m2cache:/root/.m2:rw'){
+		git branch: 'continuous-integration', credentialsId: 'jenkins_id', url: 'git@gitlab.redborder.lan:bigdata/rb-samza-bi.git'
+		sh 'mvn clean install'
+		stash includes: 'target/rb-samza-bi*.tar.gz', name: 'rb-samza-bi'
+	}
 }
 
 node('jenkins-premanager1') {
