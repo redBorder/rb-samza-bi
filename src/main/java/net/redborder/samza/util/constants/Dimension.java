@@ -122,6 +122,9 @@ public class Dimension {
     public final static String MARKET_UUID = "market_uuid";
     public final static String ORGANIZATION = "organization";
     public final static String ORGANIZATION_UUID = "organization_uuid";
+    public final static String VEHICLE = "vehicle";
+    public final static String VEHICLE_UUID = "vehicle_uuid";
+
     public final static String CLIENT_LATLONG = "client_latlong";
     public final static String HASH = "hash";
     public final static String FILE_SIZE = "file_size";
@@ -249,7 +252,7 @@ public class Dimension {
 
     //Lilee
     public static final String ASSET = "asset";
-    public static final String DIALER = "dialer";
+    public static final String atuDIALER = "dialer";
     public static final String SIM = "sim";
     public static final String LATITUDE = "latitude";
     public static final String LONGITUDE = "longitude";
