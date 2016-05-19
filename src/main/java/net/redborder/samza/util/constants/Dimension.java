@@ -252,7 +252,7 @@ public class Dimension {
 
     //Lilee
     public static final String ASSET = "asset";
-    public static final String atuDIALER = "dialer";
+    public static final String DIALER = "dialer";
     public static final String SIM = "sim";
     public static final String LATITUDE = "latitude";
     public static final String LONGITUDE = "longitude";
