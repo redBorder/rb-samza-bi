@@ -27,7 +27,7 @@ public class MerakiProcessor extends Processor<Map<String, Object>> {
     private static final String DATASOURCE = "rb_location";
 
     private final List<String> dimToCache = Arrays.asList(CLIENT_LATLNG, WIRELESS_STATION, CLIENT_MAC_VENDOR,
-            CLIENT_RSSI_NUM, CLIENT_OS);
+            CLIENT_RSSI_NUM, CLIENT_OS, WIRELESS_ID);
 
     private KeyValueStore<String, Map<String, Object>> store;
     private KeyValueStore<String, Long> countersStore;
@@ -85,6 +85,20 @@ public class MerakiProcessor extends Processor<Map<String, Object>> {
                 } else {
                     toCache.put(CLIENT_RSSI, "good");
                     rssiName = "good";
+                }
+
+                if (rssi == 0) {
+                    toCache.put(CLIENT_PROFILE, "hard");
+                    toDruid.put(CLIENT_PROFILE, "hard");
+                } else if (rssi <= -75) {
+                    toCache.put(CLIENT_PROFILE, "soft");
+                    toDruid.put(CLIENT_PROFILE, "soft");
+                } else if (rssi <= -65) {
+                    toCache.put(CLIENT_PROFILE, "medium");
+                    toDruid.put(CLIENT_PROFILE, "medium");
+                } else {
+                    toCache.put(CLIENT_PROFILE, "hard");
+                    toDruid.put(CLIENT_PROFILE, "hard");
                 }
 
                 toCache.put(CLIENT_RSSI, rssiName);
