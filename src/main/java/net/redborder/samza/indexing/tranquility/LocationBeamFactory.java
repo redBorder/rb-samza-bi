@@ -43,8 +43,8 @@ public class LocationBeamFactory implements BeamFactory {
         final String dataSource = stream.getStream();
 
         final List<String> dimensions = ImmutableList.of(
-                NEW_LOC, OLD_LOC, TYPE, TRANSITION, SERVICE_PROVIDER_UUID, ORGANIZATION_UUID, DEPLOYMENT_UUID,
-                NAMESPACE_UUID, MARKET_UUID, CAMPUS_UUID, BUILDING_UUID, FLOOR_UUID, ZONE_UUID, CLIENT_LATLONG,
+                NEW_LOC, OLD_LOC, TYPE, TRANSITION, SERVICE_PROVIDER_UUID, ORGANIZATION_UUID,
+                NAMESPACE_UUID, CAMPUS_UUID, BUILDING_UUID, FLOOR_UUID, ZONE_UUID, CLIENT_LATLONG,
                 DOT11STATUS, CLIENT_PROFILE, SENSOR_UUID, "vehicle_uuid"
         );
 

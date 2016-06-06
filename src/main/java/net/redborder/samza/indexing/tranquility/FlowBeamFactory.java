@@ -64,7 +64,6 @@ public class FlowBeamFactory implements BeamFactory {
                 new LongSumAggregatorFactory(SUM_BYTES_AGGREGATOR, BYTES),
                 new LongSumAggregatorFactory(SUM_PKTS_AGGREGATOR, PKTS),
                 new LongSumAggregatorFactory(SUM_RSSI_AGGREGATOR, CLIENT_RSSI_NUM),
-                new LongSumAggregatorFactory(SUM_DL_SCORE_AGGREGATOR, DARKLIST_SCORE),
                 new HyperUniquesAggregatorFactory(CLIENTS_AGGREGATOR, CLIENT_MAC),
                 new HyperUniquesAggregatorFactory(WIRELESS_STATIONS_AGGREGATOR, WIRELESS_STATION)
         );
