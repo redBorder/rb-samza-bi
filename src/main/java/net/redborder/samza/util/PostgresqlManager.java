@@ -193,7 +193,7 @@ public class PostgresqlManager {
                 st = conn.createStatement();
                 rs = st.executeQuery("SELECT DISTINCT ON (access_points.mac_address) access_points.ip_address," +
                         "                   access_points.mac_address, access_points.enrichment, zones.name AS zone," +
-                        "                   access_points.latitude AS latitude, access_points.longitude AS longitude," +
+                        "                   zones.id AS zone_uuid, access_points.latitude AS latitude, access_points.longitude AS longitude," +
                         "                   floors.name AS floor, floors.uuid AS floor_uuid, buildings.name AS building," +
                         "                   buildings.uuid AS building_uuid, campuses.name AS campus," +
                         "                   campuses.uuid AS campus_uuid, deployments.name AS deployment," +
