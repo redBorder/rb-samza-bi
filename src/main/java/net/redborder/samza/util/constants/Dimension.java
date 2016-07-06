@@ -258,4 +258,9 @@ public class Dimension {
     public static final String LONGITUDE = "longitude";
     public static final String TECH = "tech";
     public static final String CARRIER = "carrier";
+    public static final String MODEL = "model";
+    public static final String REV_NO = "revision";
+    public static final String BAND = "band";
+    public static final String LTE_BANDWITH = "lte_bandwith";
+    public static final String CHANNEL = "channel";
 }
