@@ -26,9 +26,9 @@ public class PostgresqlManager {
     public static final String WLC_PSQL_STORE = "wlc-psql";
     public static final String SENSOR_PSQL_STORE = "sensor-psql";
     private final Logger log = LoggerFactory.getLogger(PostgresqlManager.class);
-    private final String[] enrichColumns = {"campus", "building", "floor", "deployment",
-            "namespace", "market", "organization", "service_provider", "zone", "campus_uuid",
-            "building_uuid", "floor_uuid", "deployment_uuid", "namespace_uuid", "market_uuid",
+    private final String[] enrichColumns = {"asset", "fognode", "floor", "deployment",
+            "namespace", "market", "organization", "service_provider", "zone", "asset_uuid",
+            "fognode_uuid", "deployment_uuid", "namespace_uuid", "market_uuid",
             "organization_uuid", "service_provider_uuid", "zone_uuid", "vehicle", "vehicle_uuid"};
 
     private Connection conn = null;
@@ -194,9 +194,8 @@ public class PostgresqlManager {
                 rs = st.executeQuery("SELECT DISTINCT ON (access_points.mac_address) access_points.ip_address," +
                         " access_points.mac_address, access_points.enrichment," +
                         " zones.name AS zone, zones.id AS zone_uuid, access_points.latitude AS latitude," +
-                        " access_points.longitude AS longitude, floors.name AS floor," +
-                        " floors.uuid AS floor_uuid, buildings.name AS building, buildings.uuid AS building_uuid, " +
-                        " campuses.name AS campus, campuses.uuid AS campus_uuid," +
+                        " access_points.longitude AS longitude, fognodes.name AS fognode, fognodes.uuid AS fognode_uuid, " +
+                        " assets.name AS asset, assets.uuid AS asset_uuid," +
                         " deployments.name AS deployment, deployments.uuid AS deployment_uuid, " +
                         " namespaces.name AS namespace, namespaces.uuid AS namespace_uuid, " +
                         " markets.name AS market, markets.uuid AS market_uuid, organizations.name AS organization," +
@@ -205,12 +204,10 @@ public class PostgresqlManager {
                         " vehicles.uuid AS vehicle_uuid FROM access_points " +
                         " JOIN sensors ON (access_points.sensor_id = sensors.id) LEFT JOIN " +
                         " access_points_zones AS zones_ids ON access_points.id = zones_ids.access_point_id " +
-                        " LEFT JOIN zones ON zones_ids.zone_id = zones.id LEFT JOIN " +
-                        " (SELECT * FROM sensors WHERE domain_type=101) AS floors ON floors.lft <= sensors.lft " +
-                        " AND floors.rgt >= sensors.rgt LEFT JOIN (SELECT * FROM sensors WHERE domain_type=5) " +
-                        " AS buildings ON buildings.lft <= sensors.lft AND buildings.rgt >= sensors.rgt" +
-                        " LEFT JOIN (SELECT * FROM sensors WHERE domain_type=4) AS campuses ON campuses.lft " +
-                        " <= sensors.lft AND campuses.rgt >= sensors.rgt LEFT JOIN " +
+                        " LEFT JOIN zones ON zones_ids.zone_id = zones.id LEFT JOIN (SELECT * FROM sensors WHERE type=40) " +
+                        " AS fognodes ON fognodes.lft <= sensors.lft AND fognodes.rgt >= sensors.rgt" +
+                        " LEFT JOIN (SELECT * FROM sensors WHERE domain_type=9) AS assets ON assets.lft " +
+                        " <= sensors.lft AND assets.rgt >= sensors.rgt LEFT JOIN " +
                         " (SELECT * FROM sensors WHERE domain_type=7) AS deployments ON deployments.lft <= sensors.lft " +
                         " AND deployments.rgt >= sensors.rgt LEFT JOIN (SELECT * FROM sensors WHERE domain_type=8) AS " +
                         " namespaces ON namespaces.lft <= sensors.lft AND namespaces.rgt >= sensors.rgt LEFT JOIN " +
