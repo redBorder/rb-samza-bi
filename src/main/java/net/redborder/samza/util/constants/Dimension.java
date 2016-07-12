@@ -252,6 +252,9 @@ public class Dimension {
 
     //Lilee
     public static final String ASSET = "asset";
+    public static final String ASSET_UUID = "asset_uuid";
+    public static final String FOGNODE = "fognode";
+    public static final String FOGNODE_UUID = "fognode_uuid";
     public static final String DIALER = "dialer";
     public static final String SIM = "sim";
     public static final String LATITUDE = "latitude";
@@ -263,4 +266,7 @@ public class Dimension {
     public static final String BAND = "band";
     public static final String LTE_BANDWITH = "lte_bandwith";
     public static final String CHANNEL = "channel";
+
+    //Meraki
+    public static final String INTERFACE_NAME = "interface_name";
 }

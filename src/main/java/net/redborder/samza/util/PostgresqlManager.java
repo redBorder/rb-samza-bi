@@ -26,7 +26,7 @@ public class PostgresqlManager {
     public static final String WLC_PSQL_STORE = "wlc-psql";
     public static final String SENSOR_PSQL_STORE = "sensor-psql";
     private final Logger log = LoggerFactory.getLogger(PostgresqlManager.class);
-    private final String[] enrichColumns = {"asset", "fognode", "floor", "deployment",
+    private final String[] enrichColumns = {"asset", "fognode", "deployment",
             "namespace", "market", "organization", "service_provider", "zone", "asset_uuid",
             "fognode_uuid", "deployment_uuid", "namespace_uuid", "market_uuid",
             "organization_uuid", "service_provider_uuid", "zone_uuid", "vehicle", "vehicle_uuid"};
