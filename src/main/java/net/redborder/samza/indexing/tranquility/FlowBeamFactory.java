@@ -41,7 +41,7 @@ public class FlowBeamFactory implements BeamFactory {
 
         final String dataSource = stream.getStream();
 
-        final List<String> dimensions = ImmutableList.of(INTERFACE_NAME,
+        final List<String> dimensions = ImmutableList.of(
                 APPLICATION_ID_NAME, BIFLOW_DIRECTION, CONVERSATION, DIRECTION,
                 ENGINE_ID_NAME, HTTP_USER_AGENT_OS, HTTP_HOST, HTTP_SOCIAL_MEDIA,
                 HTTP_SOCIAL_USER, HTTP_REFER_L1, L4_PROTO, IP_PROTOCOL_VERSION,

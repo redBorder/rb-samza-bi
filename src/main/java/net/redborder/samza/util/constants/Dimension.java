@@ -267,6 +267,4 @@ public class Dimension {
     public static final String LTE_BANDWITH = "lte_bandwith";
     public static final String CHANNEL = "channel";
 
-    //Meraki
-    public static final String INTERFACE_NAME = "interface_name";
 }
