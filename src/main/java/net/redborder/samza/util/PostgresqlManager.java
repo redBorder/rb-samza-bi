@@ -29,7 +29,7 @@ public class PostgresqlManager {
     private final String[] enrichColumns = {"asset", "fognode", "deployment",
             "namespace", "market", "organization", "service_provider", "zone", "asset_uuid",
             "fognode_uuid", "deployment_uuid", "namespace_uuid", "market_uuid",
-            "organization_uuid", "service_provider_uuid", "zone_uuid", "vehicle", "vehicle_uuid"};
+            "organization_uuid", "service_provider_uuid", "zone_uuid"};
 
     private Connection conn = null;
     private KeyValueStore<String, Map<String, Object>> storeWLCSql;
@@ -191,7 +191,6 @@ public class PostgresqlManager {
         try {
             if (conn != null) {
                 st = conn.createStatement();
-
                 rs = st.executeQuery("SELECT DISTINCT ON (access_points.mac_address) access_points.ip_address," +
                         "                   access_points.mac_address, access_points.enrichment, zones.name AS zone," +
                         "                   zones.id AS zone_uuid, access_points.latitude AS latitude, access_points.longitude AS longitude," +
