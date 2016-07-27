@@ -218,9 +218,9 @@ public class LocationV10Processor extends Processor<Map<String, Object>> {
                     String[] locations = locationMapHierarchy.split(">");
 
                     if (locations.length >= 1)
-                        toCache.put(ASSET, locations[0]);
+                        toCache.put(CAMPUS, locations[0]);
                     if (locations.length >= 2)
-                        toCache.put(FOGNODE, locations[1]);
+                        toCache.put(BUILDING, locations[1]);
                     if (locations.length >= 3)
                         toCache.put(FLOOR, locations[2]);
                     if (locations.length >= 4)

@@ -2,6 +2,7 @@ package net.redborder.samza.util;
 
 
 import net.redborder.samza.store.StoreManager;
+import net.redborder.samza.util.constants.Dimension;
 import org.apache.commons.lang.StringUtils;
 import org.apache.samza.config.Config;
 import org.apache.samza.storage.kv.Entry;
@@ -29,7 +30,7 @@ public class PostgresqlManager {
     private final String[] enrichColumns = {"asset", "fognode", "deployment",
             "namespace", "market", "organization", "service_provider", "zone", "asset_uuid",
             "fognode_uuid", "deployment_uuid", "namespace_uuid", "market_uuid",
-            "organization_uuid", "service_provider_uuid", "zone_uuid"};
+            "organization_uuid", "service_provider_uuid", "zone_uuid", "fognode_id"};
 
     private Connection conn = null;
     private KeyValueStore<String, Map<String, Object>> storeWLCSql;
@@ -194,7 +195,7 @@ public class PostgresqlManager {
                 rs = st.executeQuery("SELECT DISTINCT ON (access_points.mac_address) access_points.ip_address," +
                         "                   access_points.mac_address, access_points.enrichment, zones.name AS zone," +
                         "                   zones.id AS zone_uuid, access_points.latitude AS latitude, access_points.longitude AS longitude," +
-                        "                   fognodes.name AS fognode, fognodes.uuid AS fognode_uuid, assets.name AS asset," +
+                        "                   fognodes.name AS fognode, fognodes.uuid AS fognode_uuid, fognodes.ip AS fognode_id, assets.name AS asset," +
                         "                   assets.uuid AS asset_uuid, deployments.name AS deployment," +
                         "                   deployments.uuid AS deployment_uuid, namespaces.name AS namespace," +
                         "                   namespaces.uuid AS namespace_uuid, markets.name AS market," +
@@ -244,6 +245,17 @@ public class PostgresqlManager {
                         String columnData = rs.getString(columnName);
                         if (columnData != null) enriching.put(columnName, columnData);
                     }
+
+
+                    String asset = enriching.get(Dimension.ASSET);
+                    if(asset == null || asset.equals("")) asset = "unknown";
+                    String fognode = enriching.get(Dimension.FOGNODE);
+                    if(fognode == null || fognode.equals("")) fognode = "unknown";
+
+                    enriching.put("name", String.format("%s/%s", asset, fognode));
+
+                    String fognodeId = enriching.remove("fognode_id");
+                    if(fognodeId != null && !fognodeId.equals("")) enriching.put(Dimension.FOGNODE, fognodeId);
 
                     entries++;
 

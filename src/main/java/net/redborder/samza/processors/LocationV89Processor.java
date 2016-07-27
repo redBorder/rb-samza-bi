@@ -83,9 +83,9 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
                     zone = mapHierarchy.split(">");
 
                     if (zone.length >= 1)
-                        toCache.put(ASSET, zone[0]);
+                        toCache.put(CAMPUS, zone[0]);
                     if (zone.length >= 2)
-                        toCache.put(FOGNODE, zone[1]);
+                        toCache.put(BUILDING, zone[1]);
                     if (zone.length >= 3)
                         toCache.put(FLOOR, zone[2]);
                 }

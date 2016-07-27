@@ -41,10 +41,10 @@ public class LileeBeamFactory implements BeamFactory {
         final String dataSource = stream.getStream();
 
         final List<String> dimensions = ImmutableList.of(
-                TECH, SIM, CARRIER, ASSET, DIALER, TYPE, SERVICE_PROVIDER_UUID, ORGANIZATION_UUID,
-                NAMESPACE_UUID, SENSOR_UUID, VEHICLE, VEHICLE_UUID, ORGANIZATION, NAMESPACE,
+                TECH, SIM, CARRIER, DIALER, TYPE, SERVICE_PROVIDER_UUID, ORGANIZATION_UUID,
+                NAMESPACE_UUID, SENSOR_UUID, ORGANIZATION, NAMESPACE,
                 MODEL, REV_NO, BAND, LTE_BANDWITH, CHANNEL, MARKET, MARKET_UUID, DEPLOYMENT,
-                DEPLOYMENT_UUID
+                DEPLOYMENT_UUID, NAME, FOGNODE, FOGNODE_UUID, ASSET, ASSET_UUID
         );
 
         final List<DruidSpatialDimension> spatilDimensions =
