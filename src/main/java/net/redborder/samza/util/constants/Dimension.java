@@ -267,5 +267,6 @@ public class Dimension {
     public static final String LTE_BANDWITH = "lte_bandwith";
     public static final String CHANNEL = "channel";
     public static final String NAME = "name";
+    public static final String NETWORK_NAME = "network_name";
 
 }
