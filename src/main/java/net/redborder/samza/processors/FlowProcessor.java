@@ -43,6 +43,13 @@ public class FlowProcessor extends Processor<Map<String, Object>> {
         Map<String, Object> messageEnrichmentLocal = this.enrichManager.enrich(messageEnrichmentStore);
 
         messageEnrichmentLocal = CalculateDurationFunction.execute(messageEnrichmentLocal);
+
+        if(!messageEnrichmentLocal.containsKey(Dimension.WIRELESS_STATION_NAME)){
+            if(messageEnrichmentLocal.containsKey(Dimension.WIRELESS_STATION)) {
+                messageEnrichmentLocal.put(Dimension.WIRELESS_STATION_NAME, "unknown/unknown/" + messageEnrichmentLocal.get(Dimension.WIRELESS_STATION));
+            }
+        }
+
         List<Map<String, Object>> splittedMsg = SplitFlowFunction.split(messageEnrichmentLocal);
 
         String datasource = DATASOURCE;

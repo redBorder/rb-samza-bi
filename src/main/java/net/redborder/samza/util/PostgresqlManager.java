@@ -250,15 +250,19 @@ public class PostgresqlManager {
                     String fognode = enriching.get(Dimension.FOGNODE);
                     String wirelessName = enriching.get(Dimension.WIRELESS_STATION_NAME);
 
-                    if(asset != null && fognode != null && wirelessName != null){
+                    if (asset != null && fognode != null && wirelessName != null) {
                         enriching.put(Dimension.FOGNODE, String.format("%s/%s", asset, fognode));
                         enriching.put(Dimension.WIRELESS_STATION_NAME, String.format("%s/%s/%s", asset, fognode, wirelessName));
-                    } else if (asset != null && fognode != null){
+                    } else if (asset != null && fognode != null) {
                         enriching.put(Dimension.FOGNODE, String.format("%s/%s", asset, fognode));
                         enriching.put(Dimension.WIRELESS_STATION_NAME, String.format("%s/%s/%s", asset, fognode, rs.getString("mac_address")));
                     } else if (asset != null) {
                         enriching.put(Dimension.FOGNODE, String.format("%s/%s", asset, "unknown"));
                         enriching.put(Dimension.WIRELESS_STATION_NAME, String.format("%s/%s/%s", asset, "unknown", rs.getString("mac_address")));
+                    } else if (wirelessName != null && fognode == null) {
+                        enriching.put(Dimension.WIRELESS_STATION_NAME, String.format("%s/%s/%s", "unknown", "unknown", wirelessName));
+                    } else if (fognode == null) {
+                        enriching.put(Dimension.WIRELESS_STATION_NAME, String.format("%s/%s/%s", "unknown", "unknown", rs.getString("mac_address")));
                     }
 
                     entries++;

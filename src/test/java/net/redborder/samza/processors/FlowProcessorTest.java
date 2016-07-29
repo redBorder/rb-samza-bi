@@ -75,6 +75,7 @@ public class FlowProcessorTest extends TestCase {
         message.put(TIMESTAMP, Long.valueOf(1429088471L));
         expected.putAll(message);
         expected.put(DURATION, 0L);
+        expected.put(WIRELESS_STATION_NAME, "unknown/unknown/00:00:00:00:00:00");
 
         for (String store : stores) {
             Map<String, Object> cache = new HashMap<>();
@@ -112,7 +113,7 @@ public class FlowProcessorTest extends TestCase {
         message.put(TIMESTAMP, Long.valueOf(1429088471L));
         expected.putAll(message);
         expected.put(DURATION, 0L);
-
+        expected.put(WIRELESS_STATION_NAME, "unknown/unknown/00:00:00:00:00:00");
 
         for (String store : stores) {
             List<String> keys = Arrays.asList(properties.getProperty("redborder.store." + store + ".keys").split(","));
@@ -161,6 +162,7 @@ public class FlowProcessorTest extends TestCase {
         message.put(TIMESTAMP, Long.valueOf(1429088471L));
         expected.putAll(message);
         expected.put(DURATION, 0L);
+        expected.put(WIRELESS_STATION_NAME, "unknown/unknown/00:00:00:00:00:00");
 
 
         for (String store : stores) {
@@ -212,6 +214,7 @@ public class FlowProcessorTest extends TestCase {
         message.put(TIMESTAMP, Long.valueOf(1429088471L));
         expected.putAll(message);
         expected.put(DURATION, 0L);
+        expected.put(WIRELESS_STATION_NAME, "unknown/unknown/00:00:00:00:00:00");
 
         for (String store : stores) {
             Map<String, Object> cache = new HashMap<>();
