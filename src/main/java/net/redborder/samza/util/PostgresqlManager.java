@@ -30,7 +30,7 @@ public class PostgresqlManager {
     private final String[] enrichColumns = {"asset", "fognode", "deployment",
             "namespace", "market", "organization", "service_provider", "zone", "asset_uuid",
             "fognode_uuid", "deployment_uuid", "namespace_uuid", "market_uuid",
-            "organization_uuid", "service_provider_uuid", "zone_uuid", "fognode_id"};
+            "organization_uuid", "service_provider_uuid", "zone_uuid", "fognode_id", "wireless_station_name"};
 
     private Connection conn = null;
     private KeyValueStore<String, Map<String, Object>> storeWLCSql;
@@ -193,7 +193,7 @@ public class PostgresqlManager {
             if (conn != null) {
                 st = conn.createStatement();
                 rs = st.executeQuery("SELECT DISTINCT ON (access_points.mac_address) access_points.ip_address," +
-                        "                   access_points.mac_address, access_points.enrichment, zones.name AS zone," +
+                        "                   access_points.mac_address, access_points.enrichment, zones.name AS zone, access_points.name AS wireless_station_name," +
                         "                   zones.id AS zone_uuid, access_points.latitude AS latitude, access_points.longitude AS longitude," +
                         "                   fognodes.name AS fognode, fognodes.uuid AS fognode_uuid, fognodes.ip AS fognode_id, assets.name AS asset," +
                         "                   assets.uuid AS asset_uuid, deployments.name AS deployment," +
@@ -246,16 +246,20 @@ public class PostgresqlManager {
                         if (columnData != null) enriching.put(columnName, columnData);
                     }
 
-
                     String asset = enriching.get(Dimension.ASSET);
-                    if(asset == null || asset.equals("")) asset = "unknown";
                     String fognode = enriching.get(Dimension.FOGNODE);
-                    if(fognode == null || fognode.equals("")) fognode = "unknown";
+                    String wirelessName = enriching.get(Dimension.WIRELESS_STATION_NAME);
 
-                    enriching.put("name", String.format("%s/%s", asset, fognode));
-
-                    String fognodeId = enriching.remove("fognode_id");
-                    if(fognodeId != null && !fognodeId.equals("")) enriching.put(Dimension.FOGNODE, fognodeId);
+                    if(asset != null && fognode != null && wirelessName != null){
+                        enriching.put(Dimension.FOGNODE, String.format("%s/%s", asset, fognode));
+                        enriching.put(Dimension.WIRELESS_STATION_NAME, String.format("%s/%s/%s", asset, fognode, wirelessName));
+                    } else if (asset != null && fognode != null){
+                        enriching.put(Dimension.FOGNODE, String.format("%s/%s", asset, fognode));
+                        enriching.put(Dimension.WIRELESS_STATION_NAME, String.format("%s/%s/%s", asset, fognode, rs.getString("mac_address")));
+                    } else if (asset != null) {
+                        enriching.put(Dimension.FOGNODE, String.format("%s/%s", asset, "unknown"));
+                        enriching.put(Dimension.WIRELESS_STATION_NAME, String.format("%s/%s/%s", asset, "unknown", rs.getString("mac_address")));
+                    }
 
                     entries++;
 
