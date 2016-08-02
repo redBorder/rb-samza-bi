@@ -84,7 +84,7 @@ public class StateBeamFactory implements BeamFactory {
                         .replicants(replicas)
                         .segmentGranularity(Granularity.HOUR)
                         .warmingPeriod(new Period("PT15M"))
-                        .windowPeriod(new Period("PT10M"))
+                        .windowPeriod(new Period("PT20M"))
                         .build())
                 .timestampSpec(new TimestampSpec(TIMESTAMP, "posix", null))
                 .buildBeam();

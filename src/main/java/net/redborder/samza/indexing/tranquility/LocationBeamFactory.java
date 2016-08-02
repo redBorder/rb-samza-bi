@@ -90,7 +90,7 @@ public class LocationBeamFactory implements BeamFactory {
                         .replicants(replicas)
                         .segmentGranularity(Granularity.HOUR)
                         .warmingPeriod(new Period("PT15M"))
-                        .windowPeriod(new Period("PT10M"))
+                        .windowPeriod(new Period("PT30M"))
                         .build())
                 .timestampSpec(new TimestampSpec(TIMESTAMP, "posix", null))
                 .buildBeam();
