@@ -13,7 +13,6 @@ import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
 import io.druid.query.aggregation.DoubleSumAggregatorFactory;
 import io.druid.query.aggregation.LongSumAggregatorFactory;
-import io.druid.query.aggregation.histogram.ApproximateHistogramAggregatorFactory;
 import io.druid.query.aggregation.histogram.ApproximateHistogramFoldingAggregatorFactory;
 import io.druid.query.aggregation.hyperloglog.HyperUniquesAggregatorFactory;
 import org.apache.curator.framework.CuratorFramework;
@@ -44,7 +43,7 @@ public class LocationBeamFactory implements BeamFactory {
 
         final List<String> dimensions = ImmutableList.of(
                 NEW_LOC, OLD_LOC, TYPE, TRANSITION, SERVICE_PROVIDER_UUID, ORGANIZATION_UUID,
-                NAMESPACE_UUID, ASSET_UUID, FOGNODE_UUID, FLOOR_UUID, ZONE_UUID, CLIENT_LATLONG,
+                NAMESPACE_UUID, ASSET_UUID, GATEWAY_UUID, FLOOR_UUID, ZONE_UUID, CLIENT_LATLONG,
                 DOT11STATUS, CLIENT_PROFILE, SENSOR_UUID, "vehicle_uuid"
         );
 

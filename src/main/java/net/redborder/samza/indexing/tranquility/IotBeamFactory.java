@@ -37,7 +37,7 @@ public class IotBeamFactory implements BeamFactory {
         final List<String> dimensions = ImmutableList.of(
                 SENSOR_UUID, "monitor", "value", "proxy_uuid", DEPLOYMENT, DEPLOYMENT_UUID, NAMESPACE, NAMESPACE_UUID,
                 MARKET, MARKET_UUID, ORGANIZATION, ORGANIZATION_UUID, CLIENT_LATLNG, COORDINATES_MAP, ASSET,
-                ASSET_UUID, FOGNODE, FOGNODE_UUID, FLOOR, FLOOR_UUID
+                ASSET_UUID, GATEWAY, GATEWAY_UUID, FLOOR, FLOOR_UUID
         );
 
         final List<AggregatorFactory> aggregators = ImmutableList.of(

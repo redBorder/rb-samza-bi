@@ -27,10 +27,10 @@ public class PostgresqlManager {
     public static final String WLC_PSQL_STORE = "wlc-psql";
     public static final String SENSOR_PSQL_STORE = "sensor-psql";
     private final Logger log = LoggerFactory.getLogger(PostgresqlManager.class);
-    private final String[] enrichColumns = {"asset", "fognode", "deployment",
+    private final String[] enrichColumns = {"asset", "gateway", "deployment",
             "namespace", "market", "organization", "service_provider", "zone", "asset_uuid",
-            "fognode_uuid", "deployment_uuid", "namespace_uuid", "market_uuid",
-            "organization_uuid", "service_provider_uuid", "zone_uuid", "fognode_id", "wireless_station_name"};
+            "gateway_uuid", "deployment_uuid", "namespace_uuid", "market_uuid",
+            "organization_uuid", "service_provider_uuid", "zone_uuid", "gateway_id", "wireless_station_name"};
 
     private Connection conn = null;
     private KeyValueStore<String, Map<String, Object>> storeWLCSql;
@@ -195,7 +195,7 @@ public class PostgresqlManager {
                 rs = st.executeQuery("SELECT DISTINCT ON (access_points.mac_address) access_points.ip_address," +
                         "                   access_points.mac_address, access_points.enrichment, zones.name AS zone, access_points.name AS wireless_station_name," +
                         "                   zones.id AS zone_uuid, access_points.latitude AS latitude, access_points.longitude AS longitude," +
-                        "                   fognodes.name AS fognode, fognodes.uuid AS fognode_uuid, fognodes.ip AS fognode_id, assets.name AS asset," +
+                        "                   gateways.name AS gateway, gateways.uuid AS gateway_uuid, gateways.ip AS gateway_id, assets.name AS asset," +
                         "                   assets.uuid AS asset_uuid, deployments.name AS deployment," +
                         "                   deployments.uuid AS deployment_uuid, namespaces.name AS namespace," +
                         "                   namespaces.uuid AS namespace_uuid, markets.name AS market," +
@@ -208,7 +208,7 @@ public class PostgresqlManager {
                         "                                               OR access_points.switch_id = sensors.id AND access_points.sensor_id is null)" +
                         "                         LEFT JOIN access_points_zones AS zones_ids ON access_points.id = zones_ids.access_point_id" +
                         "                         LEFT JOIN zones ON zones_ids.zone_id = zones.id" +
-                        "                         LEFT JOIN (SELECT * FROM sensors WHERE type=40) AS fognodes ON fognodes.lft <= sensors.lft AND fognodes.rgt >= sensors.rgt" +
+                        "                         LEFT JOIN (SELECT * FROM sensors WHERE type=40) AS gateways ON gateways.lft <= sensors.lft AND gateways.rgt >= sensors.rgt" +
                         "                         LEFT JOIN (SELECT * FROM sensors WHERE domain_type=9) AS assets ON assets.lft <= sensors.lft AND assets.rgt >= sensors.rgt" +
                         "                         LEFT JOIN (SELECT * FROM sensors WHERE domain_type=7) AS deployments ON deployments.lft <= sensors.lft AND deployments.rgt >= sensors.rgt" +
                         "                         LEFT JOIN (SELECT * FROM sensors WHERE domain_type=8) AS namespaces ON namespaces.lft <= sensors.lft AND namespaces.rgt >= sensors.rgt" +
@@ -247,21 +247,21 @@ public class PostgresqlManager {
                     }
 
                     String asset = enriching.get(Dimension.ASSET);
-                    String fognode = enriching.get(Dimension.FOGNODE);
+                    String gateway = enriching.get(Dimension.GATEWAY);
                     String wirelessName = enriching.get(Dimension.WIRELESS_STATION_NAME);
 
-                    if (asset != null && fognode != null && wirelessName != null) {
-                        enriching.put(Dimension.FOGNODE, String.format("%s/%s", asset, fognode));
-                        enriching.put(Dimension.WIRELESS_STATION_NAME, String.format("%s/%s/%s", asset, fognode, wirelessName));
-                    } else if (asset != null && fognode != null) {
-                        enriching.put(Dimension.FOGNODE, String.format("%s/%s", asset, fognode));
-                        enriching.put(Dimension.WIRELESS_STATION_NAME, String.format("%s/%s/%s", asset, fognode, rs.getString("mac_address")));
+                    if (asset != null && gateway != null && wirelessName != null) {
+                        enriching.put(Dimension.GATEWAY, String.format("%s/%s", asset, gateway));
+                        enriching.put(Dimension.WIRELESS_STATION_NAME, String.format("%s/%s/%s", asset, gateway, wirelessName));
+                    } else if (asset != null && gateway != null) {
+                        enriching.put(Dimension.GATEWAY, String.format("%s/%s", asset, gateway));
+                        enriching.put(Dimension.WIRELESS_STATION_NAME, String.format("%s/%s/%s", asset, gateway, rs.getString("mac_address")));
                     } else if (asset != null) {
-                        enriching.put(Dimension.FOGNODE, String.format("%s/%s", asset, "unknown"));
+                        enriching.put(Dimension.GATEWAY, String.format("%s/%s", asset, "unknown"));
                         enriching.put(Dimension.WIRELESS_STATION_NAME, String.format("%s/%s/%s", asset, "unknown", rs.getString("mac_address")));
-                    } else if (wirelessName != null && fognode == null) {
+                    } else if (wirelessName != null && gateway == null) {
                         enriching.put(Dimension.WIRELESS_STATION_NAME, String.format("%s/%s/%s", "unknown", "unknown", wirelessName));
-                    } else if (fognode == null) {
+                    } else if (gateway == null) {
                         enriching.put(Dimension.WIRELESS_STATION_NAME, String.format("%s/%s/%s", "unknown", "unknown", rs.getString("mac_address")));
                     }
 
