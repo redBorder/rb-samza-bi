@@ -268,5 +268,6 @@ public class Dimension {
     public static final String CHANNEL = "channel";
     public static final String NETWORK_NAME = "network_name";
     public static final String GATEWAY_ID = "gateway_id";
+    public static final String PHONE_NUM = "phone_num";
 
 }
