@@ -126,13 +126,13 @@ public class StoreManager {
                 KeyValueStore<String, Map<String, Object>> keyValueStore = storeData.getStore();
                 Map<String, Object> contents = keyValueStore.get(mergeKey);
 
-                if (contents == null) {
+                /*if (contents == null) {
                     Object key = enrichment.get(keys.get(0));
 
                     if (key != null) {
                         contents = keyValueStore.get(key.toString());
                     }
-                }
+                }*/
 
                 log.debug("msgType: " + message.get(TYPE) + " store: " + store + " key: " + enrichment.get(keys.get(0)) + " mergeKey: {} - contents: {}", mergeKey, contents);
 
