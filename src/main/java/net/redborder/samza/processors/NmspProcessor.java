@@ -126,8 +126,8 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
                     toCache.put(CLIENT_RSSI, "good");
                     rssiName = "good";
                 } else {
-                    toCache.put(CLIENT_RSSI, "excelent");
-                    rssiName = "excelent";
+                    toCache.put(CLIENT_RSSI, "excellent");
+                    rssiName = "excellent";
                 }
 
                 if (rssi == 0) {
