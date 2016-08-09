@@ -11,9 +11,6 @@ import io.druid.data.input.impl.SpatialDimensionSchema;
 import io.druid.data.input.impl.TimestampSpec;
 import io.druid.granularity.DurationGranularity;
 import io.druid.query.aggregation.*;
-import io.druid.query.aggregation.AggregatorFactory;
-import io.druid.query.aggregation.CountAggregatorFactory;
-import io.druid.query.aggregation.DoubleSumAggregatorFactory;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
@@ -25,47 +22,29 @@ import org.joda.time.Period;
 import java.util.List;
 import java.util.Map;
 
-import static net.redborder.samza.util.constants.Aggregators.*;
+import static net.redborder.samza.util.constants.Aggregators.EVENTS_AGGREGATOR;
 import static net.redborder.samza.util.constants.Dimension.*;
 
-public class LileeBeamFactory implements BeamFactory {
+public class StateChangeBeamFactory implements BeamFactory {
 
     @Override
     public Beam<Object> makeBeam(SystemStream stream, int partitions, int replicas, Config config) {
-        final int maxRows = Integer.valueOf(config.get("redborder.beam.lilee.maxrows", "200000"));
-        final String intermediatePersist = config.get("redborder.beam.lilee.intermediatePersist", "PT20m");
+        final int maxRows = Integer.valueOf(config.get("redborder.beam.statechange.maxrows", "200000"));
+        final String intermediatePersist = config.get("redborder.beam.statechange.intermediatePersist", "PT20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
-        final long indexGranularity = Long.valueOf(config.get("systems.druid_lilee.beam.indexGranularity", "60000"));
+        final long indexGranularity = Long.valueOf(config.get("systems.druid_statechange.beam.indexGranularity", "60000"));
 
 
         final String dataSource = stream.getStream();
 
-
-
-
-
-
         final List<String> dimensions = ImmutableList.of(
-                TECH, CARRIER, DIALER, TYPE, SERVICE_PROVIDER_UUID, ORGANIZATION_UUID,
-                NAMESPACE_UUID, SENSOR_UUID, ORGANIZATION, NAMESPACE,
-                MODEL, REV_NO, BAND, LTE_BANDWITH, CHANNEL, MARKET, MARKET_UUID, DEPLOYMENT,
-                DEPLOYMENT_UUID, GATEWAY, GATEWAY_UUID, ASSET, ASSET_UUID, GATEWAY_ID, PHONE_NUM, REG_STATE,
-                PS_STATE, SIM_CARD, SIM_MODULE, IMS_STATE, RCC_STATE
+                DIALER, TYPE, SERVICE_PROVIDER_UUID, ORGANIZATION_UUID, NAMESPACE_UUID, SENSOR_UUID, ORGANIZATION,
+                NAMESPACE, MARKET, MARKET_UUID, DEPLOYMENT, DEPLOYMENT_UUID, GATEWAY, GATEWAY_UUID, ASSET, ASSET_UUID,
+                GATEWAY_ID, "dimension", "new", "old"
         );
 
-        final List<DruidSpatialDimension> spatilDimensions =
-                ImmutableList.<DruidSpatialDimension>of(new DruidSpatialDimension() {
-                    @Override
-                    public SpatialDimensionSchema schema() {
-                        return new SpatialDimensionSchema("coordinates", ImmutableList.of(LATITUDE, LONGITUDE));
-                    }
-                });
-
         final List<AggregatorFactory> aggregators = ImmutableList.of(
-                new CountAggregatorFactory(EVENTS_AGGREGATOR),
-                new DoubleSumAggregatorFactory("sum_value", "value"),
-                new DoubleMaxAggregatorFactory("max_value", "value"),
-                new DoubleMinAggregatorFactory("min_value", "value")
+                (AggregatorFactory) new CountAggregatorFactory(EVENTS_AGGREGATOR)
         );
 
         // The Timestamper should return the timestamp of the class your Samza task produces. Samza envelopes contain
@@ -92,8 +71,7 @@ public class LileeBeamFactory implements BeamFactory {
                 .curator(curator)
                 .discoveryPath("/druid/discoveryPath")
                 .location(DruidLocation.create("overlord", "druid:local:firehose:%s", dataSource))
-                .rollup(DruidRollup.create(DruidDimensions.specific(dimensions)
-                        .withSpatialDimensions(spatilDimensions), aggregators, new DurationGranularity(indexGranularity, 0)))
+                .rollup(DruidRollup.create(DruidDimensions.specific(dimensions), aggregators, new DurationGranularity(indexGranularity, 0)))
                 .druidTuning(DruidTuning.create(maxRows, new Period(intermediatePersist), 0))
                 .tuning(ClusteredBeamTuning.builder()
                         .partitions(partitions)

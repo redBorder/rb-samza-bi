@@ -256,7 +256,6 @@ public class Dimension {
     public static final String GATEWAY = "gateway";
     public static final String GATEWAY_UUID = "gateway_uuid";
     public static final String DIALER = "dialer";
-    public static final String SIM = "sim";
     public static final String LATITUDE = "latitude";
     public static final String LONGITUDE = "longitude";
     public static final String TECH = "tech";
@@ -269,5 +268,12 @@ public class Dimension {
     public static final String NETWORK_NAME = "network_name";
     public static final String GATEWAY_ID = "gateway_id";
     public static final String PHONE_NUM = "phone_num";
+
+    public static final String REG_STATE = "reg_state";
+    public static final String PS_STATE = "ps_state";
+    public static final String SIM_CARD = "sim_card";
+    public static final String SIM_MODULE = "sim_module";
+    public static final String IMS_STATE = "ims_state";
+    public static final String RCC_STATE = "rrc_state";
 
 }

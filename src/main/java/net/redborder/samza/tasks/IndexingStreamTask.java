@@ -70,6 +70,8 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
                 systemStream = new SystemStream("druid_iot", getDatasource(message, IOT_DATASOURCE));
             } else if (stream.equals("rb_lilee_post")) {
                 systemStream = new SystemStream("druid_lilee", getDatasource(message, "rb_lilee"));
+            } else if (stream.equals("rb_statechange")) {
+                systemStream = new SystemStream("druid_statechange", getDatasource(message, "rb_statechange"));
             } else {
                 log.warn("Undefined input stream name: " + stream);
             }
