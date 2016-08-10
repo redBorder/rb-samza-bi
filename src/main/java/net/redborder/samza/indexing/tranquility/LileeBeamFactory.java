@@ -40,11 +40,6 @@ public class LileeBeamFactory implements BeamFactory {
 
         final String dataSource = stream.getStream();
 
-
-
-
-
-
         final List<String> dimensions = ImmutableList.of(
                 TECH, CARRIER, INTERFACE, TYPE, SERVICE_PROVIDER_UUID, ORGANIZATION_UUID,
                 NAMESPACE_UUID, SENSOR_UUID, ORGANIZATION, NAMESPACE,
