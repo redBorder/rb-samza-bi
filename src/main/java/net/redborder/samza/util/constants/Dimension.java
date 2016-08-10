@@ -255,7 +255,7 @@ public class Dimension {
     public static final String ASSET_UUID = "asset_uuid";
     public static final String GATEWAY = "gateway";
     public static final String GATEWAY_UUID = "gateway_uuid";
-    public static final String DIALER = "dialer";
+    public static final String INTERFACE = "interface";
     public static final String LATITUDE = "latitude";
     public static final String LONGITUDE = "longitude";
     public static final String TECH = "tech";

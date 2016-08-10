@@ -7,7 +7,6 @@ import com.metamx.tranquility.beam.ClusteredBeamTuning;
 import com.metamx.tranquility.druid.*;
 import com.metamx.tranquility.samza.BeamFactory;
 import com.metamx.tranquility.typeclass.Timestamper;
-import io.druid.data.input.impl.SpatialDimensionSchema;
 import io.druid.data.input.impl.TimestampSpec;
 import io.druid.granularity.DurationGranularity;
 import io.druid.query.aggregation.*;
@@ -32,13 +31,13 @@ public class StateChangeBeamFactory implements BeamFactory {
         final int maxRows = Integer.valueOf(config.get("redborder.beam.statechange.maxrows", "200000"));
         final String intermediatePersist = config.get("redborder.beam.statechange.intermediatePersist", "PT20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
-        final long indexGranularity = Long.valueOf(config.get("systems.druid_statechange.beam.indexGranularity", "60000"));
+        final long indexGranularity = Long.valueOf(config.get("systems.druid_statechange.beam.indexGranularity", "1000"));
 
 
         final String dataSource = stream.getStream();
 
         final List<String> dimensions = ImmutableList.of(
-                DIALER, TYPE, SERVICE_PROVIDER_UUID, ORGANIZATION_UUID, NAMESPACE_UUID, SENSOR_UUID, ORGANIZATION,
+                INTERFACE, TYPE, SERVICE_PROVIDER_UUID, ORGANIZATION_UUID, NAMESPACE_UUID, SENSOR_UUID, ORGANIZATION,
                 NAMESPACE, MARKET, MARKET_UUID, DEPLOYMENT, DEPLOYMENT_UUID, GATEWAY, GATEWAY_UUID, ASSET, ASSET_UUID,
                 GATEWAY_ID, "dimension", "new", "old"
         );
