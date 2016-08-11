@@ -44,8 +44,8 @@ public class FlowProcessor extends Processor<Map<String, Object>> {
 
         messageEnrichmentLocal = CalculateDurationFunction.execute(messageEnrichmentLocal);
 
-        if(!messageEnrichmentLocal.containsKey(Dimension.WIRELESS_STATION_NAME)){
-            if(messageEnrichmentLocal.containsKey(Dimension.WIRELESS_STATION)) {
+        if (!messageEnrichmentLocal.containsKey(Dimension.WIRELESS_STATION_NAME)) {
+            if (messageEnrichmentLocal.containsKey(Dimension.WIRELESS_STATION)) {
                 messageEnrichmentLocal.put(Dimension.WIRELESS_STATION_NAME, "unknown/unknown/" + messageEnrichmentLocal.get(Dimension.WIRELESS_STATION));
             }
         }
@@ -61,7 +61,7 @@ public class FlowProcessor extends Processor<Map<String, Object>> {
 
         Long counter = countersStore.get(datasource);
 
-        if(counter == null){
+        if (counter == null) {
             counter = 0L;
         }
 
@@ -69,7 +69,7 @@ public class FlowProcessor extends Processor<Map<String, Object>> {
 
         for (Map<String, Object> msg : splittedMsg) {
             counter++;
-            if(flows != null) {
+            if (flows != null) {
                 msg.put("flows_count", flows);
             }
             collector.send(new OutgoingMessageEnvelope(OUTPUT_STREAM, null, msg));

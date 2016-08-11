@@ -22,7 +22,7 @@ import static net.redborder.samza.util.constants.Dimension.*;
 
 public class MerakiProcessor extends Processor<Map<String, Object>> {
     private static final Logger log = LoggerFactory.getLogger(MerakiProcessor.class);
-    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", Constants.ENRICHMENT_FLOW_OUTPUT_TOPIC);
+    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", "rb_lilee_post");
     final public static String LOCATION_STORE = "location";
     private static final String DATASOURCE = "rb_flow";
 
@@ -76,15 +76,15 @@ public class MerakiProcessor extends Processor<Map<String, Object>> {
                 if (rssi == 0) {
                     toCache.put(CLIENT_RSSI, "unknown");
                     rssiName = "unknown";
-                } else if (rssi <= -80) {
-                    toCache.put(CLIENT_RSSI, "bad");
-                    rssiName = "bad";
                 } else if (rssi <= -70) {
-                    toCache.put(CLIENT_RSSI, "average");
-                    rssiName = "average";
+                    toCache.put(CLIENT_RSSI, "far");
+                    rssiName = "far";
+                } else if (rssi <= -50) {
+                    toCache.put(CLIENT_RSSI, "near");
+                    rssiName = "near";
                 } else {
-                    toCache.put(CLIENT_RSSI, "good");
-                    rssiName = "good";
+                    toCache.put(CLIENT_RSSI, "adjacent");
+                    rssiName = "adjacent";
                 }
 
                 toCache.put(CLIENT_RSSI, rssiName);
