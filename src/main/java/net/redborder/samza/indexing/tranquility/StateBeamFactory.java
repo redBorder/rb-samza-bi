@@ -11,6 +11,7 @@ import io.druid.data.input.impl.TimestampSpec;
 import io.druid.granularity.DurationGranularity;
 import io.druid.query.aggregation.AggregatorFactory;
 import io.druid.query.aggregation.CountAggregatorFactory;
+import io.druid.query.aggregation.DoubleSumAggregatorFactory;
 import io.druid.query.aggregation.LongSumAggregatorFactory;
 import io.druid.query.aggregation.hyperloglog.HyperUniquesAggregatorFactory;
 import org.apache.curator.framework.CuratorFramework;
@@ -48,6 +49,7 @@ public class StateBeamFactory implements BeamFactory {
 
         final List<AggregatorFactory> aggregators = ImmutableList.of(
                 new CountAggregatorFactory(EVENTS_AGGREGATOR),
+                new DoubleSumAggregatorFactory("sum_value", "value"),
                 new HyperUniquesAggregatorFactory(WIRELESS_STATIONS_AGGREGATOR, WIRELESS_STATION),
                 new HyperUniquesAggregatorFactory(WIRELESS_CHANNELS_AGGREGATOR, WIRELESS_CHANNEL),
                 new LongSumAggregatorFactory(SUM_WIRELESS_TX_POWER_AGGREGATOR, WIRELESS_TX_POWER)
