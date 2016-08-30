@@ -114,7 +114,7 @@
         <dependency>
             <groupId>io.druid.extensions</groupId>
             <artifactId>druid-histogram</artifactId>
-            <version>0.8.3</version>
+            <version>0.9.1.1</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.logging.log4j</groupId>
@@ -128,8 +128,8 @@
         </dependency>
         <dependency>
             <groupId>io.druid</groupId>
-            <artifactId>tranquility-samza-auto_2.10</artifactId>
-            <version>0.7.2</version>
+            <artifactId>tranquility-samza_2.10</artifactId>
+            <version>0.8.2</version>
         </dependency>
         <dependency>
             <groupId>org.codehaus.jackson</groupId>

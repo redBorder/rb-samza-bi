@@ -26,7 +26,7 @@ import static net.redborder.samza.util.constants.Dimension.TIMESTAMP;
 
 public class MonitorBeamFactory implements BeamFactory {
     @Override
-    public Beam<Object> makeBeam(SystemStream stream, int partitions, int replicas, Config config) {
+    public Beam<Object> makeBeam(SystemStream stream, Config config) {
         final int maxRows = Integer.valueOf(config.get("redborder.beam.monitor.maxrows", "200000"));
         final String intermediatePersist = config.get("redborder.beam.monitor.intermediatePersist", "PT20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
@@ -36,11 +36,11 @@ public class MonitorBeamFactory implements BeamFactory {
 
         final List<String> exclusions = ImmutableList.of("unit", "type");
 
-        final List<AggregatorFactory> aggregators = ImmutableList.<AggregatorFactory>of(
+        final List<AggregatorFactory> aggregators = ImmutableList.of(
                 new CountAggregatorFactory(EVENTS_AGGREGATOR),
                 new DoubleSumAggregatorFactory("sum_value", "value"),
-                new MaxAggregatorFactory("max_value", "value"),
-                new MinAggregatorFactory("min_value", "value"));
+                new DoubleMaxAggregatorFactory("max_value", "value"),
+                new DoubleMinAggregatorFactory("min_value", "value"));
 
         // The Timestamper should return the timestamp of the class your Samza task produces. Samza envelopes contain
         // Objects, so you'll generally have to cast them here.
@@ -69,8 +69,8 @@ public class MonitorBeamFactory implements BeamFactory {
                 .rollup(DruidRollup.create(DruidDimensions.schemalessWithExclusions(exclusions), aggregators, new DurationGranularity(indexGranularity, 0)))
                 .druidTuning(DruidTuning.create(maxRows, new Period(intermediatePersist), 0))
                 .tuning(ClusteredBeamTuning.builder()
-                        .partitions(partitions)
-                        .replicants(replicas)
+                        .partitions(1)
+                        .replicants(1)
                         .segmentGranularity(Granularity.HOUR)
                         .warmingPeriod(new Period("PT15M"))
                         .windowPeriod(new Period("PT10M"))

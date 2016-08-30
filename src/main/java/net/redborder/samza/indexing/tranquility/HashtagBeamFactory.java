@@ -30,7 +30,7 @@ import static net.redborder.samza.util.constants.Dimension.*;
 public class HashtagBeamFactory implements BeamFactory {
 
     @Override
-    public Beam<Object> makeBeam(SystemStream stream, int partitions, int replicas, Config config) {
+    public Beam<Object> makeBeam(SystemStream stream, Config config) {
         final int maxRows = Integer.valueOf(config.get("redborder.beam.state.maxrows", "200000"));
         final String intermediatePersist = config.get("redborder.beam.state.intermediatePersist", "PT20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
@@ -73,8 +73,8 @@ public class HashtagBeamFactory implements BeamFactory {
                 .rollup(DruidRollup.create(DruidDimensions.specific(dimensions), aggregators, new DurationGranularity(indexGranularity, 0)))
                 .druidTuning(DruidTuning.create(maxRows, new Period(intermediatePersist), 0))
                 .tuning(ClusteredBeamTuning.builder()
-                        .partitions(partitions)
-                        .replicants(replicas)
+                        .partitions(1)
+                        .replicants(1)
                         .segmentGranularity(Granularity.HOUR)
                         .warmingPeriod(new Period("PT15M"))
                         .windowPeriod(new Period("PT10M"))
