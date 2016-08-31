@@ -128,7 +128,7 @@
         </dependency>
         <dependency>
             <groupId>io.druid</groupId>
-            <artifactId>tranquility-samza_2.10</artifactId>
+            <artifactId>tranquility-samza-auto_2.10</artifactId>
             <version>0.8.2</version>
         </dependency>
         <dependency>
