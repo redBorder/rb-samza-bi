@@ -114,7 +114,7 @@ public class EnrichmentStreamTask implements StreamTask, InitableTask, Windowabl
     private Map<String, Object> makeMetric(String key, Long value){
         Map<String, Object> metric = new HashMap<>();
 
-        if(key != null && value != null) {
+        if(key != null && value != null && value != 0) {
             String taskName = context.getTaskName().getTaskName().split(" ")[1];
             Integer container = context.getSamzaContainerContext().id;
 
