@@ -36,11 +36,11 @@ public class MonitorBeamFactory implements BeamFactory {
 
         final List<String> exclusions = ImmutableList.of("unit", "type");
 
-        final List<AggregatorFactory> aggregators = ImmutableList.<AggregatorFactory>of(
+        final List<AggregatorFactory> aggregators = ImmutableList.of(
                 new CountAggregatorFactory(EVENTS_AGGREGATOR),
                 new DoubleSumAggregatorFactory("sum_value", "value"),
-                new MaxAggregatorFactory("max_value", "value"),
-                new MinAggregatorFactory("min_value", "value"));
+                new DoubleMaxAggregatorFactory("max_value", "value"),
+                new DoubleMinAggregatorFactory("min_value", "value"));
 
         // The Timestamper should return the timestamp of the class your Samza task produces. Samza envelopes contain
         // Objects, so you'll generally have to cast them here.

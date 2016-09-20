@@ -1,6 +1,6 @@
 package net.redborder.samza.tasks;
 
-import com.google.api.client.util.Maps;
+import com.google.common.collect.Maps;
 import net.redborder.samza.indexing.autoscaling.AutoScalingManager;
 import net.redborder.samza.indexing.autoscaling.DataSourceMetadata;
 import org.apache.samza.config.Config;
