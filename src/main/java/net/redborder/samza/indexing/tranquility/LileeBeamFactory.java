@@ -45,7 +45,7 @@ public class LileeBeamFactory implements BeamFactory {
                 NAMESPACE_UUID, SENSOR_UUID, ORGANIZATION, NAMESPACE,
                 MODEL, REV_NO, BAND, LTE_BANDWITH, CHANNEL, MARKET, MARKET_UUID, DEPLOYMENT,
                 DEPLOYMENT_UUID, GATEWAY, GATEWAY_UUID, ASSET, ASSET_UUID, GATEWAY_ID, PHONE_NUM, REG_STATE,
-                PS_STATE, SIM_CARD, SIM_MODULE, IMS_STATE, RCC_STATE
+                PS_STATE, SIM_CARD, SIM_MODULE, IMS_STATE, RCC_STATE, DIRECTION
         );
 
         final List<DruidSpatialDimension> spatilDimensions =
