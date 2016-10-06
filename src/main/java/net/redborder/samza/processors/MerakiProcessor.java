@@ -22,7 +22,7 @@ import static net.redborder.samza.util.constants.Dimension.*;
 
 public class MerakiProcessor extends Processor<Map<String, Object>> {
     private static final Logger log = LoggerFactory.getLogger(MerakiProcessor.class);
-    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", "rb_lilee_post");
+    private static final SystemStream OUTPUT_STREAM = new SystemStream("kafka", "rb_flow_post");
     final public static String LOCATION_STORE = "location";
     private static final String DATASOURCE = "rb_flow";
 
