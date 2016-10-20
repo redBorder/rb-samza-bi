@@ -120,9 +120,9 @@ public class EnrichmentStreamTask implements StreamTask, InitableTask, Windowabl
 
             String[] keys = key.split("_");
 
-            if(keys.length>=3 && !key.equals("rb_loc_post")){
-                metric.put("namespace_uuid", keys[keys.length - 1]);
-            }
+           // if(keys.length>=3 && !key.equals("rb_loc_post")){
+           //     metric.put("namespace_uuid", keys[keys.length - 1]);
+           // }
 
             metric.put("type", "enrichmentstreamtask");
             metric.put("monitor", "enrichmentstreamtask_messages");
