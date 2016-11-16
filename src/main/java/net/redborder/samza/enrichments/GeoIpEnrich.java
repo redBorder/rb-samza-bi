@@ -3,6 +3,7 @@ package net.redborder.samza.enrichments;
 import com.maxmind.geoip.Location;
 import com.maxmind.geoip.LookupService;
 import net.redborder.samza.util.PostgresqlManager;
+import org.apache.samza.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,16 +71,23 @@ public class GeoIpEnrich implements IEnrich {
 
     public GeoIpEnrich() {
         try {
-            city = new LookupService(CITY_DB_PATH, LookupService.GEOIP_MEMORY_CACHE);
-            city6 = new LookupService(CITY_V6_DB_PATH, LookupService.GEOIP_MEMORY_CACHE);
-            asn = new LookupService(ASN_DB_PATH, LookupService.GEOIP_MEMORY_CACHE);
-            asn6 = new LookupService(ASN_V6_DB_PATH, LookupService.GEOIP_MEMORY_CACHE);
             VALID_IPV4_PATTERN = Pattern.compile(ipv4Pattern, Pattern.CASE_INSENSITIVE);
             VALID_IPV6_PATTERN = Pattern.compile(ipv6Pattern, Pattern.CASE_INSENSITIVE);
-        } catch (IOException ex) {
-            log.error(ex.toString(), ex);
         } catch (PatternSyntaxException e) {
             log.error("Unable to compile IP check patterns");
+        }
+    }
+
+    @Override
+    public void init(Config config) {
+        try {
+
+            city = new LookupService(config.get("redborder.geoip.city.path", CITY_DB_PATH), LookupService.GEOIP_MEMORY_CACHE);
+            city6 = new LookupService(config.get("redborder.geoip.cityv6.path", CITY_V6_DB_PATH), LookupService.GEOIP_MEMORY_CACHE);
+            asn = new LookupService(config.get("redborder.geoip.asn.path", ASN_DB_PATH), LookupService.GEOIP_MEMORY_CACHE);
+            asn6 = new LookupService(config.get("redborder.geoip.asnv6.path", ASN_V6_DB_PATH), LookupService.GEOIP_MEMORY_CACHE);
+        } catch (IOException | NullPointerException ex) {
+            log.error(ex.toString(), ex);
         }
     }
 
@@ -89,15 +97,18 @@ public class GeoIpEnrich implements IEnrich {
      * @param ip This is the address to query the data base.
      * @return The country code, example: US, ES, FR.
      */
+
     private String getCountryCode(String ip) {
         Matcher match = VALID_IPV4_PATTERN.matcher(ip);
         String countryCode = null;
-        Location location;
+        Location location = null;
 
         if (match.matches()) {
-            location = city.getLocation(ip);
+            if (city != null)
+                location = city.getLocation(ip);
         } else {
-            location = city6.getLocationV6(ip);
+            if (city6 != null)
+                location = city6.getLocationV6(ip);
         }
 
         if (location != null) {
@@ -119,9 +130,11 @@ public class GeoIpEnrich implements IEnrich {
         String asnInfo = null;
 
         if (match.matches()) {
-            asnInfo = asn.getOrg(ip);
+            if (asn != null)
+                asnInfo = asn.getOrg(ip);
         } else {
-            asnInfo = asn6.getOrgV6(ip);
+            if (asn6 != null)
+                asnInfo = asn6.getOrgV6(ip);
         }
 
         if (asnInfo != null) {

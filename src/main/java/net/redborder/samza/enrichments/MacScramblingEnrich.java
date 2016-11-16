@@ -3,6 +3,7 @@ package net.redborder.samza.enrichments;
 import net.redborder.samza.util.MacScramble;
 import net.redborder.samza.util.PostgresqlManager;
 import net.redborder.samza.util.constants.Dimension;
+import org.apache.samza.config.Config;
 import org.bouncycastle.util.encoders.Hex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +16,11 @@ public class MacScramblingEnrich implements IEnrich {
     private final static char[] HEX_CHARS = "0123456789abcdef".toCharArray();
     private PostgresqlManager postgresqlManager;
 
+
+    @Override
+    public void init(Config config) {
+        // Nothing to do
+    }
 
     @Override
     public Map<String, Object> enrich(Map<String, Object> message) {

@@ -3,6 +3,7 @@ package net.redborder.samza.enrichments;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.redborder.samza.util.PostgresqlManager;
 import net.redborder.samza.util.constants.Dimension;
+import org.apache.samza.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,7 +19,8 @@ public class DarkListEnrich implements IEnrich {
     final String IP_FILE = "/tmp/darklist.json";
     Map<String, Map<String, Object>> ipCache = new HashMap<>();
 
-    public DarkListEnrich() {
+    @Override
+    public void init(Config config) {
         ObjectMapper mapper = new ObjectMapper();
 
         try {

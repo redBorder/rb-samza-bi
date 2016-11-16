@@ -53,6 +53,7 @@ public abstract class Processor<T> {
                         Class enrichClass = Class.forName(className);
                         IEnrich enrich = (IEnrich) enrichClass.newInstance();
                         enrich.setPostgresqlManager(postgresqlManager);
+                        enrich.init(config);
                         enrichManager.addEnrichment(enrich);
                     } else {
                         log.warn("Couldn't find property redborder.enrichments.types." + enrichment + " on config properties");

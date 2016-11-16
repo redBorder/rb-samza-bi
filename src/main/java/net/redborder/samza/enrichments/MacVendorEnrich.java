@@ -1,6 +1,7 @@
 package net.redborder.samza.enrichments;
 
 import net.redborder.samza.util.PostgresqlManager;
+import org.apache.samza.config.Config;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +18,14 @@ public class MacVendorEnrich implements IEnrich {
     public static String ouiFilePath = "/opt/rb/etc/objects/mac_vendors";
     public Map<String, String> ouiMap;
 
-    public MacVendorEnrich() {
+    private String buildOui(Object object) {
+        String mac = object.toString();
+        mac = mac.trim().replace("-", "").replace(":", "");
+        return mac.substring(0, 6).toUpperCase();
+    }
+
+    @Override
+    public void init(Config config) {
         InputStream in = null;
         ouiMap = new HashMap<>();
 
@@ -43,12 +51,6 @@ public class MacVendorEnrich implements IEnrich {
                 log.error("Couldn't process MacVendor file", ex);
             }
         }
-    }
-
-    private String buildOui(Object object) {
-        String mac = object.toString();
-        mac = mac.trim().replace("-", "").replace(":", "");
-        return mac.substring(0, 6).toUpperCase();
     }
 
     @Override

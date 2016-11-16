@@ -1,14 +1,21 @@
 package net.redborder.samza.enrichments;
 
 import junit.framework.TestCase;
+import net.redborder.samza.util.MockConfig;
+import org.apache.samza.config.Config;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
 import static net.redborder.samza.util.constants.Dimension.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class GeoIpEnrichTest extends TestCase {
@@ -23,6 +30,7 @@ public class GeoIpEnrichTest extends TestCase {
         GeoIpEnrich.CITY_V6_DB_PATH = "/this_path_does_not_exist";
 
         GeoIpEnrich geoIpEnrich = new GeoIpEnrich();
+        geoIpEnrich.init(new MockConfig());
         Map<String, Object> message = new HashMap<>();
 
         message.put(SRC_IP, "86.121.44.1");
@@ -41,6 +49,7 @@ public class GeoIpEnrichTest extends TestCase {
         GeoIpEnrich.CITY_V6_DB_PATH = ClassLoader.getSystemResource("cityv6.dat").getFile();
 
         geoIpEnrich = new GeoIpEnrich();
+        geoIpEnrich.init(new MockConfig());
 
         message.clear();
 
