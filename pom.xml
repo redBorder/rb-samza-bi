@@ -4,11 +4,11 @@
 
     <groupId>net.redborder</groupId>
     <artifactId>rb-samza-bi</artifactId>
-    <version>8.0.2</version>
+    <version>8.0.3-SNAPSHOT</version>
 
     <scm>
         <developerConnection>scm:git:git@gitlab.redborder.lan:bigdata/rb-samza-bi.git</developerConnection>
-        <tag>rb-samza-bi-8.0.2</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
