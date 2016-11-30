@@ -2,7 +2,7 @@ PACKAGE_NAME?=  redborder-samza-bi
 
 VERSION?= $(shell git describe --abbrev=6 --tags HEAD --always | sed 's/-/_/g' | sed 's/^rb_samza_bi_//')
 
-TAG_VERSION?= $(shell basename ../../target/rb-samza-*-dist.tar.gz 2>/dev/null | sed 's/^rb-samza-bi-\([^-]*\)-SNAPSHOT-dist.tar.gz/\1/')
+TAG_VERSION?= $(shell env ruby get_version.rb | sed 's/^\([^-]*\)-.*/\1/')
 
 BUILD_NUMBER?= 1
 
@@ -27,6 +27,7 @@ build_prepare: archive
 	rm -f $(RESULT_DIR)/$(PACKAGE_NAME)*.rpm
 	which sbt &>/dev/null || ( echo "sbt build tool not found" && exit 1 )
 	which mvn &>/dev/null || ( echo "maven not found" && exit 1 )
+	env ruby get_version.rb &>/dev/null || ( echo "ruby or xml-simple gem not found" && exit 1 )
 	cd ../../ && bash packaging/rpm/prepare_pack.sh && cp target/rb-samza-*-dist.tar.gz packaging/rpm/SOURCES/
 
 srpm: build_prepare
