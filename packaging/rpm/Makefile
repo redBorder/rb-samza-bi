@@ -1,6 +1,8 @@
-PACKAGE_NAME?=  redborder-samza
+PACKAGE_NAME?=  redborder-samza-bi
 
-VERSION?= $(shell git describe --abbrev=6 --tags HEAD --always | sed 's/-/_/g')
+VERSION?= $(shell git describe --abbrev=6 --tags HEAD --always | sed 's/-/_/g' | sed 's/^rb_samza_bi_//')
+
+TAG_VERSION?= $(shell git describe --abbrev=6 --tags HEAD --always | sed 's/^rb-samza-bi-\([^-]*\)-.*/\1/')
 
 BUILD_NUMBER?= 1
 
@@ -8,27 +10,32 @@ MOCK_CONFIG?=default
 
 RESULT_DIR?=pkgs
 
+#all: rpm
 all: rpm
 
 
 SOURCES:
 	mkdir -p SOURCES
 
-archive: SOURCES
-	cd ../../ && \
-	cp target/rb-samza-*-dist.tar.gz packaging/rpm/SOURCES/
+#archive: SOURCES
+#	cd ../../ && \
+#	cp target/rb-samza-*-dist.tar.gz packaging/rpm/SOURCES/
 
 
-build_prepare: archive
+build_prepare: SOURCES
 	mkdir -p $(RESULT_DIR)
 	rm -f $(RESULT_DIR)/$(PACKAGE_NAME)*.rpm
-
+	which sbt &>/dev/null || ( echo "sbt build tool not found" && exit 1 )
+	which mvn &>/dev/null || ( echo "maven not found" && exit 1 )
+	#cd ../../ && bash packaging/rpm/prepare_pack.sh && cp target/rb-samza-*-dist.tar.gz packaging/rpm/SOURCES/
+	cd ../../ && cp target/rb-samza-*-dist.tar.gz packaging/rpm/SOURCES/
 
 srpm: build_prepare
 	/usr/bin/mock \
             -r $(MOCK_CONFIG) \
             --define "__version $(VERSION)" \
             --define "__release $(BUILD_NUMBER)" \
+            --define "__tagversion $(TAG_VERSION)" \
             --resultdir=$(RESULT_DIR) \
             --buildsrpm \
             --spec=${PACKAGE_NAME}.spec \
@@ -40,6 +47,7 @@ rpm: srpm
             -r $(MOCK_CONFIG) \
             --define "__version $(VERSION)"\
             --define "__release $(BUILD_NUMBER)"\
+            --define "__tagversion $(TAG_VERSION)" \
             --resultdir=$(RESULT_DIR) \
             --rebuild $(RESULT_DIR)/$(PACKAGE_NAME)*.src.rpm
 	@echo "======= Binary RPMs now available in $(RESULT_DIR) ======="
