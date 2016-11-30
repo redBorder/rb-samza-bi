@@ -6,9 +6,10 @@ Summary: redborder samza bi package with enrichment and indexing samza applicati
 
 License: AGPL 3.0
 URL: https://github.com/redBorder/rb-samza-bi
-Source0: rb-samza-bi-%{__tagversion}-SNAPSHOT-dist.tar.gz
+Source0: %{name}-%{version}.tar.gz
+Source1: rb-samza-bi-%{__tagversion}-SNAPSHOT-dist.tar.gz
 
-Requires: java 
+Requires: java redborder-samza
 
 %description
 %{summary}
@@ -20,7 +21,7 @@ Requires: java
 
 %install
 mkdir -p %{buildroot}/usr/lib/samza/rb-samza-bi/app
-install -D -m 644 %{SOURCE0} %{buildroot}/usr/lib/samza/rb-samza-bi/app
+install -D -m 644 %{SOURCE1} %{buildroot}/usr/lib/samza/rb-samza-bi/app
 
 %clean
 rm -rf %{buildroot}

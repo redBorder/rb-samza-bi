@@ -9,8 +9,6 @@ sbt publishM2
 popd &>/dev/null
 popd &>/dev/null
 
-pushd ../.. &>/dev/null
 mvn clean package
-popd &>/dev/null
 
 rm -rf $dir1

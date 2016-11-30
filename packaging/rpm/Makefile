@@ -2,7 +2,7 @@ PACKAGE_NAME?=  redborder-samza-bi
 
 VERSION?= $(shell git describe --abbrev=6 --tags HEAD --always | sed 's/-/_/g' | sed 's/^rb_samza_bi_//')
 
-TAG_VERSION?= $(shell git describe --abbrev=6 --tags HEAD --always | sed 's/^rb-samza-bi-\([^-]*\)-.*/\1/')
+TAG_VERSION?= $(shell basename ../../target/rb-samza-*-dist.tar.gz 2>/dev/null | sed 's/^rb-samza-bi-\([^-]*\)-SNAPSHOT-dist.tar.gz/\1/')
 
 BUILD_NUMBER?= 1
 
@@ -17,18 +17,17 @@ all: rpm
 SOURCES:
 	mkdir -p SOURCES
 
-#archive: SOURCES
-#	cd ../../ && \
-#	cp target/rb-samza-*-dist.tar.gz packaging/rpm/SOURCES/
+archive: SOURCES
+	cd ../../ && \
+	git archive --prefix=$(PACKAGE_NAME)-$(VERSION)/ \
+                -o packaging/rpm/SOURCES/$(PACKAGE_NAME)-$(VERSION).tar.gz HEAD
 
-
-build_prepare: SOURCES
+build_prepare: archive
 	mkdir -p $(RESULT_DIR)
 	rm -f $(RESULT_DIR)/$(PACKAGE_NAME)*.rpm
 	which sbt &>/dev/null || ( echo "sbt build tool not found" && exit 1 )
 	which mvn &>/dev/null || ( echo "maven not found" && exit 1 )
-	#cd ../../ && bash packaging/rpm/prepare_pack.sh && cp target/rb-samza-*-dist.tar.gz packaging/rpm/SOURCES/
-	cd ../../ && cp target/rb-samza-*-dist.tar.gz packaging/rpm/SOURCES/
+	cd ../../ && bash packaging/rpm/prepare_pack.sh && cp target/rb-samza-*-dist.tar.gz packaging/rpm/SOURCES/
 
 srpm: build_prepare
 	/usr/bin/mock \
