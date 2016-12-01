@@ -2,7 +2,7 @@ PACKAGE_NAME?=  redborder-samza-bi
 
 VERSION?= $(shell git describe --abbrev=6 --tags HEAD --always | sed 's/-/_/g' | sed 's/^rb_samza_bi_//')
 
-TAG_VERSION?= $(shell cd ../../ && env ruby get_version.rb | sed 's/^\([^-]*\)-.*/\1/')
+MVN_VERSION?= $(shell cd ../../ && env ruby get_version.rb | sed 's/^\([^-]*\)-.*/\1/')
 
 BUILD_NUMBER?= 1
 
@@ -35,7 +35,7 @@ srpm: build_prepare
             -r $(MOCK_CONFIG) \
             --define "__version $(VERSION)" \
             --define "__release $(BUILD_NUMBER)" \
-            --define "__tagversion $(TAG_VERSION)" \
+            --define "__mvnversion $(MVN_VERSION)" \
             --resultdir=$(RESULT_DIR) \
             --buildsrpm \
             --spec=${PACKAGE_NAME}.spec \
@@ -47,7 +47,7 @@ rpm: srpm
             -r $(MOCK_CONFIG) \
             --define "__version $(VERSION)"\
             --define "__release $(BUILD_NUMBER)"\
-            --define "__tagversion $(TAG_VERSION)" \
+            --define "__mvnversion $(MVN_VERSION)" \
             --resultdir=$(RESULT_DIR) \
             --rebuild $(RESULT_DIR)/$(PACKAGE_NAME)*.src.rpm
 	@echo "======= Binary RPMs now available in $(RESULT_DIR) ======="
