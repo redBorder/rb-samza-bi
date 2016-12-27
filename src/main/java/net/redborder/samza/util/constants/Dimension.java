@@ -27,11 +27,11 @@ public class Dimension {
     public final static String CLIENT_MAC_VENDOR = "client_mac_vendor";
     public final static String CLIENT_ID = "client_id";
     public final static String SRC_AS_NAME = "lan_ip_as_name";
-    public final static String SRC_PORT = "lan_ip_port";
+    public final static String SRC_PORT = "lan_l4_port";
     public final static String SRC_MAP = "src_map";
     public final static String SRV_PORT = "srv_port";
     public final static String DST_AS_NAME = "wan_ip_as_name";
-    public final static String DST_PORT = "wan_ip_port";
+    public final static String DST_PORT = "wan_l4_port";
     public final static String DST_MAP = "dst_map";
     public final static String ZONE_UUID = "zone_uuid";
     public final static String APPLICATION_ID_NAME = "application_id_name";
