@@ -62,6 +62,8 @@ public class Dimension {
     public final static String DST_COUNTRY_CODE = "dst_country_code";
     public final static String WAN_IP_COUNTRY_CODE = "wan_ip_country_code";
     public final static String SRC_COUNTRY_CODE = "src_country_code";
+    public final static String SRC_COUNTRY = "src_country";
+    public final static String DST_COUNTRY = "dst_country";
     public final static String LAN_IP_COUNTRY_CODE = "lan_ip_country_code";
     public final static String SCATTERPLOT = "scatterplot";
     public final static String INPUT_SNMP = "lan_interface_name";
