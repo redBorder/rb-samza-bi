@@ -154,8 +154,8 @@ public class GeoIpEnrich implements IEnrich {
         Map<String, Object> geoIPMap = new HashMap<>();
         geoIPMap.putAll(message);
 
-        String src = (String) message.get(SRC_IP);
-        String dst = (String) message.get(DST_IP);
+        String src = (String) message.get(LAN_IP);
+        String dst = (String) message.get(WAN_IP);
 
         if (src != null) {
             String country_code = null;
@@ -166,8 +166,8 @@ public class GeoIpEnrich implements IEnrich {
                 asn_name = getAsnName(src);
             }
 
-            if (country_code != null) geoIPMap.put(SRC_COUNTRY_CODE, country_code);
-            if (asn_name != null) geoIPMap.put(SRC_AS_NAME, asn_name);
+            if (country_code != null) geoIPMap.put(LAN_IP_COUNTRY_CODE, country_code);
+            if (asn_name != null) geoIPMap.put(LAN_IP_AS_NAME, asn_name);
         }
 
         if (dst != null) {
@@ -179,8 +179,8 @@ public class GeoIpEnrich implements IEnrich {
                 asn_name = getAsnName(dst);
             }
 
-            if (country_code != null) geoIPMap.put(DST_COUNTRY_CODE, country_code);
-            if (asn_name != null) geoIPMap.put(DST_AS_NAME, asn_name);
+            if (country_code != null) geoIPMap.put(WAN_IP_COUNTRY_CODE, country_code);
+            if (asn_name != null) geoIPMap.put(WAN_IP_AS_NAME, asn_name);
         }
 
         return geoIPMap;

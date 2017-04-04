@@ -104,7 +104,7 @@ public class LocationV89Processor extends Processor<Map<String, Object>> {
                     if (location.get(LOC_AP_MACADDR) != null)
                         toCache.put(WIRELESS_STATION, location.get(LOC_AP_MACADDR));
                     if (ip != null && ip.get(0) != null) {
-                        toDruid.put(SRC, ip.get(0));
+                        toDruid.put(LAN_IP, ip.get(0));
                     }
                 }
             }
