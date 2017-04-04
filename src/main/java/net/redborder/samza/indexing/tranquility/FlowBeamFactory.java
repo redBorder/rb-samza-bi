@@ -55,7 +55,9 @@ public class FlowBeamFactory implements BeamFactory {
                 CLIENT_RSSI,  WIRELESS_STATION, MARKET, MARKET_UUID, ORGANIZATION, ORGANIZATION_UUID, TYPE, DURATION, DOT11PROTOCOL,
                 SERVICE_PROVIDER, SERVICE_PROVIDER_UUID, ZONE_UUID, HTTPS_COMMON_NAME, WIRELESS_OPERATOR,
                 CLIENT_ACCOUNTING_TYPE, INTERFACE_NAME, CLIENT_FULLNAME, CLIENT_GENDER, CLIENT_AUTH_TYPE,
-                CLIENT_VIP, CLIENT_LOYALITY, "host_l2_domain", "referer_l2", "selector_name", "tcp_flags");
+                CLIENT_VIP, CLIENT_LOYALITY, "host_l2_domain", "referer_l2", "selector_name", "tcp_flags",
+                PRODUCT_NAME
+                );
 
         final List<AggregatorFactory> aggregators = ImmutableList.of(
                 new CountAggregatorFactory(EVENTS_AGGREGATOR),

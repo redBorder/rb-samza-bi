@@ -98,6 +98,7 @@ public class Dimension {
     public final static String TARGET_NAME = "target_name";
 
     public final static String CLIENT_FULLNAME = "client_fullname";
+    public final static String PRODUCT_NAME = "product_name";
 
     // Malware
     public static final String HASH_SCORE = "hash_score";
