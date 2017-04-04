@@ -115,7 +115,7 @@ public class LocationProcessorTest extends TestCase {
         result.put(CLIENT_RSSI, "unknown");
         result.put(CLIENT_SNR, "unknown");
         result.put(CLIENT_PROFILE,"hard");
-        result.put(SRC, "10.50.22.1");
+        result.put(LAN_IP, "10.50.22.1");
         result.put(WIRELESS_STATION, "68:bc:0c:65:0a:a0");
         result.put(NAMESPACE_UUID, namespace_id);
 

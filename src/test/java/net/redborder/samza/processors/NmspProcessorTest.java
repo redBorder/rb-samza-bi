@@ -399,7 +399,7 @@ public class NmspProcessorTest extends TestCase {
 
         nmspProcessor.process(messageInfo, collector);
         Map<String, Object> toDruid = collector.getResult().get(0);
-        assertEquals(toDruid.get(SRC_VLAN), 40);
+        assertEquals(toDruid.get(LAN_VLAN), 40);
     }
 
     @Test

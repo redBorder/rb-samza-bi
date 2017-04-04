@@ -205,7 +205,7 @@ public class NmspProcessor extends Processor<Map<String, Object>> {
             message.remove(type);
 
             if (vlan != null) {
-                toCache.put(SRC_VLAN, vlan);
+                toCache.put(LAN_VLAN, vlan);
             }
 
             Integer timestamp;

@@ -28,8 +28,8 @@ public class EnrichManagerTest extends TestCase {
         macEnrichments.put(CLIENT_MAC_VENDOR, "Apple");
 
         // The enrichments that the geo ip enrichment must return
-        geoIpEnrichments.put(SRC_COUNTRY_CODE, "ES");
-        geoIpEnrichments.put(DST_COUNTRY_CODE, "US");
+        geoIpEnrichments.put(LAN_IP_COUNTRY_CODE, "ES");
+        geoIpEnrichments.put(WAN_IP_COUNTRY_CODE, "US");
 
         // The final message that we expect from the enrich manager
         enrichedMessage.putAll(macEnrichments);

@@ -33,8 +33,8 @@ public class GeoIpEnrichTest extends TestCase {
         geoIpEnrich.init(new MockConfig());
         Map<String, Object> message = new HashMap<>();
 
-        message.put(SRC_IP, "86.121.44.1");
-        message.put(DST_IP, "2a02:26f0:8:183::90");
+        message.put(LAN_IP, "86.121.44.1");
+        message.put(WAN_IP, "2a02:26f0:8:183::90");
 
         result.putAll(message);
 
@@ -53,14 +53,14 @@ public class GeoIpEnrichTest extends TestCase {
 
         message.clear();
 
-        message.put(SRC_IP, "86.121.44.1");
-        message.put(DST_IP, "2a02:26f0:8:183::90");
+        message.put(LAN_IP, "86.121.44.1");
+        message.put(WAN_IP, "2a02:26f0:8:183::90");
 
         result.putAll(message);
-        result.put(SRC_COUNTRY_CODE, "RO");
-        result.put(DST_COUNTRY_CODE, "EU");
-        result.put(SRC_AS_NAME, "RCS & RDS SA");
-        result.put(DST_AS_NAME, "Akamai Technologies European AS");
+        result.put(LAN_IP_COUNTRY_CODE, "RO");
+        result.put(WAN_IP_COUNTRY_CODE, "EU");
+        result.put(LAN_IP_AS_NAME, "RCS & RDS SA");
+        result.put(WAN_IP_AS_NAME, "Akamai Technologies European AS");
 
         enrichMessage = geoIpEnrich.enrich(message);
         assertEquals(result, enrichMessage);
