@@ -93,46 +93,57 @@ public class SplitFlowFunction {
                 return generatedPackets;
             }
 
-            long totalDiff = Seconds.secondsBetween(packet_start, packet_end).getSeconds();
-            long diff, this_bytes, this_pkts;
-            long bytes_count = 0;
-            long pkts_count = 0;
+            long totalDiff = 0;
 
-            do {
-                this_start = this_end;
-                this_end = this_start.plusSeconds(60 - this_start.getSecondOfMinute());
-                if (this_end.isAfter(packet_end)) this_end = packet_end;
-                diff = Seconds.secondsBetween(this_start, this_end).getSeconds();
+            try {
 
-                if (totalDiff == 0) this_bytes = bytes;
-                else this_bytes = (long) Math.ceil(bytes * diff / totalDiff);
+                totalDiff = Seconds.secondsBetween(packet_start, packet_end).getSeconds();
 
-                if (totalDiff == 0) this_pkts = pkts;
-                else this_pkts = (long) Math.ceil(pkts * diff / totalDiff);
+                long diff, this_bytes, this_pkts;
+                long bytes_count = 0;
+                long pkts_count = 0;
 
-                bytes_count += this_bytes;
-                pkts_count += this_pkts;
+                do {
+                    this_start = this_end;
+                    this_end = this_start.plusSeconds(60 - this_start.getSecondOfMinute());
+                    if (this_end.isAfter(packet_end)) this_end = packet_end;
 
-                Map<String, Object> to_send = new HashMap<>();
-                to_send.putAll(event);
-                to_send.put(Dimension.TIMESTAMP, this_start.getMillis() / 1000);
-                to_send.put(Dimension.BYTES, this_bytes);
-                to_send.put(Dimension.PKTS, this_pkts);
-                to_send.remove(Dimension.FIRST_SWITCHED);
-                generatedPackets.add(to_send);
-            } while (this_end.isBefore(packet_end));
+                    diff = Seconds.secondsBetween(this_start, this_end).getSeconds();
 
-            if (bytes != bytes_count || pkts != pkts_count) {
-                int last_index = generatedPackets.size() - 1;
-                Map<String, Object> last = generatedPackets.get(last_index);
-                long new_pkts = ((long) last.get(Dimension.PKTS)) + (pkts - pkts_count);
-                long new_bytes = ((long) last.get(Dimension.BYTES)) + (bytes - bytes_count);
+                    if (totalDiff == 0) this_bytes = bytes;
+                    else this_bytes = (long) Math.ceil(bytes * diff / totalDiff);
 
-                if (new_pkts > 0) last.put(Dimension.PKTS, new_pkts);
-                if (new_bytes > 0) last.put(Dimension.BYTES, new_bytes);
+                    if (totalDiff == 0) this_pkts = pkts;
+                    else this_pkts = (long) Math.ceil(pkts * diff / totalDiff);
 
-                generatedPackets.set(last_index, last);
+                    bytes_count += this_bytes;
+                    pkts_count += this_pkts;
+
+                    Map<String, Object> to_send = new HashMap<>();
+                    to_send.putAll(event);
+                    to_send.put(Dimension.TIMESTAMP, this_start.getMillis() / 1000);
+                    to_send.put(Dimension.BYTES, this_bytes);
+                    to_send.put(Dimension.PKTS, this_pkts);
+                    to_send.remove(Dimension.FIRST_SWITCHED);
+                    generatedPackets.add(to_send);
+                } while (this_end.isBefore(packet_end));
+
+                if (bytes != bytes_count || pkts != pkts_count) {
+                    int last_index = generatedPackets.size() - 1;
+                    Map<String, Object> last = generatedPackets.get(last_index);
+                    long new_pkts = ((long) last.get(Dimension.PKTS)) + (pkts - pkts_count);
+                    long new_bytes = ((long) last.get(Dimension.BYTES)) + (bytes - bytes_count);
+
+                    if (new_pkts > 0) last.put(Dimension.PKTS, new_pkts);
+                    if (new_bytes > 0) last.put(Dimension.BYTES, new_bytes);
+
+                    generatedPackets.set(last_index, last);
+                }
+            } catch (ArithmeticException e) {
+                log.error("Invalid time difference in packet {}.", event);
+                return generatedPackets;
             }
+
         } else if (event.containsKey(Dimension.TIMESTAMP)) {
             try {
                 if (event.containsKey(Dimension.BYTES)){
