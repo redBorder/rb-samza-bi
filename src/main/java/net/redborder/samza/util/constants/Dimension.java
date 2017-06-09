@@ -263,4 +263,17 @@ public class Dimension {
 
     //ICAP
     public final static String PROXY_IP = "proxy_ip";
+
+    //Vault
+    public final static String PRI = "pri";
+    public final static String PRI_TEXT = "pri_text";
+    public final static String SYSLOG_FACILITY = "syslogfacility";
+    public final static String SYSLOG_FACILITY_TEXT = "syslogfacility_text";
+    public final static String SYSLOGSEVERITY = "syslogseverity";
+    public final static String SYSLOGSEVERITY_TEXT = "syslogseverity_text";
+    public final static String HOSTNAME = "hostname";
+    public final static String FROMHOST_IP = "fromhost_ip";
+    public final static String APP_NAME = "app_name";
+    public final static String PROXY_UUID = "proxy_uuid";
+    public final static String MESSAGE = "message";
 }

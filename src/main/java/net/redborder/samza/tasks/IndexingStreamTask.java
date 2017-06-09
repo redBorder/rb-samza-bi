@@ -72,6 +72,8 @@ public class IndexingStreamTask implements StreamTask, InitableTask, WindowableT
                 systemStream = new SystemStream("druid_appmobile_signal", getDatasource(message, "appmobile_signal"));
             } else if (stream.equals("appmobile_call_post")) {
                 systemStream = new SystemStream("druid_appmobile_call", getDatasource(message, "appmobile_call"));
+            } else if (stream.equals(VAULT_TOPIC)) {
+                systemStream = new SystemStream("druid_vault", getDatasource(message, VAULT_DATASOURCE));
             } else {
                 log.warn("Undefined input stream name: " + stream);
             }
