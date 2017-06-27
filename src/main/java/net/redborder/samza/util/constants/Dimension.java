@@ -276,4 +276,6 @@ public class Dimension {
     public final static String APP_NAME = "app_name";
     public final static String PROXY_UUID = "proxy_uuid";
     public final static String MESSAGE = "message";
+    public final static String SOURCE = "source";
+    public final static String TARGET = "target";
 }
