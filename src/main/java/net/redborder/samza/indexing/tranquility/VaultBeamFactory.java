@@ -35,8 +35,8 @@ public class VaultBeamFactory implements BeamFactory {
 
     @Override
     public Beam<Object> makeBeam(SystemStream stream, int partitions, int replicas, Config config) {
-        final int maxRows = Integer.valueOf(config.get("redborder.beam.state.maxrows", "200000"));
-        final String intermediatePersist = config.get("redborder.beam.state.intermediatePersist", "PT20m");
+        final int maxRows = Integer.valueOf(config.get("redborder.beam.vault.maxrows", "200000"));
+        final String intermediatePersist = config.get("redborder.beam.vault.intermediatePersist", "PT20m");
         final String zkConnect = config.get("systems.kafka.consumer.zookeeper.connect");
         final long indexGranularity = Long.valueOf(config.get("systems.druid_vault.beam.indexGranularity", "60000"));
 
