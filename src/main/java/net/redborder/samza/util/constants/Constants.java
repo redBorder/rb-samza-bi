@@ -23,6 +23,6 @@ public class Constants {
     public static final String CHANGES_TOPIC = "rb_changes";
     public static final String IOT_TOPIC = "rb_iot_post";
     public static final String IOT_DATASOURCE = "rb_iot";
-    public static final String VAULT_TOPIC = "rb_vault";
+    public static final String VAULT_TOPIC = "rb_vault_post";
     public static final String VAULT_DATASOURCE = "rb_vault";
 }
