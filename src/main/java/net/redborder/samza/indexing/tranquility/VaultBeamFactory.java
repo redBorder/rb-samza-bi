@@ -44,7 +44,7 @@ public class VaultBeamFactory implements BeamFactory {
 
         final List<String> dimensions = ImmutableList.of(
                 PRI, PRI_TEXT, SYSLOG_FACILITY, SYSLOG_FACILITY_TEXT, SYSLOGSEVERITY, SYSLOGSEVERITY_TEXT, HOSTNAME,
-                FROMHOST_IP, APP_NAME, SENSOR_UUID, PROXY_UUID, MESSAGE, STATUS, CATEGORY, SOURCE, TARGET
+                FROMHOST_IP, APP_NAME, SENSOR_UUID, SENSOR_NAME, PROXY_UUID, MESSAGE, STATUS, CATEGORY, SOURCE, TARGET
                 );
 
         final List<AggregatorFactory> aggregators =
