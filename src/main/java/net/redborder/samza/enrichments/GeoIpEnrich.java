@@ -166,8 +166,16 @@ public class GeoIpEnrich implements IEnrich {
                 asn_name = getAsnName(src);
             }
 
-            if (country_code != null) geoIPMap.put(LAN_IP_COUNTRY_CODE, country_code);
-            if (asn_name != null) geoIPMap.put(LAN_IP_AS_NAME, asn_name);
+            if (country_code != null) {
+                geoIPMap.put(LAN_IP_COUNTRY_CODE, country_code);
+                geoIPMap.put(IP_COUNTRY_CODE, country_code);
+                geoIPMap.put(PUBLIC_IP, src);
+            }
+
+            if (asn_name != null) {
+                geoIPMap.put(LAN_IP_AS_NAME, asn_name);
+                geoIPMap.put(IP_AS_NAME, asn_name);
+            }
         }
 
         if (dst != null) {
@@ -179,8 +187,16 @@ public class GeoIpEnrich implements IEnrich {
                 asn_name = getAsnName(dst);
             }
 
-            if (country_code != null) geoIPMap.put(WAN_IP_COUNTRY_CODE, country_code);
-            if (asn_name != null) geoIPMap.put(WAN_IP_AS_NAME, asn_name);
+            if (country_code != null) {
+                geoIPMap.put(WAN_IP_COUNTRY_CODE, country_code);
+                geoIPMap.put(IP_COUNTRY_CODE, country_code);
+                geoIPMap.put(PUBLIC_IP, dst);
+            }
+
+            if (asn_name != null) {
+                geoIPMap.put(WAN_IP_AS_NAME, asn_name);
+                geoIPMap.put(IP_AS_NAME, asn_name);
+            }
         }
 
         return geoIPMap;

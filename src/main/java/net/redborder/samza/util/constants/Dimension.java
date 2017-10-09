@@ -74,6 +74,9 @@ public class Dimension {
     public final static String SERVICE_PROVIDER_UUID = "service_provider_uuid";
     public final static String SRC = "src";
     public final static String LAN_IP = "lan_ip";
+    public final static String PUBLIC_IP = "public_ip";
+    public final static String IP_COUNTRY_CODE = "ip_country_code";
+    public final static String IP_AS_NAME = "ip_as_name";
 
     public final static String BUILDING = "building";
     public final static String BUILDING_UUID = "building_uuid";

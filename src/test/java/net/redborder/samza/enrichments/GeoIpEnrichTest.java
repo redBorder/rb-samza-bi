@@ -21,7 +21,7 @@ import static org.mockito.Mockito.when;
 public class GeoIpEnrichTest extends TestCase {
 
     @Test
-    public void enrichesWitGeoIp() {
+    public void messageShouldPassIfFilesNotFound() {
         Map<String, Object> result = new HashMap<>();
 
         GeoIpEnrich.ASN_DB_PATH = "/this_path_does_not_exist";
@@ -40,18 +40,21 @@ public class GeoIpEnrichTest extends TestCase {
 
         Map<String, Object> enrichMessage = geoIpEnrich.enrich(message);
         assertEquals(result, enrichMessage);
+    }
 
-        result.clear();
+    @Test
+    public void enrichesWithGeoIp() {
+        Map<String, Object> result = new HashMap<>();
 
         GeoIpEnrich.ASN_DB_PATH = ClassLoader.getSystemResource("asn.dat").getFile();
         GeoIpEnrich.ASN_V6_DB_PATH = ClassLoader.getSystemResource("asnv6.dat").getFile();
         GeoIpEnrich.CITY_DB_PATH = ClassLoader.getSystemResource("city.dat").getFile();
         GeoIpEnrich.CITY_V6_DB_PATH = ClassLoader.getSystemResource("cityv6.dat").getFile();
 
-        geoIpEnrich = new GeoIpEnrich();
+        GeoIpEnrich geoIpEnrich = new GeoIpEnrich();
         geoIpEnrich.init(new MockConfig());
 
-        message.clear();
+        Map<String, Object> message = new HashMap<>();
 
         message.put(LAN_IP, "86.121.44.1");
         message.put(WAN_IP, "2a02:26f0:8:183::90");
@@ -61,8 +64,94 @@ public class GeoIpEnrichTest extends TestCase {
         result.put(WAN_IP_COUNTRY_CODE, "EU");
         result.put(LAN_IP_AS_NAME, "RCS & RDS SA");
         result.put(WAN_IP_AS_NAME, "Akamai Technologies European AS");
+        result.put(IP_COUNTRY_CODE, "EU");
+        result.put(PUBLIC_IP, "2a02:26f0:8:183::90");
+        result.put(IP_AS_NAME, "Akamai Technologies European AS");
 
-        enrichMessage = geoIpEnrich.enrich(message);
+        Map<String, Object> enrichMessage = geoIpEnrich.enrich(message);
+
+        assertEquals(result, enrichMessage);
+    }
+
+    @Test
+    public void enrichesWithGeoIpWithPrivateLan() {
+        Map<String, Object> result = new HashMap<>();
+
+        GeoIpEnrich.ASN_DB_PATH = ClassLoader.getSystemResource("asn.dat").getFile();
+        GeoIpEnrich.ASN_V6_DB_PATH = ClassLoader.getSystemResource("asnv6.dat").getFile();
+        GeoIpEnrich.CITY_DB_PATH = ClassLoader.getSystemResource("city.dat").getFile();
+        GeoIpEnrich.CITY_V6_DB_PATH = ClassLoader.getSystemResource("cityv6.dat").getFile();
+
+        GeoIpEnrich geoIpEnrich = new GeoIpEnrich();
+        geoIpEnrich.init(new MockConfig());
+
+        Map<String, Object> message = new HashMap<>();
+
+        message.put(LAN_IP, "192.168.1.10");
+        message.put(WAN_IP, "2a02:26f0:8:183::90");
+
+        result.putAll(message);
+        result.put(WAN_IP_COUNTRY_CODE, "EU");
+        result.put(WAN_IP_AS_NAME, "Akamai Technologies European AS");
+        result.put(IP_COUNTRY_CODE, "EU");
+        result.put(PUBLIC_IP, "2a02:26f0:8:183::90");
+        result.put(IP_AS_NAME, "Akamai Technologies European AS");
+
+        Map<String, Object> enrichMessage = geoIpEnrich.enrich(message);
+
+        assertEquals(result, enrichMessage);
+    }
+
+    @Test
+    public void enrichesWithGeoIpWithPrivateWan() {
+        Map<String, Object> result = new HashMap<>();
+
+        GeoIpEnrich.ASN_DB_PATH = ClassLoader.getSystemResource("asn.dat").getFile();
+        GeoIpEnrich.ASN_V6_DB_PATH = ClassLoader.getSystemResource("asnv6.dat").getFile();
+        GeoIpEnrich.CITY_DB_PATH = ClassLoader.getSystemResource("city.dat").getFile();
+        GeoIpEnrich.CITY_V6_DB_PATH = ClassLoader.getSystemResource("cityv6.dat").getFile();
+
+        GeoIpEnrich geoIpEnrich = new GeoIpEnrich();
+        geoIpEnrich.init(new MockConfig());
+
+        Map<String, Object> message = new HashMap<>();
+
+        message.put(LAN_IP, "86.121.44.1");
+        message.put(WAN_IP, "192.168.2.20");
+
+        result.putAll(message);
+        result.put(LAN_IP_COUNTRY_CODE, "RO");
+        result.put(LAN_IP_AS_NAME, "RCS & RDS SA");
+        result.put(IP_COUNTRY_CODE, "RO");
+        result.put(PUBLIC_IP, "86.121.44.1");
+        result.put(IP_AS_NAME, "RCS & RDS SA");
+
+        Map<String, Object> enrichMessage = geoIpEnrich.enrich(message);
+
+        assertEquals(result, enrichMessage);
+    }
+
+    @Test
+    public void enrichesWithGeoIpWithPrivateWanAndLan() {
+        Map<String, Object> result = new HashMap<>();
+
+        GeoIpEnrich.ASN_DB_PATH = ClassLoader.getSystemResource("asn.dat").getFile();
+        GeoIpEnrich.ASN_V6_DB_PATH = ClassLoader.getSystemResource("asnv6.dat").getFile();
+        GeoIpEnrich.CITY_DB_PATH = ClassLoader.getSystemResource("city.dat").getFile();
+        GeoIpEnrich.CITY_V6_DB_PATH = ClassLoader.getSystemResource("cityv6.dat").getFile();
+
+        GeoIpEnrich geoIpEnrich = new GeoIpEnrich();
+        geoIpEnrich.init(new MockConfig());
+
+        Map<String, Object> message = new HashMap<>();
+
+        message.put(LAN_IP, "192.168.2.10");
+        message.put(WAN_IP, "192.168.2.20");
+
+        result.putAll(message);
+
+        Map<String, Object> enrichMessage = geoIpEnrich.enrich(message);
+
         assertEquals(result, enrichMessage);
     }
 }
