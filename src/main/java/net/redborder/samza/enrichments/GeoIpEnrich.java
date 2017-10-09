@@ -172,7 +172,10 @@ public class GeoIpEnrich implements IEnrich {
                 geoIPMap.put(PUBLIC_IP, src);
             }
 
-            if (asn_name != null) geoIPMap.put(LAN_IP_AS_NAME, asn_name);
+            if (asn_name != null) {
+                geoIPMap.put(LAN_IP_AS_NAME, asn_name);
+                geoIPMap.put(IP_AS_NAME, asn_name);
+            }
         }
 
         if (dst != null) {
@@ -190,7 +193,10 @@ public class GeoIpEnrich implements IEnrich {
                 geoIPMap.put(PUBLIC_IP, dst);
             }
 
-            if (asn_name != null) geoIPMap.put(WAN_IP_AS_NAME, asn_name);
+            if (asn_name != null) {
+                geoIPMap.put(WAN_IP_AS_NAME, asn_name);
+                geoIPMap.put(IP_AS_NAME, asn_name);
+            }
         }
 
         return geoIPMap;
