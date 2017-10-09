@@ -65,6 +65,7 @@ public class GeoIpEnrichTest extends TestCase {
         result.put(LAN_IP_AS_NAME, "RCS & RDS SA");
         result.put(WAN_IP_AS_NAME, "Akamai Technologies European AS");
         result.put(IP_COUNTRY_CODE, "EU");
+        result.put(PUBLIC_IP, "2a02:26f0:8:183::90");
 
         Map<String, Object> enrichMessage = geoIpEnrich.enrich(message);
 
@@ -92,6 +93,7 @@ public class GeoIpEnrichTest extends TestCase {
         result.put(WAN_IP_COUNTRY_CODE, "EU");
         result.put(WAN_IP_AS_NAME, "Akamai Technologies European AS");
         result.put(IP_COUNTRY_CODE, "EU");
+        result.put(PUBLIC_IP, "2a02:26f0:8:183::90");
 
         Map<String, Object> enrichMessage = geoIpEnrich.enrich(message);
 
@@ -119,6 +121,7 @@ public class GeoIpEnrichTest extends TestCase {
         result.put(LAN_IP_COUNTRY_CODE, "RO");
         result.put(LAN_IP_AS_NAME, "RCS & RDS SA");
         result.put(IP_COUNTRY_CODE, "RO");
+        result.put(PUBLIC_IP, "86.121.44.1");
 
         Map<String, Object> enrichMessage = geoIpEnrich.enrich(message);
 
