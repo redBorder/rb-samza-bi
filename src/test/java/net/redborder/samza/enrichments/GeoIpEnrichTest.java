@@ -124,4 +124,28 @@ public class GeoIpEnrichTest extends TestCase {
 
         assertEquals(result, enrichMessage);
     }
+
+    @Test
+    public void enrichesWithGeoIpWithPrivateWanAndLan() {
+        Map<String, Object> result = new HashMap<>();
+
+        GeoIpEnrich.ASN_DB_PATH = ClassLoader.getSystemResource("asn.dat").getFile();
+        GeoIpEnrich.ASN_V6_DB_PATH = ClassLoader.getSystemResource("asnv6.dat").getFile();
+        GeoIpEnrich.CITY_DB_PATH = ClassLoader.getSystemResource("city.dat").getFile();
+        GeoIpEnrich.CITY_V6_DB_PATH = ClassLoader.getSystemResource("cityv6.dat").getFile();
+
+        GeoIpEnrich geoIpEnrich = new GeoIpEnrich();
+        geoIpEnrich.init(new MockConfig());
+
+        Map<String, Object> message = new HashMap<>();
+
+        message.put(LAN_IP, "192.168.2.10");
+        message.put(WAN_IP, "192.168.2.20");
+
+        result.putAll(message);
+
+        Map<String, Object> enrichMessage = geoIpEnrich.enrich(message);
+
+        assertEquals(result, enrichMessage);
+    }
 }
