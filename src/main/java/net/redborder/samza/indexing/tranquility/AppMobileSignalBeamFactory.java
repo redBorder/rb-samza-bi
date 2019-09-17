@@ -65,7 +65,7 @@ public class AppMobileSignalBeamFactory
                         .curator(curator)
                         .discoveryPath("/druid/discoveryPath")
                         .location(DruidLocation.create("overlord", "druid:local:firehose:%s", dataSource))
-                        .rollup(DruidRollup.create(DruidDimensions.specific(dimensions), aggregators, new DurationGranularity(indexGranularity, 0L)))
+                        .rollup(DruidRollup.create(DruidDimensions.specific(dimensions), aggregators, new DurationGranularity(indexGranularity, 0L), false))
                         .druidTuning(DruidTuning.create(maxRows, new Period(intermediatePersist), 0))
                         .tuning(ClusteredBeamTuning.builder()
                                 .partitions(partitions)
