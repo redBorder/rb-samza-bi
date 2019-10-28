@@ -64,42 +64,58 @@ public class MerakiProcessor extends Processor<Map<String, Object>> {
             String rssiName;
             Integer rssi = (Integer) message.get(CLIENT_RSSI_NUM);
 
-            if(message.containsKey(LAN_IP)){
+            toCache.putAll(message);
+
+            if(message.containsKey(SRC)){
                 toCache.put(DOT11STATUS, "ASSOCIATED");
-                toDruid.put(DOT11STATUS, "ASSOCIATED");
+                //toDruid.put(DOT11STATUS, "ASSOCIATED");
             } else {
                 toCache.put(DOT11STATUS, "PROBING");
-                toDruid.put(DOT11STATUS, "PROBING");
+                //toDruid.put(DOT11STATUS, "PROBING");
             }
 
             if(rssi != null) {
                 if (rssi == 0) {
-                    toCache.put(CLIENT_RSSI, "unknown");
+                    //toCache.put(CLIENT_RSSI, "unknown");
                     rssiName = "unknown";
                 } else if (rssi <= -85) {
-                    toCache.put(CLIENT_RSSI, "bad");
+                    //toCache.put(CLIENT_RSSI, "bad");
                     rssiName = "bad";
                 } else if (rssi <= -80) {
-                    toCache.put(CLIENT_RSSI, "low");
+                  //  toCache.put(CLIENT_RSSI, "low");
                     rssiName = "low";
                 } else if (rssi <= -70) {
-                    toCache.put(CLIENT_RSSI, "medium");
+                    //toCache.put(CLIENT_RSSI, "medium");
                     rssiName = "medium";
                 } else if (rssi <= -60) {
-                    toCache.put(CLIENT_RSSI, "good");
+                    //toCache.put(CLIENT_RSSI, "good");
                     rssiName = "good";
                 } else {
-                    toCache.put(CLIENT_RSSI, "excelent");
+                    //toCache.put(CLIENT_RSSI, "excelent");
                     rssiName = "excelent";
                 }
 
                 toCache.put(CLIENT_RSSI, rssiName);
-                toDruid.put(CLIENT_RSSI, rssiName);
+                //toDruid.put(CLIENT_RSSI, rssiName);
+
+                if (rssi == 0) {
+                    toCache.put(CLIENT_PROFILE, "hard");
+                } else if (rssi <= -75) {
+                    toCache.put(CLIENT_PROFILE, "soft");
+                } else if (rssi <= -65) {
+                    toCache.put(CLIENT_PROFILE, "medium");
+                } else {
+                    toCache.put(CLIENT_PROFILE, "hard");
+                }
+
+
+
             }
 
             store.put(clientMac, toCache);
 
-            toDruid.putAll(message);
+            //toDruid.putAll(message);
+            toDruid.putAll(toCache);
 
             Map<String, Object> storeEnrichment = storeManager.enrich(toDruid);
             storeEnrichment.putAll(toDruid);
